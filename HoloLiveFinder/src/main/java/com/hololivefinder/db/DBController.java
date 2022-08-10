@@ -30,6 +30,7 @@ public class DBController {
 		}
 	}
 	public static void InitialValueInsert(Member m,String KRName) {
+		DBConnect();
 		String sql = "insert into member values(?,?,?,?,?,?,?,?,?,?,?,?)";
 		try {
 			pstmt = con.prepareStatement(sql);
@@ -50,6 +51,7 @@ public class DBController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		DBClose();
 	}
 	public static void DBClose() {
 		try {
@@ -61,6 +63,7 @@ public class DBController {
 		}
 	}
 	public static void DBUpdate(Member m) {
+		DBConnect();
 		String sql = "update member set ONAIR = ?, ONAIRTITLE = ?, ONAIRTHUMNAILSURL = ?, ONAIRVIDEOURL = ? where channelid like ?";
 		try {
 			pstmt = con.prepareStatement(sql);
@@ -74,6 +77,7 @@ public class DBController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		DBClose();
 	}
 	public static void DBSelect(JSONObject nameObject) {
 		try {
@@ -102,7 +106,7 @@ public class DBController {
 				jArray.add(sObject);
 				//System.out.println(jArray.toString());
 				nameObject.put(sObject.get("memberName"), jArray);
-				System.out.println(nameObject.toString());
+				//System.out.println(nameObject.toString());
 			}
 			rs.close();
 			pstmt.close();

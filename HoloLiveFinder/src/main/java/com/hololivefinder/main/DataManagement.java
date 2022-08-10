@@ -156,16 +156,16 @@ public class DataManagement {
 						hololiveUrl[index],
 						index));
 			}
-			/*DBController.DBConnect();
+			/*
 			for(int i=0;i<channelId.length;i++) {
 				DBController.InitialValueInsert(list.get(i), KRName[list.get(i).getNumber()]);
 			}
-			DBController.DBClose();///db처음에 넣을때 사용한거*/
+			//db처음에 넣을때 사용한거*/
 			Collections.sort(list);
-			for(int i=0;i<channelId.length;i++) {
+			/*for(int i=0;i<channelId.length;i++) {
 				System.out.println(list.get(i).getMemberName());
 				System.out.println(list.get(i).getOnAirVideoUrl());
-			}
+			}*/
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -206,17 +206,15 @@ public class DataManagement {
 						list.get(i).setOnAirTitle(null);
 						list.get(i).setOnAirVideoUrl(null);
 					}
-					else {
+					/*else {
 						System.out.println(list.get(i).getMemberName()+"\n");
-					}
+					}*/
 					check[i]=false;
 				}
 			}
-			DBController.DBConnect();
 			for(int i=0;i<channelId.length;i++) {
 				DBController.DBUpdate(list.get(i));
 			}
-			DBController.DBClose();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

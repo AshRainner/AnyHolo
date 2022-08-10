@@ -8,5 +8,4 @@ public class Main {
 		while(true)
 		d.LiveConfirm();
 	}
-
 }
