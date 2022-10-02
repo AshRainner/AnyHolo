@@ -22,11 +22,9 @@ public class AndroidConnection extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		JSONObject jObject = new JSONObject();
 		JSONArray jArray = new JSONArray();
-		JSONObject nameObject = new JSONObject();
-		String jsonData=null;
-		DBController.DBSelect(nameObject);
-		jObject.put("Member", nameObject);
-		jsonData = jObject.toString();
-		out.print(jsonData);
+		DBController.DBSelect(jArray);
+		jObject.put("Member", jArray);
+		out.print(jObject);
+		out.flush();
 	}
 }

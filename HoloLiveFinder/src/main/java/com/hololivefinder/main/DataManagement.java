@@ -126,9 +126,9 @@ public class DataManagement {
 				list.add(new Member(KRName[index],
 						temp.getSnippet().getThumbnails().getHigh().getUrl(),
 						country,
-						"",
+						"default",
 						temp.getSnippet().getDescription(),
-						"","","",
+						"default","default","default",
 						temp.getId(),
 						twitterUrl[index],
 						hololiveUrl[index],
@@ -148,9 +148,9 @@ public class DataManagement {
 				list.add(new Member(KRName[index],
 						temp.getSnippet().getThumbnails().getHigh().getUrl(),
 						country,
-						"",
+						"default",
 						temp.getSnippet().getDescription(),
-						"","","",
+						"default","default","default",
 						temp.getId(),
 						twitterUrl[index],
 						hololiveUrl[index],
@@ -201,10 +201,10 @@ public class DataManagement {
 				}
 				for(int i=0;i<channelId.length;i++) {
 					if(!check[i]) {
-						list.get(i).setOnAir(null);
-						list.get(i).setOnAirthumnailsUrl(null);
-						list.get(i).setOnAirTitle(null);
-						list.get(i).setOnAirVideoUrl(null);
+						list.get(i).setOnAir("default");
+						list.get(i).setOnAirthumnailsUrl("default");
+						list.get(i).setOnAirTitle("default");
+						list.get(i).setOnAirVideoUrl("default");
 					}
 					/*else {
 						System.out.println(list.get(i).getMemberName()+"\n");

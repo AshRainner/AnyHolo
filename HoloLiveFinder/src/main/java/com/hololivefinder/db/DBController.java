@@ -79,7 +79,7 @@ public class DBController {
 		}
 		DBClose();
 	}
-	public static void DBSelect(JSONObject nameObject) {
+	public static void DBSelect(JSONArray jArray) {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			Connection con =null;
@@ -91,7 +91,6 @@ public class DBController {
 			ResultSet rs=pstmt.executeQuery();
 			while(rs.next()) {
 				JSONObject sObject = new JSONObject();
-				JSONArray jArray = new JSONArray();
 				sObject.put("memberName", rs.getString("memberName"));
 				sObject.put("imageUrl", rs.getString("imageUrl"));
 				sObject.put("country", rs.getString("country"));
@@ -101,12 +100,10 @@ public class DBController {
 				sObject.put("onAirThumnailsUrl", rs.getString("onairthumnailsurl"));
 				sObject.put("onAirViedoUrl", rs.getString("onairvideourl"));
 				sObject.put("channelId", rs.getString("channelid"));
+				sObject.put("twitterurl", rs.getString("twitterurl"));
 				sObject.put("hololiveUrl", rs.getString("hololiveurl"));
 				sObject.put("num", rs.getInt("num"));
 				jArray.add(sObject);
-				//System.out.println(jArray.toString());
-				nameObject.put(sObject.get("memberName"), jArray);
-				//System.out.println(nameObject.toString());
 			}
 			rs.close();
 			pstmt.close();
@@ -116,7 +113,6 @@ public class DBController {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
-			System.out.println("ASDF");
 			e.printStackTrace();
 		}
 	}
