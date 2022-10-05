@@ -65,16 +65,15 @@ public class DBController {
 	public static void DBUpdate(Member m) {
 		DBConnect();
 		String sql = "update member set ONAIR = ?, ONAIRTITLE = ?, ONAIRTHUMNAILSURL = ?, ONAIRVIDEOURL = ?"
-				+ ", IMAGEURL = ?, INTRODUCETEXT = ? where channelid like ?";
+				+ ", INTRODUCETEXT = ? where channelid like ?";
 		try {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, m.getOnAir());
 			pstmt.setString(2, m.getOnAirTitle());
 			pstmt.setString(3, m.getOnAirthumnailsUrl());
 			pstmt.setString(4, m.getOnAirVideoUrl());
-			pstmt.setString(5, m.getImageUrl());
-			pstmt.setString(6, m.getIntroduceText());
-			pstmt.setString(7, m.getChannelId());
+			pstmt.setString(5, m.getIntroduceText());
+			pstmt.setString(6, m.getChannelId());
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

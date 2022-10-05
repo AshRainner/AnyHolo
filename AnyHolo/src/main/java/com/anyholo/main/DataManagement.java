@@ -1,6 +1,9 @@
 package com.anyholo.main;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,7 +33,7 @@ public class DataManagement {
 			"UCENwRMx5Yh42zWpzURebzTw","UCs9_O1tRPMQTHQ-N_L6FU2g","UC6eWCld0KwmyHFbAqK3V-Rw","UCIBY1ollUsauvVi4hW4cumw","UC_vMYWcDjmfdpH6r4TTn1MQ",//6기생
 			"UCL_qhgtOy0dy1Agp8vkySQg","UCHsx4Hqa-1ORjQTh9TYDhww","UCMwGHR0BTZuLsmjY_NT5Pwg","UCoSrY_IQQVpmIRZ9Xf-y93g","UCyl1z3jo3XHR1riLFKG5UAg",//EN1기생
 			"UC8rcEBzJSleTkf_-agPM20g",//EN 프로젝트 HOPE
-			"UCsUj0dszADCGbF3gNrQEuSQ","UCO_aKKYxn4tvrqPjcTzZ6EQ","UCmbs8T6MWqUHP1tIQvSgKrg","UC3n5uGu18FoCy23ggWWp8tA","UCgmPnx-EEeOrZSg5Tiw7ZRQ",//EN2기
+			"UCO_aKKYxn4tvrqPjcTzZ6EQ","UCmbs8T6MWqUHP1tIQvSgKrg","UC3n5uGu18FoCy23ggWWp8tA","UCgmPnx-EEeOrZSg5Tiw7ZRQ",//EN2기
 			"UCOyYb1c43VlX9rc_lT6NKQw","UCP0BspO_AMEe3aQqqpo89Dg","UCAoy6rzhSf4ydcYjJw3WoVg",//ID1기생
 			"UCYz_5n-uDuChHtLo7My1HnQ","UC727SQYUvx5pDDGQpTICNWg","UChgTyjG-pdNvxxhdsXfHQ5Q",//ID2기생
 			"UCTvHWSfBZgtxE4sILOaurIQ","UCZLZ8Jjx_RN2CXloOmgTHVg","UCjLEmnpCNeisMxy134KPwWw"//ID3기생
@@ -46,7 +49,7 @@ public class DataManagement {
 			"Laplus","Lui","Koyori","Chloe","Iroha",//6기생
 			"Calliope","Kiara","Ina'nis","Gura","Amelia",//EN1기생
 			"IRyS",//EN 프로젝트 HOPE
-			"Sana","Fauna","Kronii","Mumei","Baelz",//EN2기생
+			"Fauna","Kronii","Mumei","Baelz",//EN2기생
 			"Risu","Moona","Iofifteen",//ID1기생
 			"Ollie","Anya","Reine",//ID2기생
 			"Zeta","Kaela","Kobo"//ID3기생
@@ -62,7 +65,7 @@ public class DataManagement {
 			"LaplusDarknesss","takanelui","hakuikoyori","sakamatachloe","kazamairohach",
 			"moricalliope","takanashikiara","ninomaeinanis","gawrgura","watsonameliaEN",
 			"irys_en",
-			"tsukumosana","ceresfauna","ourokronii","nanashimumei_en","hakosbaelz",
+			"ceresfauna","ourokronii","nanashimumei_en","hakosbaelz",
 			"ayunda_risu","moonahoshinova","airaniiofifteen",
 			"kureijiollie","anyamelfissa","pavoliareine",
 			"vestiazeta","kaelakovalskia","kobokanaeru"
@@ -78,14 +81,14 @@ public class DataManagement {
 			"la-darknesss","takane-lui","hakui-koyori","sakamata-chloe","kazama-iroha",
 			"mori-calliope","takanashi-kiara","ninomae-inanis","gawr-gura","watson-amelia",
 			"irys",
-			"tsukumo-sana","ceres-fauna","ouro-kronii","nanashi-mumei","hakos-baelz",
+			"ceres-fauna","ouro-kronii","nanashi-mumei","hakos-baelz",
 			"ayunda-risu","moona-hoshinova","airani-iofifteen",
 			"kureiji-ollie","anya-melfissa","pavolia-reine",
 			"vestia-zeta","kaela-kovalskia","kobo-kanaeru"
 	};
 	private String[] KRName={//멤버들의 한국식 이름
 			"소라","로보코","아즈키","미코","스이세이",
-			"멜","아키로젠탈","하아토","후부키","마츠리",
+			"멜","아키","하아토","후부키","마츠리",
 			"아쿠아","시온","아야메","쵸코","스바루",
 			"미오","오카유","코로네",
 			"페코라","후레아","노엘","마린",
@@ -94,7 +97,7 @@ public class DataManagement {
 			"라플라스","루이","코요리","클로에","이로하",
 			"칼리오페","키아라","이나니스","구라","아멜리아",
 			"아이리스",
-			"사나","파우나","크로니","무메이","벨즈",
+			"파우나","크로니","무메이","벨즈",
 			"리스","무나","이오피프틴",
 			"올리","아냐","레이네",
 			"제타","카엘라","코보"
@@ -184,11 +187,14 @@ public class DataManagement {
 				liveids=liveids.substring(0,liveids.length()-1);
 				String jsonString = YoutubeDataApi.getLiveJSon(liveids, API_KEY);
 				ObjectMapper mapper = new ObjectMapper();
+				String Day2Later = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_INSTANT);
 				List<com.anyholo.model.live.Item> items = mapper.readValue(jsonString, LiveModel.class).getItems();
 				for(int i=0;i<items.size();i++) {
 					int index = getIndex(items.get(i));
-					if(items.get(i).getSnippet().getLiveBroadcastContent().equals("live")) {
-						list.get(index).setOnAir("live");
+					if(items.get(i).getSnippet().getLiveBroadcastContent().equals("live")||
+							items.get(i).getSnippet().getLiveBroadcastContent().equals("upcoming")&&
+							items.get(i).getLiveStreamingDetails().getScheduledStartTime().compareTo(Day2Later)<=0) {
+						list.get(index).setOnAir(items.get(i).getSnippet().getLiveBroadcastContent());
 						list.get(index).setOnAirthumnailsUrl(items.get(i).getSnippet().getThumbnails().getMedium().getUrl());
 						list.get(index).setOnAirTitle(items.get(i).getSnippet().getTitle());
 						list.get(index).setOnAirVideoUrl("https://www.youtube.com/watch?v="+items.get(i).getId());

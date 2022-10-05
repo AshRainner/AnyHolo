@@ -19,7 +19,7 @@ public class YoutubeDataApi {
 		//live중인 채널들의 videos_id만 모아서 한번에 검색
 		//search api를 사용할 경우 할당량을 너무 많이 사용하기에 이러한 방법을 사용
 		String apiurl = "https://www.googleapis.com/youtube/v3/videos";
-		apiurl+="?part=snippet&id="+videos_id;
+		apiurl+="?part=snippet,liveStreamingDetails&id="+videos_id;
 		apiurl+="&fields=items&key="+key;
 		URL url = new URL(apiurl);
 		return apiConnection(apiurl);

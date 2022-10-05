@@ -30,6 +30,8 @@ public class Item {
 	private String id;
 	@JsonProperty("snippet")
 	private Snippet snippet;
+	@JsonProperty("liveStreamingDetails")
+	private LiveStreamingDetails liveStreamingDetails;
 	@JsonIgnore
 	private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -72,7 +74,17 @@ public class Item {
 	public void setSnippet(Snippet snippet) {
 		this.snippet = snippet;
 	}
+	
+	@JsonProperty("liveStreamingDetails")
+	public LiveStreamingDetails getLiveStreamingDetails() {
+	return liveStreamingDetails;
+	}
 
+	@JsonProperty("liveStreamingDetails")
+	public void setLiveStreamingDetails(LiveStreamingDetails liveStreamingDetails) {
+	this.liveStreamingDetails = liveStreamingDetails;
+	}
+	
 	@JsonAnyGetter
 	public Map<String, Object> getAdditionalProperties() {
 		return this.additionalProperties;
