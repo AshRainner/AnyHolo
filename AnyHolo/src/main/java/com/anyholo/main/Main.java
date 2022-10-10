@@ -10,6 +10,7 @@ public class Main {
 		/*String now = ZonedDateTime.now().format(DateTimeFormatter.ISO_INSTANT);
 		System.out.println(ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_INSTANT));*/
 		DataManagement d = new DataManagement();
+		System.out.println("-");
 		d.twitTest();
 		/*d.InitialValue();//초기값 설정
 		Thread refresh = new tcpSocket();

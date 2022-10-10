@@ -271,10 +271,15 @@ public class DataManagement {
 			Document doc = Jsoup.connect("https://twitter.com/"
 					+"gell8778"+"/with_replies").get();
 			String temp="";
+			System.out.println("data-testid=\"cellInnerDiv\"");
+			Elements links = doc.select("data-testid=\"cellInnerDiv\"");
+			for(Element element : links) {
+				System.out.println(element);
+			}
 			/*Elements links = doc.select("link[rel=\"canonical\"]");
-				if(links.attr("href").contains("watch")) {
-					liveids+=(links.attr("href").substring(32))+",";
-				}*/
+			if(links.attr("href").contains("watch")) {
+				liveids+=(links.attr("href").substring(32))+",";
+			}*/
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
