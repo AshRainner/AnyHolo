@@ -22,8 +22,7 @@ public class YoutubeDataApi {
 		apiurl+="?part=snippet,liveStreamingDetails&id="+videos_id;
 		apiurl+="&fields=items&key="+key;
 		URL url = new URL(apiurl);
-		return apiConnection(apiurl);
-		
+		return apiConnection(apiurl);	
 	}
 	private static String apiConnection(String apiurl)throws IOException {
 		URL url = new URL(apiurl);

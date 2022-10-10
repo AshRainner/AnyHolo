@@ -10,6 +10,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.anyholo.model.data.Member;
+import com.anyholo.model.data.Twit;
 
 public class DBController {
 	private static String url = "jdbc:oracle:thin:@222.237.255.159:1521:xe";
@@ -61,6 +62,43 @@ public class DBController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	public static int TwitSelect(String twid) {
+		DBConnect();
+		String sql = "select * from twit where twitid like ?";
+		try {
+			pstmt=con.prepareStatement(sql);
+			pstmt.setString(1, twid);
+			pstmt.executeQuery();
+			return 1;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return 0;
+		}
+	}
+	public static void TwitInsert(Twit t) {
+		DBConnect();
+		String sql = "insert into Twit values(?,?,?,?,?,?,?,?,?,TO_DATE(?,'yyyy-MM-dd hh24:mi:ss'))";
+		//TwitID, WriteUserName, UserID, UserProfileURL, TwitContent, TwitType, NextTwitID, MediaType, MediaURL, WriteDate
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, t.getTwitID());
+			pstmt.setString(2, t.getWriteUserName());
+			pstmt.setString(3, t.getUserID());
+			pstmt.setString(4, t.getUserProfileURL());
+			pstmt.setString(5, t.getTwitContent());
+			pstmt.setString(6, t.getTwitType());
+			pstmt.setString(7, t.getNextTwitID());
+			pstmt.setString(8, t.getMediaType());
+			pstmt.setString(9, t.getMediaURL());
+			pstmt.setString(10, t.getWriteDate());
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		DBClose();
 	}
 	public static void DBUpdate(Member m) {
 		DBConnect();

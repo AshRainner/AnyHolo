@@ -1,7 +1,9 @@
 package com.anyholo.api;
+import java.sql.ResultSet;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
+import com.anyholo.db.DBController;
+import com.anyholo.model.data.Twit;
 
 import io.github.redouane59.twitter.TwitterClient;
 import io.github.redouane59.twitter.dto.endpoints.AdditionalParameters;
@@ -67,6 +69,7 @@ import io.github.redouane59.twitter.signature.TwitterCredentials;
 1486636197908602880 : 카엘라
 1486629076005634049 : 코보
 멤버들 트위터 id
+808300835000094721 : 내꺼 테스트용
  */
 public class TwitterApiTest {
 	final static String ACCESS_TOKEN = "808300835000094721-qxnXYKulsArpmrnd8uTn1eVhF4cNyfU";
@@ -81,21 +84,143 @@ public class TwitterApiTest {
 				.apiSecretKey(API_KEY_SECRET)
 				.build());
 		//리트윗한건 get media로 안가져와짐
-		
-		
-		List<String> testlist = new ArrayList();		
-		
-		
-		TweetList timeline = twitterClient.getUserTimeline("1133215093246664706",
-				AdditionalParameters.builder().startTime(LocalDateTime.now().minusDays(2)).endTime(LocalDateTime.now()).build());
-		System.out.println("!");	
-		/*for(int i = 0; i<timeline.getIncludes().getMedia().size();i++) {
+		/*TweetList timeline = twitterClient.getUserTimeline("1133215093246664706",
+				AdditionalParameters.builder().startTime(LocalDateTime.now().minusDays(1)).endTime(LocalDateTime.now()).build());
+//		 TweetList timeline = twitterClient.getUserTimeline("1062499145267605504",
+//				 AdditionalParameters.builder().startTime(LocalDateTime.now().minusDays(1)).endTime(LocalDateTime.now()).build());
+//		 System.out.println("!");
+//		 HashMap<String,ArrayList<String>> midea = new HashMap<String,ArrayList<String>>();
+//		 HashMap<String,Tweet> rt = new HashMap<String,Tweet>();
+//		 if(timeline.getIncludes().getMedia()!=null) {
+//			 for(int i=0;i<timeline.getIncludes().getMedia().size();i++) {
+//				 ArrayList<String> type_url = new ArrayList<>();
+//				 type_url.add(timeline.getIncludes().getMedia().get(i).getType());
+//				 if(timeline.getIncludes().getMedia().get(i).getType().equals("photo"))
+//					 type_url.add(timeline.getIncludes().getMedia().get(i).getUrl());
+//				 else
+//					 type_url.add(timeline.getIncludes().getMedia().get(i).getVariants().get(0).getUrl());	
+//				 //System.out.println(timeline.getIncludes().getMedia().get(i).getVariants().get(0).getUrl()); // 비디오 URL
+//				 midea.put(timeline.getIncludes().getMedia().get(i).getKey(),type_url);
+//			 }
+//		 }
+//		 System.out.println("---------------------------------------");
+//		 List<String> rtids = new ArrayList<>();
+//		 for(int i=0;i<timeline.getData().size();i++) {
+//			 TweetData td = timeline.getData().get(i);
+//			 if(td.getTweetType().equals(TweetType.RETWEETED)) {
+//				 rtids.add(td.getInReplyToStatusId());
+//				 /*System.out.println("리트윗 트윗 ID : "+rt.getId());
+//				System.out.println("리트윗 User ID : "+ rt.getUser().getId());
+//				System.out.println("리트윗 TwitType : "+rt.getTweetType());
+//				System.out.println("리트윗 TwitProfile : "+ rt.getUser().getProfileImageUrl());
+//				System.out.println("리트윗 TwitContent : "+rt.getText());*/
+		//			 }
+		//
+		//		 }
+		//		 List<Twit> twits = new ArrayList<Twit>();
+		//		 TweetList rts = twitterClient.getTweets(rtids);
+		//		 /*Tweet testTwit = twitterClient.getTweet("1579426521269342210");//사진 여러개
+		//		System.out.println("TwitID : "+testTwit.getId());
+		//		System.out.println("WriteUserName : "+testTwit.getUser().getDisplayedName());
+		//		System.out.println("UserID : "+testTwit.getUser().getName());
+		//		System.out.println("TwitType : "+testTwit.getTweetType());
+		//		System.out.println("TwitContent : "+testTwit.getText());
+		//		System.out.println("NextTwitID : "+testTwit.getInReplyToStatusId());
+		//		for(int i=0;i<testTwit.getMedia().size();i++) {
+		//			System.out.println(testTwit.getMedia().get(i).getUrl());
+		//		}
+		//		System.out.println("size : "+testTwit.getMedia().size());*/
+		//
+		//		 for(int i=0;i<rts.getData().size();i++) {
+		//			 TweetData td = rts.getData().get(i);
+		//			 String time = td.getCreatedAt().toString();
+		//			 time=time.replace("T"," ");
+		//			 Twit t = new Twit(
+		//					 td.getId(),
+		//					 td.getUser().getDisplayedName(),
+		//					 td.getUser().getProfileImageUrl(),
+		//					 td.getUser().getId(),
+		//					 td.getText(),
+		//					 null,
+		//					 td.getTweetType().toString(),
+		//					 time,
+		//					 td.getInReplyToStatusId(),
+		//					 null);
+		//			 System.out.println("TwitID : "+td.getId());
+		//			 System.out.println("WriteUserName : "+td.getUser().getDisplayedName());
+		//			 System.out.println("UserID : "+td.getUser().getName());
+		//			 System.out.println("TwitType : "+td.getTweetType());
+		//			 System.out.println("TwitContent : "+td.getText());
+		//			 System.out.println("NextTwitID : "+td.getInReplyToStatusId());
+		//			 System.out.println("WRITEDATE : "+time);
+		//			 if(td.getAttachments()!=null) {
+		//				 System.out.println("Media Type : "+midea.get(td.getAttachments().getMediaKeys()[0]).get(0));
+		//				 System.out.println("TwitImage : "+midea.get(td.getAttachments().getMediaKeys()[0]).get(1));
+		//				 t.setMediaURL(midea.get(td.getAttachments().getMediaKeys()[0]).get(1));
+		//				 t.setMediaType(midea.get(td.getAttachments().getMediaKeys()[0]).get(0));
+		//			 }
+		//			 //DBController.TweetInsert(t);
+		//			 System.out.println("---------------------------------------");
+		//		 }
+		//		 for(int i=0;i<timeline.getData().size();i++) {
+		//			 TweetData td = timeline.getData().get(i);
+		//			 System.out.println("TwitID : "+td.getId());
+		//			 System.out.println("WriteUserName : "+td.getUser().getDisplayedName());
+		//			 System.out.println("UserID : "+td.getUser().getName());
+		//			 System.out.println("TwitType : "+td.getTweetType());
+		//			 System.out.println("TwitContent : "+td.getText());
+		//			 System.out.println("NextTwitID : "+td.getInReplyToStatusId());
+		//			 System.out.println("WRITEDATE : "+td.getCreatedAt());
+		//			 if(td.getAttachments()!=null) {
+		//				 System.out.println("TwitImage"+midea.get(td.getAttachments().getMediaKeys()[0]));
+		//			 }
+		//			 System.out.println("---------------------------------------");
+		//		 }
+		//		 System.out.println(timeline.getData().size());
+		//		 //System.out.println(rts.getData().size());
+		TweetList timeline = twitterClient.getUserTimeline("808300835000094721",
+				AdditionalParameters.builder().startTime(LocalDateTime.now().minusDays(1)).endTime(LocalDateTime.now()).build());
+		for(int i=0;i<timeline.getData().size();i++) {
+			TweetData td = timeline.getData().get(i);
+			String time = td.getCreatedAt().toString();
+			time=time.replace("T"," ");
+			Twit t = new Twit(
+					td.getId(),
+					td.getUser().getDisplayedName(),
+					td.getUser().getId(),
+					td.getUser().getProfileImageUrl(),
+					td.getText(),
+					td.getTweetType().toString(),
+					td.getInReplyToStatusId(),
+					null,
+					null,
+					time);
+			if(DBController.TwitSelect(td.getId())==0) {
+				System.out.println("데이터가 있음");
+			}
+			else {
+				System.out.println("데이터가 없음");
+			}
+			System.out.println("---------------------------------------");
+		}
+	}
+	/*for(int i = 0; i<timeline.getIncludes().getMedia().size();i++) {
 			System.out.println(timeline.getIncludes().getMedia().get(i).getMediaUrl());
 			System.out.println(timeline.getIncludes().getMedia().get(i).getKey());//어디 트윗에 있는 것인가
 			System.out.println(timeline.getIncludes().getMedia().get(i).getId());
 			System.out.println("------------------------------------------------");
 		}*/
-		for(int i =0; i<timeline.getData().size();i++) {
+	/*testlist.add("1578320231076069377");
+		testlist.add("1577718845774901249");
+		testlist.add("1579399409573691393");
+		TweetList test = twitterClient.getTweets(testlist);
+		for(int i = 0;i<test.getData().size();i++) {
+			TweetData td = test.getData().get(i);
+			System.out.println(td.getUser().getDisplayedName()+" : "+td.getUser().getName());
+			System.out.println("내용 : "+td.getText());
+			//System.out.println(test.getIncludes().getMedia().get(i).getUrl());url 가져오기
+		}*/
+	/*for(int i =0; i<timeline.getData().size();i++) {
 			TweetData td = timeline.getData().get(i);
 			System.out.println(td.getUser().getDisplayedName()+" : "+td.getUser().getName());
 			System.out.println("내용 : "+td.getText());
@@ -104,16 +229,22 @@ public class TwitterApiTest {
 			System.out.println("다음 Tweet : "+td.getInReplyToStatusId());
 			System.out.println("다음 Tweet 쓴 사람 id : "+td.getInReplyToUserId());
 			System.out.println();
-			if(td.getAttachments()!=null)
+			if(td.getMedia().size()>0) {
+				for(int j=0;j<td.getMedia().size();j++)
+					System.out.println(td.getMedia().get(j));
+			}
+			if(td.getAttachments()!=null) {
 				System.out.println("get meida key : "+td.getAttachments().getMediaKeys());
+				System.out.println(td.getMedia().size());
+			}
 			if(td.getTweetType().toString().equals("QUOTED")||
 					td.getTweetType().toString().equals("REPLIED_TO")) {
 				System.out.println("test들감");
 				test(td.getInReplyToStatusId(),twitterClient);
 			}
 			System.out.println("----------------------------------");
-		}
-		/*for(int i =0;i<timeline.getData().size();i++) {
+		}*/
+	/*for(int i =0;i<timeline.getData().size();i++) {
 			TweetData td = timeline.getData().get(i);
 			if(td.getTweetType().toString().equals("DEFAULT")||
 					td.getTweetType().toString().equals("QUOTED")) {
@@ -128,7 +259,7 @@ public class TwitterApiTest {
 			System.out.println("-------------------------------------------------");
 			}
 		}*/
-		/*Tweet tweet = twitterClient.getTweet("1576181857900601344");
+	/*Tweet tweet = twitterClient.getTweet("1576181857900601344");
 		System.out.println(tweet.getText());
 		System.out.println("------------------------");
 		System.out.println(tweet.getCreatedAt());//트윗 올린 시간
@@ -143,7 +274,7 @@ public class TwitterApiTest {
 		System.out.println("------------------------");
 		System.out.println(tweet.getUser().getName()); //누구인지
 		System.out.println("------------------------");*/
-		/*User user = twitterClient.getUserFromUserName("usadapekora");
+	/*User user = twitterClient.getUserFromUserName("usadapekora");
 		System.out.println(user.getName()); //누구인지
 		System.out.println("------------------------");
 		System.out.println(user.getDisplayedName());//화면에 표시되는 이름
@@ -167,14 +298,13 @@ public class TwitterApiTest {
 		System.out.println(user.getId());//user id값
 		System.out.println("------------------------");
 		System.out.println(user.getUrl());//링크 걸려있는거*/
-		/*List<String> member = new ArrayList();
+	/*List<String> member = new ArrayList();
 		for(int i=0;i<DataManagement.twitterUrl.length;i++)
 		member.add(DataManagement.twitterUrl[i]);
 		System.out.println(member);
 		List<User> users = twitterClient.getUsersFromUserNames(member);
 		for(int i=0;i<users.size();i++)
 			System.out.println(users.get(i).getId()+" : "+DataManagement.KRName[i]);*/
-	}
 	public static void test(String twid,TwitterClient twitterClient) {
 		Tweet tweet = twitterClient.getTweet(twid);
 		System.out.println("------------------------");
@@ -188,7 +318,7 @@ public class TwitterApiTest {
 					System.out.println("미디어 url : "+m.getPreviewImageUrl());
 				else
 					System.out.println("이미지 url :"+m.getMediaUrl());
-				
+
 			}
 		}
 		if(tweet.getTweetType().toString().equals("QUOTED")||
