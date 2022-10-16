@@ -36,4 +36,27 @@ public class YoutubeDataApi {
 		}
 		return response.toString();
 	}
+	public static String getKirinukiVideo(String channel_id,String key)throws IOException{
+		//playlistid가져와서 playlist로 검색해서 가져오기
+		String apiurl = "https://www.googleapis.com/youtube/v3/playlistItems";
+		apiurl+="?part=snippet&playlistId="+channel_id;
+		apiurl+="&fields=items&key="+key;
+		//UCOPaYsI-TnBk0qxoAy_rjXA
+		//UUOPaYsI-TnBk0qxoAy_rjXA
+		return apiConnection(apiurl);
+	}
+	public static String getKirinukiInitialValue(String channel_id,String key)throws IOException{
+		String apiurl = "https://www.googleapis.com/youtube/v3/playlistItems";
+		channel_id="UU"+channel_id.substring(2,channel_id.length());
+		apiurl+="?part=snippet&maxResults=50&playlistId="+channel_id;
+		apiurl+="&key="+key;
+		return apiConnection(apiurl);
+	}
+	public static String getKirinukiInitialValue(String channel_id,String nextPageToken,String key)throws IOException{
+		String apiurl = "https://www.googleapis.com/youtube/v3/playlistItems";
+		channel_id="UU"+channel_id.substring(2,channel_id.length());
+		apiurl+="?part=snippet&maxResults=50&pageToken=+"+nextPageToken+"&playlistId="+channel_id;
+		apiurl+="&key="+key;		
+		return apiConnection(apiurl);
+	}
 }

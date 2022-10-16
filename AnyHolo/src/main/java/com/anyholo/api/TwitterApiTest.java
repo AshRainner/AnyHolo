@@ -13,7 +13,7 @@ import io.github.redouane59.twitter.dto.tweet.TweetV2.MediaEntityV2;
 import io.github.redouane59.twitter.dto.tweet.TweetV2.TweetData;
 import io.github.redouane59.twitter.signature.TwitterCredentials;
 /*
- 880317891249188864 : 소라
+880317891249188864 : 소라
 960340787782299648 : 로보코
 1062499145267605504 : 아즈키
 979891380616019968 : 미코

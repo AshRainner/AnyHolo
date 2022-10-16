@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.anyholo.model.data.Kirinuki;
 import com.anyholo.model.data.Member;
 import com.anyholo.model.data.Twit;
 
@@ -99,6 +100,25 @@ public class DBController {
 			e.printStackTrace();
 		}
 		DBClose();
+	}
+	public static void KirinukiInsert(Kirinuki k) {
+		DBConnect();
+		String sql = "insert into Kirinuki values(?,?,?,?,TO_DATE(?,'yyyy-MM-dd hh24:mi:ss'))";
+		
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, k.getYoutubeURL());
+			pstmt.setString(2, k.getChannelName());
+			pstmt.setString(3, k.getThumnailsURL());
+			pstmt.setString(4, k.getTag());
+			pstmt.setString(5, k.getUploadTime());
+			pstmt.executeUpdate();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		DBClose();
+		
 	}
 	public static void DBUpdate(Member m) {
 		DBConnect();

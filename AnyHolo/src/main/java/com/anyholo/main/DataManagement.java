@@ -1,6 +1,9 @@
 package com.anyholo.main;
 
 import java.io.IOException;
+import java.util.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -8,17 +11,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.anyholo.api.TwitterApi;
 import com.anyholo.api.YoutubeDataApi;
 import com.anyholo.db.DBController;
+import com.anyholo.model.data.Kirinuki;
 import com.anyholo.model.data.Member;
 import com.anyholo.model.data.Twit;
+import com.anyholo.model.kirinuki.KirinukiModel;
 import com.anyholo.model.live.LiveModel;
 import com.anyholo.model.profile.Item;
 import com.anyholo.model.profile.ProfileModel;
@@ -111,6 +117,22 @@ public class DataManagement {
 			"리스","무나","이오피프틴",
 			"올리","아냐","레이네",
 			"제타","카엘라","코보"
+	};
+	private String[] TwitterId= {
+			"880317891249188864", "960340787782299648", "1062499145267605504", "979891380616019968", "97527587867340800",
+			"985703615758123008", "996643748862836736", "998336069992001537", "997786053124616192", "996645451045617664",
+			"1024528894940987392", "1024533638879166464", "1024532356554608640", "1024970912859189248", "1027853566780698624",
+			"1063337246231687169", "1109751762733301760", "1109748792721432577",
+			"1133215093246664706", "1154304634569150464", "1153195295573856256", "1153192638645821440",
+			"1200396304360206337", "1200397643479805957", "1200357161747939328", "1200396798281445376",
+			"1255013740799356929", "1255017971363090432", "1255015814979186689", "1270551806993547265",
+			"1433657158067896325", "1433660866063339527", "1433667543806267393", "1433669866406375432", "1434755250049589252",
+			"1283653858510598144", "1283646922406760448", "1283650008835743744", "1283657064410017793", "1283656034305769472",
+			"1363705980261855232",
+			"1409819816194576394", "1409784760805650436", "1409817096523968513", "1409817941705515015", "1409783149211443200",
+			"1234752200145899520", "1234753886520393729", "1235180878449397764",
+			"1328277233492844544", "1328277750000492545", "1328275136575799297",
+			"1486633489101307907", "1486636197908602880", "1486629076005634049"			
 	};
 	private List<Member> list = new ArrayList<Member>();
 	public void InitialValue() {//초기값 설정
@@ -251,6 +273,69 @@ public class DataManagement {
 		}
 		return 0;
 	}
+	public void test(String channel_id) {
+		try {
+			String jsonString = YoutubeDataApi.getKirinukiInitialValue(channel_id, API_KEY);
+			ObjectMapper mapper = new ObjectMapper();
+			KirinukiModel model = mapper.readValue(jsonString, KirinukiModel.class);
+			if(model.getNextPageToken()!=null) {
+				test(channel_id,model.getNextPageToken());
+			}
+			for(com.anyholo.model.kirinuki.Item item: model.getItems()) {
+				String time = convertTime(item.getSnippet().getPublishedAt());
+				Kirinuki k = new Kirinuki(item.getSnippet().getResourceId().getVideoId(),
+						item.getSnippet().getChannelTitle(),
+						item.getSnippet().getThumbnails().getHigh().getUrl(),
+						item.getSnippet().getDescription(),
+						time);
+				DBController.KirinukiInsert(k);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void test(String channel_id,String nextToken) {
+		try {
+			channel_id="UCOPaYsI-TnBk0qxoAy_rjXA";
+			String jsonString = YoutubeDataApi.getKirinukiInitialValue(channel_id,nextToken, API_KEY);
+			ObjectMapper mapper = new ObjectMapper();
+			KirinukiModel model = mapper.readValue(jsonString, KirinukiModel.class);
+			if(model.getNextPageToken()!=null) {
+				test(channel_id,model.getNextPageToken());
+			}
+			for(com.anyholo.model.kirinuki.Item item: model.getItems()) {
+				String time = convertTime(item.getSnippet().getPublishedAt());
+				Kirinuki k = new Kirinuki(item.getSnippet().getResourceId().getVideoId(),
+						item.getSnippet().getChannelTitle(),
+						item.getSnippet().getThumbnails().getHigh().getUrl(),
+						item.getSnippet().getDescription(),
+						time);
+				DBController.KirinukiInsert(k);
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public String convertTime(String time) {
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");			    
+	    TimeZone utcZone = TimeZone.getTimeZone("UTC");
+	    sf.setTimeZone(utcZone);
+	    Date date = null;
+	    try {
+			date = sf.parse(time);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    String converttime = sdf.format(date);
+		return converttime;
+	}
+	
 	public HashMap<String,ArrayList<String>> getMideaURL(TweetList tl) {
 		HashMap<String,ArrayList<String>> midea = new HashMap<String,ArrayList<String>>();
 		if(tl.getIncludes().getMedia()!=null) {
@@ -266,62 +351,114 @@ public class DataManagement {
 		}
 		return midea;
 	}
-	public void twitTest() {		
-		try {
-			Document doc = Jsoup.connect("https://twitter.com/"
-					+"gell8778"+"/with_replies").get();
-			String temp="";
-			System.out.println("data-testid=\"cellInnerDiv\"");
-			Elements links = doc.select("data-testid=\"cellInnerDiv\"");
-			for(Element element : links) {
-				System.out.println(element);
-			}
-			/*Elements links = doc.select("link[rel=\"canonical\"]");
-			if(links.attr("href").contains("watch")) {
-				liveids+=(links.attr("href").substring(32))+",";
-			}*/
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
 	public void getTwit() {
 		TwitterClient twitterClient = TwitterApi.getTwitterClient();
-		TweetList timeline = twitterClient.getUserTimeline("1255013740799356929",
-				AdditionalParameters.builder().startTime(LocalDateTime.now().minusDays(1)).endTime(LocalDateTime.now()).build());
-		HashMap<String,ArrayList<String>> midea = new HashMap<String,ArrayList<String>>();
-		List<Twit> twitList = new ArrayList<>();
-		if(timeline.getIncludes().getMedia()!=null) {
-			midea.putAll(getMideaURL(timeline));
-		}
-		System.out.println("---------------------------------------");
-		List<String> rtIds = new ArrayList<>(); // 리트윗한 트윗의 아이디들
-		List<String> quIds = new ArrayList<>(); // 인용된 트윗의 아이디들 공유 ㅇㅇ
-		for(int i=0;i<timeline.getData().size();i++) {
-			TweetData td = timeline.getData().get(i);
-			if(td.getTweetType().equals(TweetType.RETWEETED)) {
-				rtIds.add(td.getInReplyToStatusId());
+		for(int j = 0; j<TwitterId.length;j++) {
+			TweetList timeline = twitterClient.getUserTimeline(TwitterId[j],
+					AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusMinutes(1)).endTime(LocalDateTime.now().minusHours(9)).build());
+			/*System.out.println(LocalDateTime.now().minusHours(9));
+		System.out.println(LocalDateTime.now().minusHours(9).minusMinutes(1));
+		System.out.println("2022-10-11T05:09:45.000Z");*/
+			HashMap<String,ArrayList<String>> midea = new HashMap<String,ArrayList<String>>();
+			List<Twit> twitList = new ArrayList<>();
+			if(timeline.getIncludes()!=null) {
+				midea.putAll(getMideaURL(timeline));
 			}
-			else if(td.getTweetType().equals(TweetType.QUOTED)) {
-				quIds.add(td.getInReplyToStatusId());
-			}
+			//System.out.println("---------------------------------------");
+			List<String> rtIds = new ArrayList<>(); // 리트윗한 트윗의 아이디들
+			List<String> quIds = new ArrayList<>(); // 인용된 트윗의 아이디들 공유 ㅇㅇ
+			for(int i=0;i<timeline.getData().size();i++) {
+				TweetData td = timeline.getData().get(i);
+				if(td.getTweetType().equals(TweetType.RETWEETED)) {
+					rtIds.add(td.getInReplyToStatusId());
+				}
+				else if(td.getTweetType().equals(TweetType.QUOTED)) {
+					quIds.add(td.getInReplyToStatusId());
+				}
 
-		}
-		TweetList rtTwit = null; //RT 트윗
-		TweetList quTwit = null; //인용 트윗
-		if(rtIds.size()!=0) {
-			rtTwit = twitterClient.getTweets(rtIds);
-		}
-		if(quIds.size()!=0) {
-			quTwit = twitterClient.getTweets(quIds);
-		}
-		if(rtTwit!=null) {
-			if(rtTwit.getIncludes().getMedia()!=null) {
-				midea.putAll(getMideaURL(rtTwit));
 			}
-			for(int i=0;i<rtTwit.getData().size();i++) { // 리트윗한 트윗 내용
-				TweetData td = rtTwit.getData().get(i);
+			TweetList rtTwit = null; //RT 트윗
+			TweetList quTwit = null; //인용 트윗
+			if(rtIds.size()!=0) {
+				rtTwit = twitterClient.getTweets(rtIds);
+			}
+			if(quIds.size()!=0) {
+				quTwit = twitterClient.getTweets(quIds);
+			}
+			if(rtTwit!=null) {
+				if(rtTwit.getIncludes().getMedia()!=null) {
+					midea.putAll(getMideaURL(rtTwit));
+				}
+				for(int i=0;i<rtTwit.getData().size();i++) { // 리트윗한 트윗 내용
+					TweetData td = rtTwit.getData().get(i);
+					String time = td.getCreatedAt().toString();
+					time=time.replace("T"," ");
+					Twit t = new Twit(
+							td.getId(),
+							td.getUser().getDisplayedName(),
+							td.getUser().getId(),
+							td.getUser().getProfileImageUrl(),
+							td.getText(),
+							td.getTweetType().toString(),
+							td.getInReplyToStatusId(),
+							null,
+							null,
+							time);
+					/*System.out.println("TwitID : "+td.getId());
+				System.out.println("WriteUserName : "+td.getUser().getDisplayedName());
+				System.out.println("UserID : "+td.getUser().getName());
+				System.out.println("TwitType : "+td.getTweetType());
+				System.out.println("TwitContent : "+td.getText());
+				System.out.println("NextTwitID : "+td.getInReplyToStatusId());
+				System.out.println("WRITEDATE : "+time);*/
+					if(td.getAttachments()!=null) {
+						//System.out.println("Media Type : "+midea.get(td.getAttachments().getMediaKeys()[0]).get(0));
+						//System.out.println("TwitImage : "+midea.get(td.getAttachments().getMediaKeys()[0]).get(1));
+						t.setMediaURL(midea.get(td.getAttachments().getMediaKeys()[0]).get(1));
+						t.setMediaType(midea.get(td.getAttachments().getMediaKeys()[0]).get(0));
+					}
+					twitList.add(t);
+					//System.out.println("---------------------------------------");
+				}
+			}
+			if(quTwit!=null) {
+				if(quTwit.getIncludes().getMedia()!=null) {
+					midea.putAll(getMideaURL(quTwit));
+				}
+				for(int i=0;i<quTwit.getData().size();i++) { // 인용한 트윗 내용
+					TweetData td = quTwit.getData().get(i);
+					String time = td.getCreatedAt().toString();
+					time=time.replace("T"," ");
+					Twit t = new Twit(
+							td.getId(),
+							td.getUser().getDisplayedName(),
+							td.getUser().getId(),
+							td.getUser().getProfileImageUrl(),
+							td.getText(),
+							td.getTweetType().toString(),
+							td.getInReplyToStatusId(),
+							null,
+							null,
+							time);
+					/*System.out.println("TwitID : "+td.getId());
+				System.out.println("WriteUserName : "+td.getUser().getDisplayedName());
+				System.out.println("UserID : "+td.getUser().getName());
+				System.out.println("TwitType : "+td.getTweetType());
+				System.out.println("TwitContent : "+td.getText());
+				System.out.println("NextTwitID : "+td.getInReplyToStatusId());
+				System.out.println("WRITEDATE : "+time);*/
+					if(td.getAttachments()!=null) {
+						/*System.out.println("Media Type : "+midea.get(td.getAttachments().getMediaKeys()[0]).get(0));
+					System.out.println("TwitImage : "+midea.get(td.getAttachments().getMediaKeys()[0]).get(1));*/
+						t.setMediaURL(midea.get(td.getAttachments().getMediaKeys()[0]).get(1));
+						t.setMediaType(midea.get(td.getAttachments().getMediaKeys()[0]).get(0));
+					}
+					twitList.add(t);
+					//System.out.println("---------------------------------------");
+				}
+			}
+			for(int i=0;i<timeline.getData().size();i++) { // timeline 트윗
+				TweetData td = timeline.getData().get(i);
 				String time = td.getCreatedAt().toString();
 				time=time.replace("T"," ");
 				Twit t = new Twit(
@@ -336,14 +473,13 @@ public class DataManagement {
 						null,
 						time);
 				/*System.out.println("TwitID : "+td.getId());
-				System.out.println("WriteUserName : "+td.getUser().getDisplayedName());
-				System.out.println("UserID : "+td.getUser().getName());
-				System.out.println("TwitType : "+td.getTweetType());
-				System.out.println("TwitContent : "+td.getText());
-				System.out.println("NextTwitID : "+td.getInReplyToStatusId());
-				System.out.println("WRITEDATE : "+time);*/
+			System.out.println("WriteUserName : "+td.getUser().getDisplayedName());
+			System.out.println("UserID : "+td.getUser().getName());
+			System.out.println("TwitType : "+td.getTweetType());
+			System.out.println("TwitContent : "+td.getText());
+			System.out.println("NextTwitID : "+td.getInReplyToStatusId());
+			System.out.println("WRITEDATE : "+td.getCreatedAt());*/
 				if(td.getAttachments()!=null) {
-					//System.out.println("Media Type : "+midea.get(td.getAttachments().getMediaKeys()[0]).get(0));
 					//System.out.println("TwitImage : "+midea.get(td.getAttachments().getMediaKeys()[0]).get(1));
 					t.setMediaURL(midea.get(td.getAttachments().getMediaKeys()[0]).get(1));
 					t.setMediaType(midea.get(td.getAttachments().getMediaKeys()[0]).get(0));
@@ -351,85 +487,19 @@ public class DataManagement {
 				twitList.add(t);
 				//System.out.println("---------------------------------------");
 			}
-		}
-		if(quTwit!=null) {
-			if(quTwit.getIncludes().getMedia()!=null) {
-				midea.putAll(getMideaURL(quTwit));
+			for(int i=0;i<twitList.size();i++) {
+				System.out.println("트윗 ID : "+twitList.get(i).getTwitID());
+				System.out.println("닉네임 : "+twitList.get(i).getWriteUserName());
+				System.out.println("유저 프로필 : "+twitList.get(i).getUserProfileURL());
+				System.out.println("유저 ID : "+twitList.get(i).getUserID());
+				System.out.println("내용 : "+twitList.get(i).getTwitContent());
+				System.out.println("트윗 타입 : "+twitList.get(i).getTwitType());
+				System.out.println("미디어 타입 : "+twitList.get(i).getMediaType());
+				System.out.println("미디어 URL : "+twitList.get(i).getMediaURL());
+				System.out.println("다음 트윗 ID : "+twitList.get(i).getNextTwitID());
+				System.out.println("트윗이 언제 써졌나 : "+twitList.get(i).getWriteDate());
+				System.out.println("---------------------------------------");
 			}
-			for(int i=0;i<quTwit.getData().size();i++) { // 인용한 트윗 내용
-				TweetData td = quTwit.getData().get(i);
-				String time = td.getCreatedAt().toString();
-				time=time.replace("T"," ");
-				Twit t = new Twit(
-						td.getId(),
-						td.getUser().getDisplayedName(),
-						td.getUser().getId(),
-						td.getUser().getProfileImageUrl(),
-						td.getText(),
-						td.getTweetType().toString(),
-						td.getInReplyToStatusId(),
-						null,
-						null,
-						time);
-				/*System.out.println("TwitID : "+td.getId());
-				System.out.println("WriteUserName : "+td.getUser().getDisplayedName());
-				System.out.println("UserID : "+td.getUser().getName());
-				System.out.println("TwitType : "+td.getTweetType());
-				System.out.println("TwitContent : "+td.getText());
-				System.out.println("NextTwitID : "+td.getInReplyToStatusId());
-				System.out.println("WRITEDATE : "+time);*/
-				if(td.getAttachments()!=null) {
-					/*System.out.println("Media Type : "+midea.get(td.getAttachments().getMediaKeys()[0]).get(0));
-					System.out.println("TwitImage : "+midea.get(td.getAttachments().getMediaKeys()[0]).get(1));*/
-					t.setMediaURL(midea.get(td.getAttachments().getMediaKeys()[0]).get(1));
-					t.setMediaType(midea.get(td.getAttachments().getMediaKeys()[0]).get(0));
-				}
-				twitList.add(t);
-				//System.out.println("---------------------------------------");
-			}
-		}
-		for(int i=0;i<timeline.getData().size();i++) { // timeline 트윗
-			TweetData td = timeline.getData().get(i);
-			String time = td.getCreatedAt().toString();
-			time=time.replace("T"," ");
-			Twit t = new Twit(
-					td.getId(),
-					td.getUser().getDisplayedName(),
-					td.getUser().getId(),
-					td.getUser().getProfileImageUrl(),
-					td.getText(),
-					td.getTweetType().toString(),
-					td.getInReplyToStatusId(),
-					null,
-					null,
-					time);
-			/*System.out.println("TwitID : "+td.getId());
-			System.out.println("WriteUserName : "+td.getUser().getDisplayedName());
-			System.out.println("UserID : "+td.getUser().getName());
-			System.out.println("TwitType : "+td.getTweetType());
-			System.out.println("TwitContent : "+td.getText());
-			System.out.println("NextTwitID : "+td.getInReplyToStatusId());
-			System.out.println("WRITEDATE : "+td.getCreatedAt());*/
-			if(td.getAttachments()!=null) {
-				//System.out.println("TwitImage : "+midea.get(td.getAttachments().getMediaKeys()[0]).get(1));
-				t.setMediaURL(midea.get(td.getAttachments().getMediaKeys()[0]).get(1));
-				t.setMediaType(midea.get(td.getAttachments().getMediaKeys()[0]).get(0));
-			}
-			twitList.add(t);
-			//System.out.println("---------------------------------------");
-		}
-		for(int i=0;i<twitList.size();i++) {
-			System.out.println("트윗 ID : "+twitList.get(i).getTwitID());
-			System.out.println("닉네임 : "+twitList.get(i).getWriteUserName());
-			System.out.println("유저 프로필 : "+twitList.get(i).getUserProfileURL());
-			System.out.println("유저 ID : "+twitList.get(i).getUserID());
-			System.out.println("내용 : "+twitList.get(i).getTwitContent());
-			System.out.println("트윗 타입 : "+twitList.get(i).getTwitType());
-			System.out.println("미디어 타입 : "+twitList.get(i).getMediaType());
-			System.out.println("미디어 URL : "+twitList.get(i).getMediaURL());
-			System.out.println("다음 트윗 ID : "+twitList.get(i).getNextTwitID());
-			System.out.println("트윗이 언제 써졌나 : "+twitList.get(i).getWriteDate());
-			System.out.println("---------------------------------------");
 		}
 	}
 }
