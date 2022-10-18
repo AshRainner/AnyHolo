@@ -283,11 +283,22 @@ public class DataManagement {
 			}
 			for(com.anyholo.model.kirinuki.Item item: model.getItems()) {
 				String time = convertTime(item.getSnippet().getPublishedAt());
-				Kirinuki k = new Kirinuki(item.getSnippet().getResourceId().getVideoId(),
-						item.getSnippet().getChannelTitle(),
-						item.getSnippet().getThumbnails().getHigh().getUrl(),
-						item.getSnippet().getDescription(),
-						time);
+				Kirinuki k;
+				if(item.getSnippet().getThumbnails().getMaxres()!=null) {
+					k = new Kirinuki(item.getSnippet().getResourceId().getVideoId(),
+							item.getSnippet().getChannelTitle(),
+							item.getSnippet().getThumbnails().getMaxres().getUrl(),
+							item.getSnippet().getTitle(),
+							item.getSnippet().getDescription(),
+							time);
+				}else {
+					k = new Kirinuki(item.getSnippet().getResourceId().getVideoId(),
+							item.getSnippet().getChannelTitle(),
+							item.getSnippet().getThumbnails().getHigh().getUrl(),
+							item.getSnippet().getTitle(),
+							item.getSnippet().getDescription(),
+							time);
+				}
 				DBController.KirinukiInsert(k);
 			}
 		} catch (IOException e) {
@@ -295,10 +306,9 @@ public class DataManagement {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void test(String channel_id,String nextToken) {
 		try {
-			channel_id="UCOPaYsI-TnBk0qxoAy_rjXA";
 			String jsonString = YoutubeDataApi.getKirinukiInitialValue(channel_id,nextToken, API_KEY);
 			ObjectMapper mapper = new ObjectMapper();
 			KirinukiModel model = mapper.readValue(jsonString, KirinukiModel.class);
@@ -307,11 +317,22 @@ public class DataManagement {
 			}
 			for(com.anyholo.model.kirinuki.Item item: model.getItems()) {
 				String time = convertTime(item.getSnippet().getPublishedAt());
-				Kirinuki k = new Kirinuki(item.getSnippet().getResourceId().getVideoId(),
-						item.getSnippet().getChannelTitle(),
-						item.getSnippet().getThumbnails().getHigh().getUrl(),
-						item.getSnippet().getDescription(),
-						time);
+				Kirinuki k;
+				if(item.getSnippet().getThumbnails().getMaxres()!=null) {
+					k = new Kirinuki(item.getSnippet().getResourceId().getVideoId(),
+							item.getSnippet().getChannelTitle(),
+							item.getSnippet().getThumbnails().getMaxres().getUrl(),
+							item.getSnippet().getTitle(),
+							item.getSnippet().getDescription(),
+							time);
+				}else {
+					k = new Kirinuki(item.getSnippet().getResourceId().getVideoId(),
+							item.getSnippet().getChannelTitle(),
+							item.getSnippet().getThumbnails().getHigh().getUrl(),
+							item.getSnippet().getTitle(),
+							item.getSnippet().getDescription(),
+							time);
+				}
 				DBController.KirinukiInsert(k);
 			}
 		} catch (IOException e) {
@@ -319,23 +340,23 @@ public class DataManagement {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public String convertTime(String time) {
 		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
-	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");			    
-	    TimeZone utcZone = TimeZone.getTimeZone("UTC");
-	    sf.setTimeZone(utcZone);
-	    Date date = null;
-	    try {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");			    
+		TimeZone utcZone = TimeZone.getTimeZone("UTC");
+		sf.setTimeZone(utcZone);
+		Date date = null;
+		try {
 			date = sf.parse(time);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	    String converttime = sdf.format(date);
+		String converttime = sdf.format(date);
 		return converttime;
 	}
-	
+
 	public HashMap<String,ArrayList<String>> getMideaURL(TweetList tl) {
 		HashMap<String,ArrayList<String>> midea = new HashMap<String,ArrayList<String>>();
 		if(tl.getIncludes().getMedia()!=null) {

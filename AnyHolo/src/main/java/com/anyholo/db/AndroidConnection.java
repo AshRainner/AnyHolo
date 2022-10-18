@@ -21,8 +21,12 @@ public class AndroidConnection extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter out = response.getWriter();
 		JSONObject jObject = new JSONObject();
-		JSONArray jArray = new JSONArray();
-		DBController.DBSelect(jArray);
+		JSONArray jArray = new JSONArray();		
+		//jArray = new JSONArray();
+		DBController.DBSelect(jArray, DBController.KIRINUKI_SELECT);
+		jObject.put("Kirinuki", jArray);
+		jArray = new JSONArray();
+		DBController.DBSelect(jArray,DBController.MEMBER_SELECT);
 		jObject.put("Member", jArray);
 		out.print(jObject);
 		out.flush();

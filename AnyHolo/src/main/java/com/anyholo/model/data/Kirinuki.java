@@ -4,13 +4,15 @@ public class Kirinuki {
 	String youtubeURL;
 	String channelName;
 	String thumnailsURL;
+	String videoTitle;
 	String tag;
 	String uploadTime;
-	public Kirinuki(String youtubeURL, String channelName, String thumnailsURL, String tag, String uploadTime) {
+	public Kirinuki(String youtubeURL, String channelName, String thumnailsURL,String videoTitle, String tag, String uploadTime) {
 		super();
 		this.youtubeURL = youtubeURL;
 		this.channelName = channelName;
 		this.thumnailsURL = thumnailsURL;
+		this.videoTitle=videoTitle;
 		this.tag = tag;
 		this.uploadTime = uploadTime;
 	}
@@ -43,6 +45,12 @@ public class Kirinuki {
 	}
 	public void setUploadTime(String uploadTime) {
 		this.uploadTime = uploadTime;
+	}
+	public String getVideoTitle() {
+		return videoTitle;
+	}
+	public void setVideoTitle(String videoTitle) {
+		this.videoTitle = videoTitle;
 	}
 	
 	

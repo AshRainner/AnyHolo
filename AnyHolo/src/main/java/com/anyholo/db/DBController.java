@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -14,6 +16,9 @@ import com.anyholo.model.data.Member;
 import com.anyholo.model.data.Twit;
 
 public class DBController {
+	public static final int MEMBER_SELECT = 1;
+	public static final int KIRINUKI_SELECT = 2; 
+	public static final int TWEET_SELECT = 3;
 	private static String url = "jdbc:oracle:thin:@222.237.255.159:1521:xe";
 	private static String userid = "HololiveFinder";
 	private static String pwd ="8778";
@@ -80,7 +85,7 @@ public class DBController {
 	}
 	public static void TwitInsert(Twit t) {
 		DBConnect();
-		String sql = "insert into Twit values(?,?,?,?,?,?,?,?,?,TO_DATE(?,'yyyy-MM-dd hh24:mi:ss'))";
+		String sql = "insert into Twit values(?,?,?,?,?,?,?,?,?,TO_DATE(?,'yyyy-MM-dd hh24:mi'))";
 		//TwitID, WriteUserName, UserID, UserProfileURL, TwitContent, TwitType, NextTwitID, MediaType, MediaURL, WriteDate
 		try {
 			pstmt = con.prepareStatement(sql);
@@ -103,15 +108,15 @@ public class DBController {
 	}
 	public static void KirinukiInsert(Kirinuki k) {
 		DBConnect();
-		String sql = "insert into Kirinuki values(?,?,?,?,TO_DATE(?,'yyyy-MM-dd hh24:mi:ss'))";
-		
+		String sql = "insert into Kirinuki values(?,?,?,?,?,TO_DATE(?,'yyyy-MM-dd hh24:mi'))";		
 		try {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, k.getYoutubeURL());
 			pstmt.setString(2, k.getChannelName());
 			pstmt.setString(3, k.getThumnailsURL());
-			pstmt.setString(4, k.getTag());
-			pstmt.setString(5, k.getUploadTime());
+			pstmt.setString(4, k.getVideoTitle());
+			pstmt.setString(5, k.getTag());
+			pstmt.setString(6, k.getUploadTime());
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -139,15 +144,43 @@ public class DBController {
 		}
 		DBClose();
 	}
-	public static void DBSelect(JSONArray jArray) {
+	public static void DBSelect(JSONArray jArray,int Num) {
+		if(Num==MEMBER_SELECT)
+			MemberSelect(jArray);
+		else if(Num==KIRINUKI_SELECT)
+			KirinukiSelect(jArray);
+	}
+	private static void KirinukiSelect(JSONArray jArray) {
+		
 		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			Connection con =null;
-			String sql = "SELECT * FROM member";
-			con = DriverManager.getConnection(url, userid, pwd);
-			if(con==null)
-				System.out.println("시발");
-			PreparedStatement pstmt = con.prepareStatement(sql);
+			DBConnect();
+			String sql = "SELECT * FROM kirinuki order by uploadtime desc";
+			pstmt = con.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				JSONObject sObject = new JSONObject();
+				sObject.put("youtubeUrl", rs.getString("youtubeUrl"));
+				sObject.put("channelName", rs.getString("channelName"));
+				sObject.put("thumnailUrl", rs.getString("thumnailUrl"));
+				sObject.put("videoTitle", rs.getString("videoTitle"));
+				sObject.put("tag", rs.getString("tag"));
+				Timestamp time = rs.getTimestamp("uploadtime");
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");		
+				//System.out.println(format.format(time));
+				sObject.put("uploadTime",format.format(time));
+				jArray.add(sObject);
+			}
+			DBClose();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	private static void MemberSelect(JSONArray jArray) {
+		try {		
+			DBConnect();
+			String sql = "SELECT * FROM member order by num";
+			pstmt = con.prepareStatement(sql);
 			ResultSet rs=pstmt.executeQuery();
 			while(rs.next()) {
 				JSONObject sObject = new JSONObject();
@@ -165,13 +198,8 @@ public class DBController {
 				sObject.put("num", rs.getInt("num"));
 				jArray.add(sObject);
 			}
-			rs.close();
-			pstmt.close();
-			con.close();
+			DBClose();
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
