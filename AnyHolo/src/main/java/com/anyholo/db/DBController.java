@@ -13,7 +13,7 @@ import org.json.simple.JSONObject;
 
 import com.anyholo.model.data.Kirinuki;
 import com.anyholo.model.data.Member;
-import com.anyholo.model.data.Twit;
+import com.anyholo.model.data.Tweet;
 
 public class DBController {
 	public static final int MEMBER_SELECT = 1;
@@ -69,9 +69,9 @@ public class DBController {
 			e.printStackTrace();
 		}
 	}
-	public static int TwitSelect(String twid) {
+	public static int TweetSelect(String twid) {
 		DBConnect();
-		String sql = "select * from twit where twitid like ?";
+		String sql = "select * from tweet where twitid like ?";
 		try {
 			pstmt=con.prepareStatement(sql);
 			pstmt.setString(1, twid);
@@ -83,19 +83,19 @@ public class DBController {
 			return 0;
 		}
 	}
-	public static void TwitInsert(Twit t) {
+	public static void TweetInsert(Tweet t) {
 		DBConnect();
-		String sql = "insert into Twit values(?,?,?,?,?,?,?,?,?,TO_DATE(?,'yyyy-MM-dd hh24:mi'))";
+		String sql = "insert into Tweet values(?,?,?,?,?,?,?,?,?,TO_DATE(?,'yyyy-MM-dd hh24:mi:ss'))";
 		//TwitID, WriteUserName, UserID, UserProfileURL, TwitContent, TwitType, NextTwitID, MediaType, MediaURL, WriteDate
 		try {
 			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, t.getTwitID());
+			pstmt.setString(1, t.getTweetID());
 			pstmt.setString(2, t.getWriteUserName());
 			pstmt.setString(3, t.getUserID());
 			pstmt.setString(4, t.getUserProfileURL());
-			pstmt.setString(5, t.getTwitContent());
-			pstmt.setString(6, t.getTwitType());
-			pstmt.setString(7, t.getNextTwitID());
+			pstmt.setString(5, t.getTweetContent());
+			pstmt.setString(6, t.getTweetType());
+			pstmt.setString(7, t.getNextTweetID());
 			pstmt.setString(8, t.getMediaType());
 			pstmt.setString(9, t.getMediaURL());
 			pstmt.setString(10, t.getWriteDate());
@@ -149,6 +149,37 @@ public class DBController {
 			MemberSelect(jArray);
 		else if(Num==KIRINUKI_SELECT)
 			KirinukiSelect(jArray);
+		else
+			TweetSelect(jArray);
+	}
+	private static void TweetSelect(JSONArray jArray) {
+		try {
+			DBConnect();
+			String sql = "SELECT * FROM Tweet order by writedate desc";
+			pstmt = con.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				JSONObject sObject = new JSONObject();
+				sObject.put("tweetId", rs.getString("tweetId"));
+				sObject.put("writeUserName", rs.getString("writeUserName"));
+				sObject.put("userId", rs.getString("userId"));
+				sObject.put("userProfileUrl", rs.getString("userProfileUrl"));
+				sObject.put("tweetContent", rs.getString("tweetContent"));
+				sObject.put("tweetType", rs.getString("tweetType"));
+				sObject.put("nextTweetId", rs.getString("nextTweetId"));
+				sObject.put("mediaType", rs.getString("mediaType"));
+				sObject.put("mediaUrl", rs.getString("mediaUrl"));
+				Timestamp time = rs.getTimestamp("writedate");
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");		
+				//System.out.println(format.format(time));
+				sObject.put("writeDate",format.format(time));
+				jArray.add(sObject);
+			}
+			DBClose();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	private static void KirinukiSelect(JSONArray jArray) {
 		
@@ -169,6 +200,7 @@ public class DBController {
 				//System.out.println(format.format(time));
 				sObject.put("uploadTime",format.format(time));
 				jArray.add(sObject);
+				
 			}
 			DBClose();
 		} catch (SQLException e) {

@@ -3,7 +3,6 @@ import java.sql.ResultSet;
 import java.time.LocalDateTime;
 
 import com.anyholo.db.DBController;
-import com.anyholo.model.data.Twit;
 
 import io.github.redouane59.twitter.TwitterClient;
 import io.github.redouane59.twitter.dto.endpoints.AdditionalParameters;
@@ -184,7 +183,7 @@ public class TwitterApiTest {
 			TweetData td = timeline.getData().get(i);
 			String time = td.getCreatedAt().toString();
 			time=time.replace("T"," ");
-			Twit t = new Twit(
+			com.anyholo.model.data.Tweet t = new com.anyholo.model.data.Tweet(
 					td.getId(),
 					td.getUser().getDisplayedName(),
 					td.getUser().getId(),
@@ -195,7 +194,7 @@ public class TwitterApiTest {
 					null,
 					null,
 					time);
-			if(DBController.TwitSelect(td.getId())==0) {
+			if(DBController.TweetSelect(td.getId())==0) {
 				System.out.println("데이터가 있음");
 			}
 			else {
