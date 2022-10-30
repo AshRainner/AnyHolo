@@ -51,7 +51,7 @@ class SendThread extends Thread{
 			System.out.println("데이터 취합중");
 			JSONObject jObject = new JSONObject();
 			JSONArray jArray = new JSONArray();
-			DBController.DBSelect(jArray,DBController.MEMBER_SELECT);
+			DBController.DBSelect(jArray,DBController.MEMBER_SELECT,1);
 			jObject.put("Member", jArray);
 			os.writeObject(jObject);
 			os.flush();

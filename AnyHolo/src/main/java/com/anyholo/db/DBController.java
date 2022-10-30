@@ -24,6 +24,7 @@ public class DBController {
 	private static String pwd ="8778";
 	private static Connection con =null;
 	private static PreparedStatement pstmt = null;
+	private static final int MAXITEM=50;
 	public static void DBConnect() {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -123,7 +124,7 @@ public class DBController {
 			e.printStackTrace();
 		}
 		DBClose();
-		
+
 	}
 	public static void DBUpdate(Member m) {
 		DBConnect();
@@ -144,19 +145,24 @@ public class DBController {
 		}
 		DBClose();
 	}
-	public static void DBSelect(JSONArray jArray,int Num) {
+	public static void DBSelect(JSONArray jArray,int Num,int Page) {
 		if(Num==MEMBER_SELECT)
 			MemberSelect(jArray);
 		else if(Num==KIRINUKI_SELECT)
-			KirinukiSelect(jArray);
+			//KirinukiSelect(jArray,(Page-1)*5+1,Page*5);
+		KirinukiSelect(jArray,(Page-1)*MAXITEM+1,Page*MAXITEM);
 		else
-			TweetSelect(jArray);
+			TweetSelect(jArray,(Page-1)*MAXITEM+1,Page*MAXITEM);
 	}
-	private static void TweetSelect(JSONArray jArray) {
+	private static void TweetSelect(JSONArray jArray,int startNum,int EndNum) {
 		try {
 			DBConnect();
-			String sql = "SELECT * FROM Tweet order by writedate desc";
+			//String sql = "SELECT * FROM Tweet order by writedate asc";
+			String sql ="SELECT * FROM (SELECT rownum AS num, t.* FROM (SELECT * FROM HOLOLIVEFINDER.TWEET t ORDER BY WRITEDATE DESC)t) WHERE num BETWEEN ? AND ?";
+			//700 750
 			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, startNum);
+			pstmt.setInt(2, EndNum);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
 				JSONObject sObject = new JSONObject();
@@ -181,12 +187,15 @@ public class DBController {
 			e.printStackTrace();
 		}
 	}
-	private static void KirinukiSelect(JSONArray jArray) {
-		
+	private static void KirinukiSelect(JSONArray jArray,int startNum,int EndNum) {
+
 		try {
 			DBConnect();
-			String sql = "SELECT * FROM kirinuki order by uploadtime desc";
+			//String sql = "SELECT * FROM kirinuki order by uploadtime desc";			
+			String sql="SELECT * FROM (SELECT rownum AS num, k.* FROM (SELECT * FROM HOLOLIVEFINDER.KIRINUKI k ORDER BY k.uploadtime desc)k) WHERE num BETWEEN ? AND ?";
 			pstmt = con.prepareStatement(sql);
+			pstmt.setInt(1, startNum);
+			pstmt.setInt(2, EndNum);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
 				JSONObject sObject = new JSONObject();
@@ -200,7 +209,7 @@ public class DBController {
 				//System.out.println(format.format(time));
 				sObject.put("uploadTime",format.format(time));
 				jArray.add(sObject);
-				
+
 			}
 			DBClose();
 		} catch (SQLException e) {

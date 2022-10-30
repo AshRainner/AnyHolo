@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-@WebServlet("/dbcon")
-public class AndroidConnection extends HttpServlet {
+@WebServlet("/dbcon/Live")
+public class AndroidLiveValue extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
@@ -21,14 +21,8 @@ public class AndroidConnection extends HttpServlet {
 		response.setCharacterEncoding("UTF-8");
 		PrintWriter out = response.getWriter();
 		JSONObject jObject = new JSONObject();
-		JSONArray jArray = new JSONArray();		
-		DBController.DBSelect(jArray,DBController.TWEET_SELECT);
-		jObject.put("Tweet", jArray);
-		jArray = new JSONArray();
-		DBController.DBSelect(jArray, DBController.KIRINUKI_SELECT);
-		jObject.put("Kirinuki", jArray);
-		jArray = new JSONArray();
-		DBController.DBSelect(jArray,DBController.MEMBER_SELECT);
+		JSONArray jArray = new JSONArray();
+		DBController.DBSelect(jArray,DBController.MEMBER_SELECT,0);
 		jObject.put("Member", jArray);
 		out.print(jObject);
 		out.flush();
