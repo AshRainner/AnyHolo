@@ -19,12 +19,13 @@ public class DBController {
 	public static final int MEMBER_SELECT = 1;
 	public static final int KIRINUKI_SELECT = 2; 
 	public static final int TWEET_SELECT = 3;
+	public static final int TWEET_SELECT_TWEETID = 4;
 	private static String url = "jdbc:oracle:thin:@222.237.255.159:1521:xe";
 	private static String userid = "HololiveFinder";
 	private static String pwd ="8778";
 	private static Connection con =null;
 	private static PreparedStatement pstmt = null;
-	private static final int MAXITEM=50;
+	private static final int MAXITEM=6;
 	public static void DBConnect() {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -151,8 +152,42 @@ public class DBController {
 		else if(Num==KIRINUKI_SELECT)
 			//KirinukiSelect(jArray,(Page-1)*5+1,Page*5);
 		KirinukiSelect(jArray,(Page-1)*MAXITEM+1,Page*MAXITEM);
-		else
+			//KirinukiSelect(jArray);
+		else if(Num==TWEET_SELECT)
 			TweetSelect(jArray,(Page-1)*MAXITEM+1,Page*MAXITEM);
+			//TweetSelect(jArray);
+		else
+			TweetSelect(jArray,Page);
+	}
+	private static void TweetSelect(JSONArray jArray,int TweetId) {
+		try {
+			DBConnect();
+			String sql ="SELECT * FROM HOLOLIVEFINDER.TWEET WHERE TWEETID = '?'";
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, String.valueOf(TweetId));
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				JSONObject sObject = new JSONObject();
+				sObject.put("tweetId", rs.getString("tweetId"));
+				sObject.put("writeUserName", rs.getString("writeUserName"));
+				sObject.put("userId", rs.getString("userId"));
+				sObject.put("userProfileUrl", rs.getString("userProfileUrl"));
+				sObject.put("tweetContent", rs.getString("tweetContent"));
+				sObject.put("tweetType", rs.getString("tweetType"));
+				sObject.put("nextTweetId", rs.getString("nextTweetId"));
+				sObject.put("mediaType", rs.getString("mediaType"));
+				sObject.put("mediaUrl", rs.getString("mediaUrl"));
+				Timestamp time = rs.getTimestamp("writedate");
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");		
+				//System.out.println(format.format(time));
+				sObject.put("writeDate",format.format(time));
+				jArray.add(sObject);
+			}
+			DBClose();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	private static void TweetSelect(JSONArray jArray,int startNum,int EndNum) {
 		try {
@@ -176,10 +211,68 @@ public class DBController {
 				sObject.put("mediaType", rs.getString("mediaType"));
 				sObject.put("mediaUrl", rs.getString("mediaUrl"));
 				Timestamp time = rs.getTimestamp("writedate");
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+				sObject.put("writeDate",format.format(time));
+				jArray.add(sObject);
+			}
+			DBClose();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	private static void TweetSelect(JSONArray jArray) {
+		try {
+			DBConnect();
+			//String sql = "SELECT * FROM Tweet order by writedate asc";
+			String sql ="SELECT * FROM (SELECT rownum AS num, t.* FROM (SELECT * FROM HOLOLIVEFINDER.TWEET t ORDER BY WRITEDATE DESC)t)";
+			//700 750
+			pstmt = con.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				JSONObject sObject = new JSONObject();
+				sObject.put("tweetId", rs.getString("tweetId"));
+				sObject.put("writeUserName", rs.getString("writeUserName"));
+				sObject.put("userId", rs.getString("userId"));
+				sObject.put("userProfileUrl", rs.getString("userProfileUrl"));
+				sObject.put("tweetContent", rs.getString("tweetContent"));
+				sObject.put("tweetType", rs.getString("tweetType"));
+				sObject.put("nextTweetId", rs.getString("nextTweetId"));
+				sObject.put("mediaType", rs.getString("mediaType"));
+				sObject.put("mediaUrl", rs.getString("mediaUrl"));
+				Timestamp time = rs.getTimestamp("writedate");
 				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");		
 				//System.out.println(format.format(time));
 				sObject.put("writeDate",format.format(time));
 				jArray.add(sObject);
+			}
+			DBClose();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	private static void KirinukiSelect(JSONArray jArray) {
+
+		try {
+			DBConnect();
+			//String sql = "SELECT * FROM kirinuki order by uploadtime desc";			
+			String sql="SELECT * FROM (SELECT rownum AS num, k.* FROM (SELECT * FROM HOLOLIVEFINDER.KIRINUKI k ORDER BY k.uploadtime desc)k)";
+			pstmt = con.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				JSONObject sObject = new JSONObject();
+				sObject.put("youtubeUrl", rs.getString("youtubeUrl"));
+				sObject.put("channelName", rs.getString("channelName"));
+				sObject.put("thumnailUrl", rs.getString("thumnailUrl"));
+				sObject.put("videoTitle", rs.getString("videoTitle"));
+				sObject.put("tag", rs.getString("tag"));
+				Timestamp time = rs.getTimestamp("uploadtime");
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");		
+				//System.out.println(format.format(time));
+				sObject.put("uploadTime",format.format(time));
+				jArray.add(sObject);
+
 			}
 			DBClose();
 		} catch (SQLException e) {

@@ -29,6 +29,5 @@ public class AndroidKirinukiValue extends HttpServlet {
 		jObject.put("Kirinuki", jArray);
 		out.print(jObject);
 		out.flush();
-		
 	}
 }
