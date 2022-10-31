@@ -6,7 +6,7 @@ import java.util.Collections;
 public class Main {
 
 	public static void main(String[] args) {
-		ArrayList<TestV> list = new ArrayList<TestV>();
+		/*ArrayList<TestV> list = new ArrayList<TestV>();
 		list.add(new TestV("1",null));
 		list.add(new TestV("3",null));
 		list.add(new TestV("5",null));
@@ -29,10 +29,10 @@ public class Main {
 			}
 		}
 		for(TestV v : list)
-			System.out.println(v.id);
-		//DataManagement d = new DataManagement();
+			System.out.println(v.id);*/
+		DataManagement d = new DataManagement();
 		//d.getKirinuki("UCOPaYsI-TnBk0qxoAy_rjXA");
-		//d.getTweet();
+		d.getTweet();
 		
 		//내꺼 UCOPaYsI-TnBk0qxoAy_rjXA
 		//홀로라이브 인도네시아님꺼 UC3_IjQ8uQXTBZ5ysRHOls7g

@@ -30,35 +30,35 @@ public class AndroidTweetValue extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		JSONObject jObject = new JSONObject();
 		JSONArray jArray = new JSONArray();
-		if(TweetId==0)
-			DBController.DBSelect(jArray,DBController.TWEET_SELECT,Tpage);
-		else
-			DBController.DBSelect(jArray, DBController.TWEET_SELECT_TWEETID, TweetId);
-		ArrayList<String> quotedIds = new ArrayList<String>();
-		ArrayList<String> rePliedIds = new ArrayList<String>();
-		ArrayList<String> reTweetIds = new ArrayList<String>();
+		DBController.DBSelect(jArray,DBController.TWEET_SELECT,Tpage);
+		ArrayList<String> nokoriIds = new ArrayList<String>();
 		for(int i=0;i<jArray.size();i++) {
 			JSONObject j = (JSONObject) jArray.get(i);
-			if(j.get("tweetType")==null)
-				return;
-			else if(j.get("tweetType").equals("QUOTED")) {
-				quotedIds.add(String.valueOf(j.get("nextTweetId")));
-			}
-			else if(j.get("tweetType").equals("RETWEETED"))
-				reTweetIds.add(String.valueOf(j.get("nextTweetId")));
-			else if(j.get("tweetType").equals("REPLIED_TO"))
-				rePliedIds.add(String.valueOf(j.get("nextTweetId")));
-		}
-		for(int i = 0;i<quotedIds.size();i++) {
-			for(int j=0;j<jArray.size();j+++) {
+			if(j.get("tweetType").equals("DEFAULT")) {
 				
 			}
+			else
+				nokoriIds.add(String.valueOf(j.get("nextTweetId")));
 		}
-		System.out.println(quotedIds);
-		System.out.println(reTweetIds);
-		System.out.println(rePliedIds);
+		System.out.println(nokoriIds);
+		for(int i = 0;i<nokoriIds.size();i++) {
+			for(int j=0;j<jArray.size();j++) {
+				JSONObject jObj = (JSONObject) jArray.get(j);
+				if(nokoriIds.get(i).equals(jObj.get("tweetId"))) {
+					nokoriIds.remove(i);
+					i--;
+					break;
+				}
+			}
+		}
+		System.out.println(nokoriIds);
+		for(int i = 0;i<jArray.size();i++) {
+			JSONObject j=(JSONObject)jArray.get(i);
+			if(!(j.get("tweetType").equals("DEFAULT")))
+				if(nokoriIds.contains(j.get("nextTweetId")))
+					DBController.NextTweetSelect(j,String.valueOf(j.get("nextTweetId")));
+		}
 		jObject.put("Tweet", jArray);
-		
 		out.print(jObject);
 		out.flush();
 	}

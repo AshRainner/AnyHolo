@@ -25,7 +25,7 @@ public class DBController {
 	private static String pwd ="8778";
 	private static Connection con =null;
 	private static PreparedStatement pstmt = null;
-	private static final int MAXITEM=6;
+	private static final int MAXITEM=10;
 	public static void DBConnect() {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -151,11 +151,11 @@ public class DBController {
 			MemberSelect(jArray);
 		else if(Num==KIRINUKI_SELECT)
 			//KirinukiSelect(jArray,(Page-1)*5+1,Page*5);
-		KirinukiSelect(jArray,(Page-1)*MAXITEM+1,Page*MAXITEM);
-			//KirinukiSelect(jArray);
+			KirinukiSelect(jArray,(Page-1)*MAXITEM+1,Page*MAXITEM);
+		//KirinukiSelect(jArray);
 		else if(Num==TWEET_SELECT)
 			TweetSelect(jArray,(Page-1)*MAXITEM+1,Page*MAXITEM);
-			//TweetSelect(jArray);
+		//TweetSelect(jArray);
 		else
 			TweetSelect(jArray,Page);
 	}
@@ -189,12 +189,45 @@ public class DBController {
 			e.printStackTrace();
 		}
 	}
+	public static void NextTweetSelect(JSONObject obj,String tweetId){
+		DBConnect();
+		String sql = "SELECT * from HOLOLIVEFINDER.TWEET t WHERE TWEETID = ?";
+		System.out.println(tweetId);
+		try {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, tweetId);
+			ResultSet rs = pstmt.executeQuery();
+			rs.next();
+			JSONObject nextObject = new JSONObject();
+			nextObject.put("tweetId", rs.getString("tweetId"));
+			nextObject.put("writeUserName", rs.getString("writeUserName"));
+			nextObject.put("userId", rs.getString("userId"));
+			nextObject.put("userProfileUrl", rs.getString("userProfileUrl"));
+			nextObject.put("tweetContent", rs.getString("tweetContent"));
+			nextObject.put("tweetType", rs.getString("tweetType"));
+			nextObject.put("nextTweetId", rs.getString("nextTweetId"));
+			nextObject.put("mediaType", rs.getString("mediaType"));
+			nextObject.put("mediaUrl", rs.getString("mediaUrl"));	
+			Timestamp time = rs.getTimestamp("writedate");
+			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			nextObject.put("writeDate",format.format(time));
+			if(rs.getString("nextTweetId")!=null) {							
+				NextTweetSelect(nextObject,rs.getString("nextTweetId"));
+			}
+			obj.put("nextTweet", nextObject);
+			DBClose();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	private static void TweetSelect(JSONArray jArray,int startNum,int EndNum) {
 		try {
 			DBConnect();
 			//String sql = "SELECT * FROM Tweet order by writedate asc";
 			String sql ="SELECT * FROM (SELECT rownum AS num, t.* FROM (SELECT * FROM HOLOLIVEFINDER.TWEET t ORDER BY WRITEDATE DESC)t) WHERE num BETWEEN ? AND ?";
 			//700 750
+			//String sql = "SELECT * from HOLOLIVEFINDER.TWEET t WHERE TWEETID = '1586621753207717892'";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setInt(1, startNum);
 			pstmt.setInt(2, EndNum);

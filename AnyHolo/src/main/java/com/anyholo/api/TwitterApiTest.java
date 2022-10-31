@@ -194,12 +194,6 @@ public class TwitterApiTest {
 					null,
 					null,
 					time);
-			if(DBController.TweetSelect(td.getId())==0) {
-				System.out.println("데이터가 있음");
-			}
-			else {
-				System.out.println("데이터가 없음");
-			}
 			System.out.println("---------------------------------------");
 		}
 	}
@@ -258,45 +252,6 @@ public class TwitterApiTest {
 			System.out.println("-------------------------------------------------");
 			}
 		}*/
-	/*Tweet tweet = twitterClient.getTweet("1576181857900601344");
-		System.out.println(tweet.getText());
-		System.out.println("------------------------");
-		System.out.println(tweet.getCreatedAt());//트윗 올린 시간
-		System.out.println("------------------------");
-		System.out.println(tweet.getLang());//트윗 언어(일본어 == ja같은)
-		System.out.println("------------------------");
-		System.out.println(tweet.getLikeCount()); // 좋아요 수
-		System.out.println("------------------------");
-		System.out.println(tweet.getRetweetCount()); // 리트윗 수
-		System.out.println("------------------------");
-		System.out.println(tweet.getReplyCount()); // 
-		System.out.println("------------------------");
-		System.out.println(tweet.getUser().getName()); //누구인지
-		System.out.println("------------------------");*/
-	/*User user = twitterClient.getUserFromUserName("usadapekora");
-		System.out.println(user.getName()); //누구인지
-		System.out.println("------------------------");
-		System.out.println(user.getDisplayedName());//화면에 표시되는 이름
-		System.out.println("------------------------");
-		System.out.println(user.getDateOfCreation());//가입일
-		System.out.println("------------------------");
-		System.out.println(user.getDescription());//소개글
-		System.out.println("------------------------");
-		System.out.println(user.getTweetCount());//몇개의 트윗을 햇는가
-		System.out.println("------------------------");
-		System.out.println(user.getFollowersCount());//팔로워 수
-		System.out.println("------------------------");
-		System.out.println(user.getFollowingCount());//팔로우 수
-		System.out.println("------------------------");
-		System.out.println(user.getPinnedTweet().getText());
-		System.out.println("------------------------");
-		System.out.println(user.getPinnedTweet().getMedia());
-		System.out.println("------------------------");
-		System.out.println(user.getLocation());//위치
-		System.out.println("------------------------");
-		System.out.println(user.getId());//user id값
-		System.out.println("------------------------");
-		System.out.println(user.getUrl());//링크 걸려있는거*/
 	/*List<String> member = new ArrayList();
 		for(int i=0;i<DataManagement.twitterUrl.length;i++)
 		member.add(DataManagement.twitterUrl[i]);

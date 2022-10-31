@@ -394,8 +394,13 @@ public class DataManagement {
 						null,
 						null,
 						time);
-				if(td.getAttachments()!=null) {
-					t.setMediaURL(midea.get(td.getAttachments().getMediaKeys()[0]).get(1));
+				if(td.getAttachments()!=null) {		
+					String url="";
+					for(String key : td.getAttachments().getMediaKeys()){
+						url += midea.get(key).get(1)+";";
+					}
+					url=url.substring(0,url.length()-1);
+					t.setMediaURL(url);
 					t.setMediaType(midea.get(td.getAttachments().getMediaKeys()[0]).get(0));
 				}
 				tweetList.add(t);
@@ -404,22 +409,22 @@ public class DataManagement {
 	}
 	public void getTweet() {
 		TwitterClient twitterClient = TwitterApi.getTwitterClient();
-		for(int j = 0; j<TwitterId.length;j++) {
+		//for(int j = 0; j<TwitterId.length;j++) {
 			/*TweetList timeline = twitterClient.getUserTimeline(TwitterId[j],
 					AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusMinutes(1)).endTime(LocalDateTime.now().minusHours(9)).build());*/
-			TweetList timeline = twitterClient.getUserTimeline(TwitterId[j],
-					AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusDays(2)).endTime(LocalDateTime.now().minusHours(9)).build());
+			/*TweetList timeline = twitterClient.getUserTimeline(TwitterId[j],
+					AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusDays(2)).endTime(LocalDateTime.now().minusHours(9)).build());*/
 			/*System.out.println(LocalDateTime.now().minusHours(9));
 		System.out.println(LocalDateTime.now().minusHours(9).minusMinutes(1));
 		System.out.println("2022-10-11T05:09:45.000Z");*/
 			/*TweetList timeline = twitterClient.getUserTimeline("1153192638645821440",
-				AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusDays(2)).endTime(LocalDateTime.now().minusHours(9)).build());*/
-			HashMap<String,ArrayList<String>> midea = new HashMap<String,ArrayList<String>>();
+				AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusDays(2)).endTime(LocalDateTime.now().minusHours(9)).build());
+			*/HashMap<String,ArrayList<String>> midea = new HashMap<String,ArrayList<String>>();
 			List<Tweet> tweetList = new ArrayList<>();
 			/*if(timeline.getIncludes()!=null) {
 			midea.putAll(getMideaURL(timeline));
 		}*/
-			List<String> rtIds = new ArrayList<>(); // 리트윗한 트윗의 아이디들
+			/*List<String> rtIds = new ArrayList<>(); // 리트윗한 트윗의 아이디들
 			List<String> quIds = new ArrayList<>(); // 인용된 트윗의 아이디들(인용 == 공유)
 			List<String> reIds = new ArrayList<>(); //리플라이된 트윗의 아이디들
 			for(int i=0;i<timeline.getData().size();i++) {
@@ -433,7 +438,6 @@ public class DataManagement {
 				else if(td.getTweetType().equals(TweetType.REPLIED_TO)) {
 					reIds.add(td.getInReplyToStatusId());
 				}
-
 			}
 
 			TweetList rtTweet = null; //RT 트윗
@@ -452,7 +456,12 @@ public class DataManagement {
 			getTweet(rtTweet,tweetList,midea);
 			getTweet(quTweet,tweetList,midea);
 			getTweet(reTweet,tweetList,midea);
-			getTweet(timeline,tweetList,midea);
+			getTweet(timeline,tweetList,midea);*/
+			ArrayList<String> t = new ArrayList<String>();
+			t.add("1581570643358732289");
+			t.add("1586637264654053377");
+			TweetList test = twitterClient.getTweets(t);
+			getTweet(test,tweetList,midea);
 
 			for(int i=0;i<tweetList.size();i++) {
 				System.out.println("트윗 ID : "+tweetList.get(i).getTweetID());
@@ -471,4 +480,4 @@ public class DataManagement {
 
 		}
 	}
-}
+//}
