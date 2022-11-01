@@ -388,7 +388,7 @@ public class DataManagement {
 						td.getUser().getDisplayedName(),
 						td.getUser().getId(),
 						td.getUser().getProfileImageUrl(),
-						td.getText(),
+						td.getText().substring(0,td.getText().indexOf("https://t.co/")),//뒤에 붙은 보기 안좋은 url떼서 넣기
 						td.getTweetType().toString(),
 						td.getInReplyToStatusId(),
 						null,

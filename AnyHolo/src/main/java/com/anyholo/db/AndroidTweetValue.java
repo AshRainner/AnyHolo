@@ -58,6 +58,7 @@ public class AndroidTweetValue extends HttpServlet {
 				if(nokoriIds.contains(j.get("nextTweetId")))
 					DBController.NextTweetSelect(j,String.valueOf(j.get("nextTweetId")));
 		}
+		System.out.println("TweetValue");
 		jObject.put("Tweet", jArray);
 		out.print(jObject);
 		out.flush();
