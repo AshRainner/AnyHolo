@@ -472,7 +472,7 @@ public class DataManagement {
 				System.out.println("트윗 타입 : "+tweetList.get(i).getTweetType());
 				System.out.println("미디어 타입 : "+tweetList.get(i).getMediaType());
 				System.out.println("미디어 URL : "+tweetList.get(i).getMediaURL());
-				System.out.println("다음 트윗 ID : "+tweetList.get(i).getNextTweetID());
+				System.out.println("다음 트윗 ID : "+tweetList.get(i).getPrevTweetID());
 				System.out.println("트윗이 언제 써졌나 : "+tweetList.get(i).getWriteDate());
 				System.out.println("---------------------------------------");
 				DBController.TweetInsert(tweetList.get(i));

@@ -7,9 +7,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.anyholo.model.data.Kirinuki;
 import com.anyholo.model.data.Member;
@@ -88,7 +90,7 @@ public class DBController {
 	public static void TweetInsert(Tweet t) {
 		DBConnect();
 		String sql = "insert into Tweet values(?,?,?,?,?,?,?,?,?,TO_DATE(?,'yyyy-MM-dd hh24:mi:ss'))";
-		//TwitID, WriteUserName, UserID, UserProfileURL, TwitContent, TwitType, NextTwitID, MediaType, MediaURL, WriteDate
+		//TwitID, WriteUserName, UserID, UserProfileURL, TwitContent, TwitType, prevTweetId, MediaType, MediaURL, WriteDate
 		try {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, t.getTweetID());
@@ -97,7 +99,7 @@ public class DBController {
 			pstmt.setString(4, t.getUserProfileURL());
 			pstmt.setString(5, t.getTweetContent());
 			pstmt.setString(6, t.getTweetType());
-			pstmt.setString(7, t.getNextTweetID());
+			pstmt.setString(7, t.getPrevTweetID());
 			pstmt.setString(8, t.getMediaType());
 			pstmt.setString(9, t.getMediaURL());
 			pstmt.setString(10, t.getWriteDate());
@@ -159,12 +161,77 @@ public class DBController {
 		else
 			TweetSelect(jArray,Page);
 	}
-	private static void TweetSelect(JSONArray jArray,int TweetId) {
+	public static void RepliedTweetSelect(ArrayList<JSONObject> temp,JSONObject obj) {
+		DBConnect();
+		temp.add(obj);
+		RepliedPrevTweetSelect(temp,obj);
+		RepliedNextTweetSelect(temp,obj);
+		DBClose();
+	}
+	private static void RepliedPrevTweetSelect(ArrayList<JSONObject> temp,JSONObject obj) {//맨 앞에 있는 트윗 찾는거 replied에서
+		try {	
+			String sql ="SELECT * FROM HOLOLIVEFINDER.TWEET WHERE TweetId = ?";
+			pstmt = con.prepareStatement(sql);
+			String prevTweetId = (String) obj.get("prevTweetId");
+			pstmt.setString(1, String.valueOf(prevTweetId));
+			ResultSet rs = pstmt.executeQuery();
+			while(rs.next()) {
+				JSONObject prevObject = new JSONObject();
+				prevObject.put("tweetId", rs.getString("tweetId"));
+				prevObject.put("writeUserName", rs.getString("writeUserName"));
+				prevObject.put("userId", rs.getString("userId"));
+				prevObject.put("userProfileUrl", rs.getString("userProfileUrl"));
+				prevObject.put("tweetContent", rs.getString("tweetContent"));
+				prevObject.put("tweetType", rs.getString("tweetType"));
+				prevObject.put("prevTweetId", rs.getString("prevTweetId"));
+				prevObject.put("mediaType", rs.getString("mediaType"));
+				prevObject.put("mediaUrl", rs.getString("mediaUrl"));
+				Timestamp time = rs.getTimestamp("writedate");
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+				prevObject.put("writeDate",format.format(time));		
+				temp.add(prevObject);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	private static void RepliedNextTweetSelect(ArrayList<JSONObject> temp,JSONObject obj) {
+		try {
+			String sql ="SELECT * FROM HOLOLIVEFINDER.TWEET WHERE prevTweetId = ?";
+			pstmt = con.prepareStatement(sql);
+			String tweetId = (String) obj.get("tweetId");//앞쪽에 있는걸 검색하기 위해서는 prev아이디가 현재 트윗인걸 검색해야함
+			pstmt.setString(1, String.valueOf(tweetId));
+			ResultSet rs = pstmt.executeQuery();			
+			int check=0;
+			while(rs.next()) {
+				JSONObject nextObject = new JSONObject();
+				nextObject.put("tweetId", rs.getString("tweetId"));
+				nextObject.put("writeUserName", rs.getString("writeUserName"));
+				nextObject.put("userId", rs.getString("userId"));
+				nextObject.put("userProfileUrl", rs.getString("userProfileUrl"));
+				nextObject.put("tweetContent", rs.getString("tweetContent"));
+				nextObject.put("tweetType", rs.getString("tweetType"));
+				nextObject.put("prevTweetId", rs.getString("prevTweetId"));
+				nextObject.put("mediaType", rs.getString("mediaType"));
+				nextObject.put("mediaUrl", rs.getString("mediaUrl"));
+				Timestamp time = rs.getTimestamp("writedate");
+				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+				nextObject.put("writeDate",format.format(time));
+				temp.add(nextObject);
+				RepliedNextTweetSelect(temp,nextObject);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	private static void TweetSelect(JSONArray jArray,int tweetId) {
 		try {
 			DBConnect();
-			String sql ="SELECT * FROM HOLOLIVEFINDER.TWEET WHERE TWEETID = '?'";
+			String sql ="SELECT * FROM HOLOLIVEFINDER.TWEET WHERE TWEETID = ?";
 			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, String.valueOf(TweetId));
+			pstmt.setString(1, String.valueOf(tweetId));
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
 				JSONObject sObject = new JSONObject();
@@ -174,12 +241,11 @@ public class DBController {
 				sObject.put("userProfileUrl", rs.getString("userProfileUrl"));
 				sObject.put("tweetContent", rs.getString("tweetContent"));
 				sObject.put("tweetType", rs.getString("tweetType"));
-				sObject.put("nextTweetId", rs.getString("nextTweetId"));
+				sObject.put("prevTweetId", rs.getString("prevTweetId"));
 				sObject.put("mediaType", rs.getString("mediaType"));
 				sObject.put("mediaUrl", rs.getString("mediaUrl"));
 				Timestamp time = rs.getTimestamp("writedate");
 				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");		
-				//System.out.println(format.format(time));
 				sObject.put("writeDate",format.format(time));
 				jArray.add(sObject);
 			}
@@ -189,10 +255,9 @@ public class DBController {
 			e.printStackTrace();
 		}
 	}
-	public static void NextTweetSelect(JSONObject obj,String tweetId){
+	public static void PrevTweetSelect(JSONObject obj,String tweetId){
 		DBConnect();
 		String sql = "SELECT * from HOLOLIVEFINDER.TWEET t WHERE TWEETID = ?";
-		System.out.println(tweetId);
 		try {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, tweetId);
@@ -205,16 +270,16 @@ public class DBController {
 			nextObject.put("userProfileUrl", rs.getString("userProfileUrl"));
 			nextObject.put("tweetContent", rs.getString("tweetContent"));
 			nextObject.put("tweetType", rs.getString("tweetType"));
-			nextObject.put("nextTweetId", rs.getString("nextTweetId"));
+			nextObject.put("prevTweetId", rs.getString("prevTweetId"));
 			nextObject.put("mediaType", rs.getString("mediaType"));
 			nextObject.put("mediaUrl", rs.getString("mediaUrl"));	
 			Timestamp time = rs.getTimestamp("writedate");
 			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 			nextObject.put("writeDate",format.format(time));
-			if(rs.getString("nextTweetId")!=null) {							
-				NextTweetSelect(nextObject,rs.getString("nextTweetId"));
+			if(rs.getString("prevTweetId")!=null) {							
+				PrevTweetSelect(nextObject,rs.getString("prevTweetId"));
 			}
-			obj.put("nextTweet", nextObject);
+			obj.put("prevTweet", nextObject);
 			DBClose();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -240,7 +305,7 @@ public class DBController {
 				sObject.put("userProfileUrl", rs.getString("userProfileUrl"));
 				sObject.put("tweetContent", rs.getString("tweetContent"));
 				sObject.put("tweetType", rs.getString("tweetType"));
-				sObject.put("nextTweetId", rs.getString("nextTweetId"));
+				sObject.put("prevTweetId", rs.getString("prevTweetId"));
 				sObject.put("mediaType", rs.getString("mediaType"));
 				sObject.put("mediaUrl", rs.getString("mediaUrl"));
 				Timestamp time = rs.getTimestamp("writedate");
@@ -270,12 +335,11 @@ public class DBController {
 				sObject.put("userProfileUrl", rs.getString("userProfileUrl"));
 				sObject.put("tweetContent", rs.getString("tweetContent"));
 				sObject.put("tweetType", rs.getString("tweetType"));
-				sObject.put("nextTweetId", rs.getString("nextTweetId"));
+				sObject.put("prevTweetId", rs.getString("prevTweetId"));
 				sObject.put("mediaType", rs.getString("mediaType"));
 				sObject.put("mediaUrl", rs.getString("mediaUrl"));
 				Timestamp time = rs.getTimestamp("writedate");
 				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");		
-				//System.out.println(format.format(time));
 				sObject.put("writeDate",format.format(time));
 				jArray.add(sObject);
 			}
@@ -302,7 +366,6 @@ public class DBController {
 				sObject.put("tag", rs.getString("tag"));
 				Timestamp time = rs.getTimestamp("uploadtime");
 				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");		
-				//System.out.println(format.format(time));
 				sObject.put("uploadTime",format.format(time));
 				jArray.add(sObject);
 
@@ -332,7 +395,6 @@ public class DBController {
 				sObject.put("tag", rs.getString("tag"));
 				Timestamp time = rs.getTimestamp("uploadtime");
 				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");		
-				//System.out.println(format.format(time));
 				sObject.put("uploadTime",format.format(time));
 				jArray.add(sObject);
 

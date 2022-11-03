@@ -9,7 +9,7 @@ public class Tweet {
 	String userProfileURL;
 	String tweetContent;
 	String tweetType;
-	String nextTweetID;
+	String prevTweetID;
 	String mediaType;
 	String mediaURL;
 	String writeDate;
@@ -17,7 +17,7 @@ public class Tweet {
 	
 
 	public Tweet(String tweetID, String writeUserName, String userID, String userProfileURL, String tweetContent,
-			String tweetType, String nextTweetID, String mediaType, String mediaURL, String writeDate) {
+			String tweetType, String prevTweetID, String mediaType, String mediaURL, String writeDate) {
 		super();
 		this.tweetID = tweetID;
 		this.writeUserName = writeUserName;
@@ -25,7 +25,7 @@ public class Tweet {
 		this.userProfileURL = userProfileURL;
 		this.tweetContent = tweetContent;
 		this.tweetType = tweetType;
-		this.nextTweetID = nextTweetID;
+		this.prevTweetID = prevTweetID;
 		this.mediaType = mediaType;
 		this.mediaURL = mediaURL;
 		this.writeDate = writeDate;
@@ -105,14 +105,14 @@ public class Tweet {
 
 
 
-	public String getNextTweetID() {
-		return nextTweetID;
+	public String getPrevTweetID() {
+		return prevTweetID;
 	}
 
 
 
-	public void setNextTweetID(String nextTweetID) {
-		this.nextTweetID = nextTweetID;
+	public void setPrevTweetID(String prevTweetID) {
+		this.prevTweetID = prevTweetID;
 	}
 
 
