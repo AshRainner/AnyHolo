@@ -190,6 +190,9 @@ public class DBController {
 				SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 				prevObject.put("writeDate",format.format(time));		
 				temp.add(prevObject);
+				System.out.println("--");
+				System.out.println(prevObject);
+				RepliedPrevTweetSelect(temp, prevObject);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
