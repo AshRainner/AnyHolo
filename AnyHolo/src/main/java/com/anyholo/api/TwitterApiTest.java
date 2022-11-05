@@ -193,7 +193,9 @@ public class TwitterApiTest {
 					td.getInReplyToStatusId(),
 					null,
 					null,
-					time);
+					time,
+					null,
+					null);
 			System.out.println("---------------------------------------");
 		}
 	}

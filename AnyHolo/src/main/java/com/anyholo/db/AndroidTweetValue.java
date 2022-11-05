@@ -28,7 +28,7 @@ public class AndroidTweetValue extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		JSONObject jObject = new JSONObject();
 		JSONArray jArray = new JSONArray();
-		DBController.DBSelect(jArray,DBController.TWEET_SELECT,Tpage);
+		DBController.DBSelect(jArray,DBController.TWEET_SELECT,"","",Tpage);
 		ArrayList<String> prevTweetIds = new ArrayList<String>();
 		ArrayList<String> repliedTweetIds = new ArrayList<String>();
 		for(int i=0;i<jArray.size();i++) {

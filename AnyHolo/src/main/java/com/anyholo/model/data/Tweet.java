@@ -13,11 +13,13 @@ public class Tweet {
 	String mediaType;
 	String mediaURL;
 	String writeDate;
+	String country;
+	String holo;
 	
 	
 
 	public Tweet(String tweetID, String writeUserName, String userID, String userProfileURL, String tweetContent,
-			String tweetType, String prevTweetID, String mediaType, String mediaURL, String writeDate) {
+			String tweetType, String prevTweetID, String mediaType, String mediaURL, String writeDate,String country,String holo) {
 		super();
 		this.tweetID = tweetID;
 		this.writeUserName = writeUserName;
@@ -29,6 +31,8 @@ public class Tweet {
 		this.mediaType = mediaType;
 		this.mediaURL = mediaURL;
 		this.writeDate = writeDate;
+		this.country = country;
+		this.holo = holo;
 	}
 
 
@@ -151,5 +155,29 @@ public class Tweet {
 		this.writeDate = writeDate;
 	}
 
+
+
+	public String getCountry() {
+		return country;
+	}
+
+
+
+	public void setCountry(String country) {
+		this.country = country;
+	}
+
+
+
+	public String getHolo() {
+		return holo;
+	}
+
+
+
+	public void setHolo(String holo) {
+		this.holo = holo;
+	}
+	
 	
 }

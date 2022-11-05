@@ -30,10 +30,15 @@ public class Main {
 		}
 		for(TestV v : list)
 			System.out.println(v.id);*/
-		//DataManagement d = new DataManagement();
+		DataManagement d = new DataManagement();
 		//d.getKirinuki("UCOPaYsI-TnBk0qxoAy_rjXA");
+		//d.getKirinuki("UC3_IjQ8uQXTBZ5ysRHOls7g");
 		//d.getTweet();
-		String s ="⏰１８時から⏰\r\n"
+		String s = "";
+		String[] s2=s.split(",");
+		for(String s3 : s2)
+		System.out.println(s3);
+		/*String s ="⏰１８時から⏰\r\n"
 				+ "\r\n"
 				+ "今日は、監視カメラでお部屋を見張るお仕事？です！！！！👀\r\n"
 				+ "ホラー？ホラー？？？ホラーなの？？？？？\r\n"
@@ -41,7 +46,7 @@ public class Main {
 				+ "放送こちら➡ https://t.co/0PEM9VblLQ https://t.co/sqdVChMgez";
 		System.out.println(s.indexOf("https://t.co/"));
 		s = s.substring(0,s.indexOf("https://t.co/"));
-		System.out.println(s);
+		System.out.println(s);*/
 		//내꺼 UCOPaYsI-TnBk0qxoAy_rjXA
 		//홀로라이브 인도네시아님꺼 UC3_IjQ8uQXTBZ5ysRHOls7g
 		

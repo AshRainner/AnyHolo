@@ -22,7 +22,7 @@ public class AndroidLiveValue extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		JSONObject jObject = new JSONObject();
 		JSONArray jArray = new JSONArray();
-		DBController.DBSelect(jArray,DBController.MEMBER_SELECT,0);
+		DBController.DBSelect(jArray,DBController.MEMBER_SELECT,"","",0);
 		jObject.put("Member", jArray);
 		out.print(jObject);
 		out.flush();

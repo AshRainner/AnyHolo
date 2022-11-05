@@ -25,7 +25,7 @@ public class AndroidInitialValue extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		JSONObject jObject = new JSONObject();
 		JSONArray jArray = new JSONArray();
-		DBController.DBSelect(jArray,DBController.TWEET_SELECT,74);
+		DBController.DBSelect(jArray,DBController.TWEET_SELECT,null,null,1);
 		ArrayList<String> prevTweetIds = new ArrayList<String>();
 		ArrayList<String> repliedTweetIds = new ArrayList<String>();
 		for(int i=0;i<jArray.size();i++) {
@@ -89,10 +89,10 @@ public class AndroidInitialValue extends HttpServlet {
 		}
 		jObject.put("Tweet", jArray);
 		jArray = new JSONArray();
-		DBController.DBSelect(jArray, DBController.KIRINUKI_SELECT,1);
+		DBController.DBSelect(jArray, DBController.KIRINUKI_SELECT,"","",1);
 		jObject.put("Kirinuki", jArray);
 		jArray = new JSONArray();
-		DBController.DBSelect(jArray,DBController.MEMBER_SELECT,1);
+		DBController.DBSelect(jArray,DBController.MEMBER_SELECT,"","",1);
 		jObject.put("Member", jArray);
 		out.print(jObject);
 		out.flush();

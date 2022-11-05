@@ -19,13 +19,22 @@ public class AndroidKirinukiValue extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html; charset=UTF-8");;
 		response.setCharacterEncoding("UTF-8");
-		int Kpage = 1;
+		int kPage = 1;
+		String country=null;
 		if(request.getParameter("KPage")!=null)
-			Kpage=Integer.parseInt(request.getParameter("KPage"));
+			kPage=Integer.parseInt(request.getParameter("KPage"));
+		if(request.getParameter("Country")!=null)	
+			country=request.getParameter("Country");
+		String keyword="";
+		if(request.getParameter("Keyword")!=null)
+			keyword = request.getParameter("Keyword");
 		PrintWriter out = response.getWriter();	
 		JSONObject jObject = new JSONObject();
 		JSONArray jArray = new JSONArray();
-		DBController.DBSelect(jArray,DBController.KIRINUKI_SELECT,Kpage);
+		System.out.println("country : "+country+" | 키워드 : "+keyword);
+		
+		DBController.DBSelect(jArray,DBController.KIRINUKI_SELECT,country,keyword,kPage);
+		
 		jObject.put("Kirinuki", jArray);
 		out.print(jObject);
 		out.flush();
