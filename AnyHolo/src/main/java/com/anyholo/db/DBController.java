@@ -95,7 +95,7 @@ public class DBController {
 	}
 	public static void TweetInsert(Tweet t) {
 		DBConnect();
-		String sql = "insert into Tweet values(?,?,?,?,?,?,?,?,?,TO_DATE(?,'yyyy-MM-dd hh24:mi:ss'),?,?)";
+		String sql = "insert into Tweet values(?,?,?,?,?,?,?,?,?,TO_DATE(?,'yyyy-MM-dd hh24:mi:ss'),?,?,?)";
 		//TwitID, WriteUserName, UserID, UserProfileURL, TwitContent, TwitType, prevTweetId, MediaType, MediaURL, WriteDate
 		try {
 			pstmt = con.prepareStatement(sql);
@@ -111,6 +111,7 @@ public class DBController {
 			pstmt.setString(10, t.getWriteDate());
 			pstmt.setString(11, t.getCountry());
 			pstmt.setString(12, t.getHolo());
+			pstmt.setString(13, t.getName());
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -232,13 +233,38 @@ public class DBController {
 	private static void TweetSelect(JSONArray jArray,String country,String keyword,int startNum,int EndNum) {
 		try {
 			DBConnect();
-			//String sql = "SELECT * FROM Tweet order by writedate asc";
-			String sql ="SELECT * FROM (SELECT rownum AS num, t.* FROM (SELECT * FROM HOLOLIVEFINDER.TWEET t ORDER BY WRITEDATE DESC)t) WHERE num BETWEEN ? AND ?";
-			//700 750
-			//String sql = "SELECT * from HOLOLIVEFINDER.TWEET t WHERE TWEETID = '1586621753207717892'";
+			String sql ="SELECT * FROM (SELECT rownum AS num, t.* FROM (SELECT * FROM HOLOLIVEFINDER.TWEET t where holo = 1 ORDER BY WRITEDATE DESC)t) WHERE num BETWEEN ? AND ?";
+			String plusSql="";
+			int countryCheck=0;
+			int keywordCheck=0;
+			String []keywordSplit = keyword.split(",");
+			if(!(country.equals("")||country.equals("전체")||country.equals("즐겨찾기"))) {
+				plusSql+="and country like ? ";
+				countryCheck=1;
+			}	
+			if(!keyword.equals("")){
+				keywordCheck=1;
+				plusSql+="and name like ? ";
+
+				for(;keywordCheck<keywordSplit.length;keywordCheck++)
+					plusSql+="or name like ? ";
+
+			}
+			if(!plusSql.equals(""))
+				sql=sql.replace("holo = 1","holo = 1 "+plusSql);
 			pstmt = con.prepareStatement(sql);
-			pstmt.setInt(1, startNum);
-			pstmt.setInt(2, EndNum);
+			if(countryCheck==1)
+				pstmt.setString(countryCheck, country);
+			if(keywordCheck>=1)
+				for(int i=1;i<=keywordSplit.length;i++) {
+					pstmt.setString(i+countryCheck, "%"+keywordSplit[i-1]+"%");
+				}
+			System.out.println(sql);
+			pstmt.setInt(1+keywordCheck+countryCheck, startNum);
+			pstmt.setInt(2+keywordCheck+countryCheck, EndNum);
+			System.out.println(keywordCheck);
+			System.out.println(countryCheck);
+			System.out.println(2+keywordCheck+countryCheck);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
 				JSONObject sObject = new JSONObject();			
@@ -267,11 +293,11 @@ public class DBController {
 				countryCheck=1;
 			}	
 			if(!keyword.equals("")){
+				keywordCheck=1;
 				if(countryCheck==1)
 					plusSql+="and tag like ? ";
 				else {
 					plusSql+="tag like ? ";
-					keywordCheck=1;
 					for(;keywordCheck<keywordSplit.length;keywordCheck++)
 						plusSql+="or tag like ? ";
 				}
@@ -285,7 +311,6 @@ public class DBController {
 				for(int i=1;i<=keywordSplit.length;i++) {
 					pstmt.setString(i+countryCheck, "%"+keywordSplit[i-1]+"%");
 				}
-			System.out.println(sql);
 			pstmt.setInt(1+keywordCheck+countryCheck, startNum);
 			System.out.println(1+keywordCheck+countryCheck);
 			pstmt.setInt(2+keywordCheck+countryCheck, EndNum);

@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -22,13 +23,20 @@ public class AndroidTweetValue extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html; charset=UTF-8");;
 		response.setCharacterEncoding("UTF-8");
-		int Tpage = 1;
-		if(request.getParameter("TPage")!=null)
-			Tpage=Integer.parseInt(request.getParameter("TPage"));
+		int page = 1;
+		if(request.getParameter("Page")!=null)
+			page=Integer.parseInt(request.getParameter("Page"));
+		String country="";
+		if(request.getParameter("Country")!=null)	
+			country=request.getParameter("Country");
+		String keyword="";
+		if(request.getParameter("Keyword")!=null)
+			keyword = request.getParameter("Keyword");
 		PrintWriter out = response.getWriter();
 		JSONObject jObject = new JSONObject();
 		JSONArray jArray = new JSONArray();
-		DBController.DBSelect(jArray,DBController.TWEET_SELECT,"","",Tpage);
+		System.out.println("country : "+country+"keyword : "+keyword);
+		DBController.DBSelect(jArray,DBController.TWEET_SELECT,country,keyword,page);
 		ArrayList<String> prevTweetIds = new ArrayList<String>();
 		ArrayList<String> repliedTweetIds = new ArrayList<String>();
 		for(int i=0;i<jArray.size();i++) {
@@ -90,7 +98,10 @@ public class AndroidTweetValue extends HttpServlet {
 				}
 			}
 		}
-		jObject.put("Tweet", jArray);
+		LinkedHashSet<JSONObject> deduplicationHashSet = new LinkedHashSet<>();
+		for(int i=0;i<jArray.size();i++)
+			deduplicationHashSet.add((JSONObject) jArray.get(i));
+		jObject.put("Tweet", deduplicationHashSet);
 		out.print(jObject);
 		out.flush();
 	}

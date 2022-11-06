@@ -33,11 +33,9 @@ public class Main {
 		DataManagement d = new DataManagement();
 		//d.getKirinuki("UCOPaYsI-TnBk0qxoAy_rjXA");
 		//d.getKirinuki("UC3_IjQ8uQXTBZ5ysRHOls7g");
-		//d.getTweet();
-		String s = "";
-		String[] s2=s.split(",");
-		for(String s3 : s2)
-		System.out.println(s3);
+		while(true)
+		d.getTweet();
+		//d.gettest();
 		/*String s ="⏰１８時から⏰\r\n"
 				+ "\r\n"
 				+ "今日は、監視カメラでお部屋を見張るお仕事？です！！！！👀\r\n"

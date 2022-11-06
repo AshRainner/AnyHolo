@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -25,7 +26,7 @@ public class AndroidInitialValue extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		JSONObject jObject = new JSONObject();
 		JSONArray jArray = new JSONArray();
-		DBController.DBSelect(jArray,DBController.TWEET_SELECT,null,null,1);
+		DBController.DBSelect(jArray,DBController.TWEET_SELECT,"","",1);
 		ArrayList<String> prevTweetIds = new ArrayList<String>();
 		ArrayList<String> repliedTweetIds = new ArrayList<String>();
 		for(int i=0;i<jArray.size();i++) {
@@ -87,7 +88,10 @@ public class AndroidInitialValue extends HttpServlet {
 				}
 			}
 		}
-		jObject.put("Tweet", jArray);
+		LinkedHashSet<JSONObject> deduplicationHashSet = new LinkedHashSet<>();
+		for(int i=0;i<jArray.size();i++)
+			deduplicationHashSet.add((JSONObject) jArray.get(i));
+		jObject.put("Tweet", deduplicationHashSet);
 		jArray = new JSONArray();
 		DBController.DBSelect(jArray, DBController.KIRINUKI_SELECT,"","",1);
 		jObject.put("Kirinuki", jArray);

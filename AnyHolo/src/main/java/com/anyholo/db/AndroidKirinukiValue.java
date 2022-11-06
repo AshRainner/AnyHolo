@@ -19,10 +19,10 @@ public class AndroidKirinukiValue extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html; charset=UTF-8");;
 		response.setCharacterEncoding("UTF-8");
-		int kPage = 1;
+		int page = 1;
 		String country=null;
-		if(request.getParameter("KPage")!=null)
-			kPage=Integer.parseInt(request.getParameter("KPage"));
+		if(request.getParameter("Page")!=null)
+			page=Integer.parseInt(request.getParameter("Page"));
 		if(request.getParameter("Country")!=null)	
 			country=request.getParameter("Country");
 		String keyword="";
@@ -33,7 +33,7 @@ public class AndroidKirinukiValue extends HttpServlet {
 		JSONArray jArray = new JSONArray();
 		System.out.println("country : "+country+" | 키워드 : "+keyword);
 		
-		DBController.DBSelect(jArray,DBController.KIRINUKI_SELECT,country,keyword,kPage);
+		DBController.DBSelect(jArray,DBController.KIRINUKI_SELECT,country,keyword,page);
 		
 		jObject.put("Kirinuki", jArray);
 		out.print(jObject);
