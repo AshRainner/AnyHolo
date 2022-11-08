@@ -1,53 +1,43 @@
 package com.anyholo.main;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class Main {
 
 	public static void main(String[] args) {
-		/*ArrayList<TestV> list = new ArrayList<TestV>();
-		list.add(new TestV("1",null));
-		list.add(new TestV("3",null));
-		list.add(new TestV("5",null));
-		list.add(new TestV("7",null));
-		System.out.println(list);
-		Collections.reverse(list);
-		ArrayList<TestV> list2 = new ArrayList<TestV>();
-		list2.add(new TestV("2","1"));
-		list2.add(new TestV("4","3"));
-		list2.add(new TestV("6","5"));
-		System.out.println(list2);
-		for(int i=0;i<list.size();i++) {
-			for(int j=0;j<list2.size();j++) {
-				if(list.get(i).getId().equals(list2.get(j).getNid())) {
-					System.out.println("!");
-					list.add(i+1,list2.get(j));
-					list2.remove(j);
-					break;
-				}
-			}
-		}
-		for(TestV v : list)
-			System.out.println(v.id);*/
 		DataManagement d = new DataManagement();
 		//d.getKirinuki("UCOPaYsI-TnBk0qxoAy_rjXA");
 		//d.getKirinuki("UC3_IjQ8uQXTBZ5ysRHOls7g");
-		while(true)
-		d.getTweet();
-		//d.gettest();
-		/*String s ="⏰１８時から⏰\r\n"
-				+ "\r\n"
-				+ "今日は、監視カメラでお部屋を見張るお仕事？です！！！！👀\r\n"
-				+ "ホラー？ホラー？？？ホラーなの？？？？？\r\n"
-				+ "\r\n"
-				+ "放送こちら➡ https://t.co/0PEM9VblLQ https://t.co/sqdVChMgez";
-		System.out.println(s.indexOf("https://t.co/"));
-		s = s.substring(0,s.indexOf("https://t.co/"));
-		System.out.println(s);*/
+		Thread tweetThread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				while(true) {
+					System.out.println("트윗 시작 : "+LocalDateTime.now());
+					d.getTweet();
+					System.out.println("트윗 종료 : "+LocalDateTime.now());
+					try {
+						Thread.sleep((1000*40));
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		tweetThread.start();
+		d.InitialValue();
+		while(true) {
+			System.out.println("라이브 컨펌 시작 : "+LocalDateTime.now());
+			d.LiveConfirm();
+			System.out.println("라이브 컨펌 종료 : "+LocalDateTime.now());
+		}
 		//내꺼 UCOPaYsI-TnBk0qxoAy_rjXA
 		//홀로라이브 인도네시아님꺼 UC3_IjQ8uQXTBZ5ysRHOls7g
-		
+
 		/*while(true) {
 			System.out.println("시작"+LocalDateTime.now());
 			d.getTwit();
@@ -59,7 +49,7 @@ public class Main {
 				e.printStackTrace();
 			}
 		}*/
-		
+
 		/*d.InitialValue();//초기값 설정
 		Thread refresh = new tcpSocket();
 		refresh.start();

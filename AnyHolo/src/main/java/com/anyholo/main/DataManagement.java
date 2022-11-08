@@ -257,9 +257,6 @@ public class DataManagement {
 						list.get(i).setOnAirTitle("default");
 						list.get(i).setOnAirVideoUrl("default");
 					}
-					/*else {
-						System.out.println(list.get(i).getMemberName()+"\n");
-					}*/
 					check[i]=false;
 				}
 			}
@@ -443,11 +440,11 @@ public class DataManagement {
 				String time = td.getCreatedAt().plusHours(9).toString();
 				time=time.replace("T"," ");
 				if(Arrays.asList(TwitterId).contains(td.getUser().getId())) {
-					if(Arrays.asList(TwitterId).indexOf(td.getUser().getId())<34) {
+					if(Arrays.asList(TwitterId).indexOf(td.getUser().getId())<35) {
 						country = "JP";
 						holo = "1";
 					}
-					else if(Arrays.asList(TwitterId).indexOf(td.getUser().getId())<44) {
+					else if(Arrays.asList(TwitterId).indexOf(td.getUser().getId())<45) {
 						country = "EN";
 						holo = "1";
 					}
@@ -506,7 +503,7 @@ public class DataManagement {
 	}
 	public void getTweet() {
 		TwitterClient twitterClient = TwitterApi.getTwitterClient();
-		System.out.println("시작 : "+LocalDateTime.now());
+		
 		for(int j = 0; j<TwitterId.length;j++) {
 			TweetList timeline = twitterClient.getUserTimeline(TwitterId[j],
 					AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusMinutes(1)).endTime(LocalDateTime.now().minusHours(9)).build());
@@ -556,11 +553,6 @@ public class DataManagement {
 			getTweet(quTweet,tweetList,midea);
 			getTweet(reTweet,tweetList,midea);
 			getTweet(timeline,tweetList,midea);
-			/*ArrayList<String> t = new ArrayList<String>();
-			t.add("1581570643358732289");
-			t.add("1586637264654053377");
-			TweetList test = twitterClient.getTweets(t);
-			getTweet(test,tweetList,midea);*/
 
 			for(int i=0;i<tweetList.size();i++) {
 				/*System.out.println("트윗 ID : "+tweetList.get(i).getTweetID());
@@ -577,6 +569,6 @@ public class DataManagement {
 				DBController.TweetInsert(tweetList.get(i));
 			}			
 		}
-	System.out.println("종료 : "+LocalDateTime.now());
+	
 	}
 }
