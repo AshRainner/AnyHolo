@@ -43,7 +43,6 @@ import io.github.redouane59.twitter.dto.tweet.TweetType;
 import io.github.redouane59.twitter.dto.tweet.TweetV2.TweetData;
 
 public class DataManagement {
-	private String API_KEY = null;//발급받은 API 키값
 	private String[] channelId = { // 멤버들의 유튜브 채널 ID
 			"UCp6993wxpyDPHUpavwDFqgg","UCDqI2jOz0weumE8s7paEk6g","UC0TXe_LYZ4scaW2XMyi5_kw","UC-hM6YJuNYVAmUWxeIr9FeA","UC5CwaMl1eIgY8h02uZw7u8A",//0기생
 			"UCD8HOxPs4Xvsm8H0ZxXGiBw","UCFTLzh12_nrtzqBPsTCqenA","UC1CfXB_kRs3C-zaeTG3oGyg","UCdn5BQ06XqgXoAxIhbqw5Rg","UCQ0UDLQCjY0rmuxCDE38FGg",//1기생
@@ -158,11 +157,8 @@ public class DataManagement {
 	};
 	private List<Member> list = new ArrayList<Member>();
 	public void InitialValue() {//초기값 설정
-		File youtubeApiPath = new File("C:\\Users\\User\\Desktop\\test\\YoutubeApiKey.txt");
 		try {
-			BufferedReader br = new BufferedReader(new FileReader(youtubeApiPath));
-			API_KEY = br.readLine();
-			System.out.println(API_KEY);
+			YoutubeDataApi.setKey();
 			String channelIds="";
 			for(int i=0;i<50;i++)
 				channelIds+=channelId[i]+",";
@@ -170,7 +166,7 @@ public class DataManagement {
 			//채널 아이디 50개를 한번에 검색하기 위해 합치기
 			// 50개인 이유는 api에서 한번에 검색가능한 수가 50개라서
 			String jsonString =	YoutubeDataApi.getProfileJSon
-					(channelIds,API_KEY);
+					(channelIds);
 			ObjectMapper mapper = new ObjectMapper();
 			List<Item> items = mapper.readValue(jsonString, ProfileModel.class).getItems();
 			for(int i=0;i<50;i++) {
@@ -199,7 +195,7 @@ public class DataManagement {
 				channelIds+=channelId[i]+",";
 			channelIds=channelIds.substring(0,channelIds.length()-1);
 			//50개를 넘어간 나머지
-			jsonString = YoutubeDataApi.getProfileJSon(channelIds, API_KEY);
+			jsonString = YoutubeDataApi.getProfileJSon(channelIds);
 			items = mapper.readValue(jsonString, ProfileModel.class).getItems();
 			for(int i=50;i<channelId.length;i++) {
 				int index = getIndex(items.get(i-50));
@@ -242,7 +238,7 @@ public class DataManagement {
 			}
 			if(liveids!="") {
 				liveids=liveids.substring(0,liveids.length()-1);
-				String jsonString = YoutubeDataApi.getLiveJSon(liveids, API_KEY);
+				String jsonString = YoutubeDataApi.getLiveJSon(liveids);
 				ObjectMapper mapper = new ObjectMapper();
 				String Day2Later = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_INSTANT);
 				List<com.anyholo.model.live.Item> items = mapper.readValue(jsonString, LiveModel.class).getItems();
@@ -294,7 +290,7 @@ public class DataManagement {
 	}
 	public void getKirinuki(String channel_id) {
 		try {
-			String jsonString = YoutubeDataApi.getKirinukiInitialValue(channel_id, API_KEY);
+			String jsonString = YoutubeDataApi.getKirinukiInitialValue(channel_id);
 			ObjectMapper mapper = new ObjectMapper();
 			KirinukiModel model = mapper.readValue(jsonString, KirinukiModel.class);
 			if(model.getNextPageToken()!=null) {
@@ -350,7 +346,7 @@ public class DataManagement {
 	}
 	public void getKirinuki(String channel_id,String nextToken) {
 		try {
-			String jsonString = YoutubeDataApi.getKirinukiInitialValue(channel_id,nextToken, API_KEY);
+			String jsonString = YoutubeDataApi.getKirinukiInitialValue(channel_id,nextToken);
 			ObjectMapper mapper = new ObjectMapper();
 			KirinukiModel model = mapper.readValue(jsonString, KirinukiModel.class);
 			if(model.getNextPageToken()!=null) {
