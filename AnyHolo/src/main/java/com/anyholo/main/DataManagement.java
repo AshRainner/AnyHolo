@@ -1,7 +1,9 @@
 package com.anyholo.main;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
-import java.util.Date;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -10,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -29,6 +32,8 @@ import com.anyholo.model.kirinuki.KirinukiModel;
 import com.anyholo.model.live.LiveModel;
 import com.anyholo.model.profile.Item;
 import com.anyholo.model.profile.ProfileModel;
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.github.redouane59.twitter.TwitterClient;
@@ -38,7 +43,7 @@ import io.github.redouane59.twitter.dto.tweet.TweetType;
 import io.github.redouane59.twitter.dto.tweet.TweetV2.TweetData;
 
 public class DataManagement {
-	private final static String API_KEY = "AIzaSyADYWApy4Z5VvjrCc2j5BCtRX2VjX2zIvs";//발급받은 API 키값
+	private String API_KEY = null;//발급받은 API 키값
 	private String[] channelId = { // 멤버들의 유튜브 채널 ID
 			"UCp6993wxpyDPHUpavwDFqgg","UCDqI2jOz0weumE8s7paEk6g","UC0TXe_LYZ4scaW2XMyi5_kw","UC-hM6YJuNYVAmUWxeIr9FeA","UC5CwaMl1eIgY8h02uZw7u8A",//0기생
 			"UCD8HOxPs4Xvsm8H0ZxXGiBw","UCFTLzh12_nrtzqBPsTCqenA","UC1CfXB_kRs3C-zaeTG3oGyg","UCdn5BQ06XqgXoAxIhbqw5Rg","UCQ0UDLQCjY0rmuxCDE38FGg",//1기생
@@ -153,7 +158,11 @@ public class DataManagement {
 	};
 	private List<Member> list = new ArrayList<Member>();
 	public void InitialValue() {//초기값 설정
+		File youtubeApiPath = new File("C:\\Users\\User\\Desktop\\test\\YoutubeApiKey.txt");
 		try {
+			BufferedReader br = new BufferedReader(new FileReader(youtubeApiPath));
+			API_KEY = br.readLine();
+			System.out.println(API_KEY);
 			String channelIds="";
 			for(int i=0;i<50;i++)
 				channelIds+=channelId[i]+",";
@@ -162,7 +171,6 @@ public class DataManagement {
 			// 50개인 이유는 api에서 한번에 검색가능한 수가 50개라서
 			String jsonString =	YoutubeDataApi.getProfileJSon
 					(channelIds,API_KEY);
-			//System.out.println(jsonObject.toJSONString());
 			ObjectMapper mapper = new ObjectMapper();
 			List<Item> items = mapper.readValue(jsonString, ProfileModel.class).getItems();
 			for(int i=0;i<50;i++) {
@@ -261,9 +269,6 @@ public class DataManagement {
 				}
 			}
 			for(int i=0;i<channelId.length;i++) {
-				/*System.out.println(list.get(i).getMemberName());
-					System.out.println(list.get(i).getImageUrl());
-					System.out.println(list.get(i).getOnAirVideoUrl());*/
 				DBController.DBUpdate(list.get(i));
 			}
 		} catch (IOException e) {
@@ -335,7 +340,7 @@ public class DataManagement {
 			e.printStackTrace();
 		}
 	}
-	public void gettest() {
+	public void getLength() {
 		System.out.println("채널 아디 : "+channelId.length);
 		System.out.println("멤버 네임 t : "+memberNameT.length);
 		System.out.println("twitterUrl : "+twitterUrl.length);
@@ -343,7 +348,6 @@ public class DataManagement {
 		System.out.println("KRName : "+KRName.length);
 		System.out.println("TwitterId : "+TwitterId.length);
 	}
-
 	public void getKirinuki(String channel_id,String nextToken) {
 		try {
 			String jsonString = YoutubeDataApi.getKirinukiInitialValue(channel_id,nextToken, API_KEY);
@@ -502,19 +506,24 @@ public class DataManagement {
 		}
 	}
 	public void getTweet() {
-		TwitterClient twitterClient = TwitterApi.getTwitterClient();
-		
+		TwitterClient twitterClient = null;
+		try {
+			twitterClient = TwitterApi.getTwitterClient();
+		} catch (StreamReadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DatabindException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 		for(int j = 0; j<TwitterId.length;j++) {
 			TweetList timeline = twitterClient.getUserTimeline(TwitterId[j],
-					AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusMinutes(1)).endTime(LocalDateTime.now().minusHours(9)).build());
-			/*TweetList timeline = twitterClient.getUserTimeline(TwitterId[j],
-					AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusDays(1)).endTime(LocalDateTime.now().minusHours(9)).build());
-			/*System.out.println(LocalDateTime.now().minusHours(9));
-		System.out.println(LocalDateTime.now().minusHours(9).minusMinutes(1));
-		System.out.println("2022-10-11T05:09:45.000Z");*/
-			//1133215093246664706페코라1063337246231687169아쿠아1283653858510598144칼리1234752200145899520리스
+					AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusMinutes(1)).endTime(LocalDateTime.now().minusHours(9)).build());			//1133215093246664706페코라1063337246231687169아쿠아1283653858510598144칼리1234752200145899520리스
 			//1458498136117489665내꺼
-			/*TweetList timeline = twitterClient.getUserTimeline("1458498136117489665",
+			/*TweetList timeline = twitterClient.getUserTimeline("1133215093246664706",
 				AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusDays(1)).endTime(LocalDateTime.now().minusHours(9)).build());*/
 			HashMap<String,ArrayList<String>> midea = new HashMap<String,ArrayList<String>>();
 			List<Tweet> tweetList = new ArrayList<>();

@@ -259,12 +259,8 @@ public class DBController {
 				for(int i=1;i<=keywordSplit.length;i++) {
 					pstmt.setString(i+countryCheck, "%"+keywordSplit[i-1]+"%");
 				}
-			System.out.println(sql);
 			pstmt.setInt(1+keywordCheck+countryCheck, startNum);
 			pstmt.setInt(2+keywordCheck+countryCheck, EndNum);
-			System.out.println(keywordCheck);
-			System.out.println(countryCheck);
-			System.out.println(2+keywordCheck+countryCheck);
 			ResultSet rs = pstmt.executeQuery();
 			while(rs.next()) {
 				JSONObject sObject = new JSONObject();			
@@ -312,9 +308,7 @@ public class DBController {
 					pstmt.setString(i+countryCheck, "%"+keywordSplit[i-1]+"%");
 				}
 			pstmt.setInt(1+keywordCheck+countryCheck, startNum);
-			System.out.println(1+keywordCheck+countryCheck);
 			pstmt.setInt(2+keywordCheck+countryCheck, EndNum);
-			System.out.println(2+keywordCheck+countryCheck);
 			ResultSet rs = pstmt.executeQuery();
 			KirinukiPut(jArray,rs);
 			DBClose();

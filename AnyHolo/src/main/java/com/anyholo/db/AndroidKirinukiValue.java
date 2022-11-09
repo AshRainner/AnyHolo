@@ -31,10 +31,7 @@ public class AndroidKirinukiValue extends HttpServlet {
 		PrintWriter out = response.getWriter();	
 		JSONObject jObject = new JSONObject();
 		JSONArray jArray = new JSONArray();
-		System.out.println("country : "+country+" | 키워드 : "+keyword);
-		
 		DBController.DBSelect(jArray,DBController.KIRINUKI_SELECT,country,keyword,page);
-		
 		jObject.put("Kirinuki", jArray);
 		out.print(jObject);
 		out.flush();

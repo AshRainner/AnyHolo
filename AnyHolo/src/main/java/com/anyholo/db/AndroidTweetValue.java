@@ -35,7 +35,6 @@ public class AndroidTweetValue extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		JSONObject jObject = new JSONObject();
 		JSONArray jArray = new JSONArray();
-		System.out.println("country : "+country+"keyword : "+keyword);
 		DBController.DBSelect(jArray,DBController.TWEET_SELECT,country,keyword,page);
 		ArrayList<String> prevTweetIds = new ArrayList<String>();
 		ArrayList<String> repliedTweetIds = new ArrayList<String>();
@@ -90,6 +89,7 @@ public class AndroidTweetValue extends HttpServlet {
 					jArray.remove(i);
 					for(int j=0;j<temp.size();j++)
 						jArray.add(i++,temp.get(j));
+					i--;//맨 마지막에 빼줘야 마지막에 ++된거 상쇄됨
 				}
 			}
 			else if(!(jObj.get("tweetType").equals("DEFAULT"))) {
@@ -98,7 +98,6 @@ public class AndroidTweetValue extends HttpServlet {
 				}
 			}
 		}
-		System.out.println(jArray);
 		LinkedHashSet<JSONObject> deduplicationHashSet = new LinkedHashSet<>();
 		for(int i=0;i<jArray.size();i++)
 			deduplicationHashSet.add((JSONObject) jArray.get(i));
