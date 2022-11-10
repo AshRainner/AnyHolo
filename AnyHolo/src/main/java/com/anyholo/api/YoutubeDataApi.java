@@ -12,7 +12,7 @@ import java.net.URL;
 public class YoutubeDataApi {
 	private static String API_KEY = null;
 	public static void setKey() {
-		File youtubeApiPath = new File("C:\\Users\\User\\Desktop\\test\\YoutubeApiKey.txt");
+		File youtubeApiPath = new File("/key/YoutubeApiKey.txt");
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(youtubeApiPath));
 			API_KEY=br.readLine();
