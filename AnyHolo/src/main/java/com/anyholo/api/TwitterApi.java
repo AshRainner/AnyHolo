@@ -23,8 +23,10 @@ public class TwitterApi {
 			.build());*///하드코딩용
 	public static TwitterClient getTwitterClient() throws StreamReadException, DatabindException, IOException {
 		TwitterClient twitterClient = new TwitterClient(
-				new ObjectMapper().readValue(new File("/key/TwitterApiKey.json"),TwitterCredentials.class));
+				new ObjectMapper().readValue(new File("/key/TwitterApiKey.json"),TwitterCredentials.class));//리눅스 용
 		//파일 위치 적으면됨
+		/*TwitterClient twitterClient = new TwitterClient(
+				new ObjectMapper().readValue(new File("C:\\Users\\User\\Desktop\\test\\TwitterApiKey.json"),TwitterCredentials.class));*///윈도우 용 테스트
 		return twitterClient;
 	}
 }

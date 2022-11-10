@@ -8,9 +8,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		DataManagement d = new DataManagement();
-		d.InitialValue();
 		Thread tweetThread = new Thread(new Runnable() {
-
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub

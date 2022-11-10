@@ -21,15 +21,8 @@ public class DBController {
 	public static final int MEMBER_SELECT = 1;
 	public static final int KIRINUKI_SELECT = 2; 
 	public static final int TWEET_SELECT = 3;
-	public static final int TWEET_SELECT_TWEETID = 4;
-	public static final int KIRINUKI_SELECT_JP = 5;
-	public static final int KIRINUKI_SELECT_EN = 6;
-	public static final int KIRINUKI_SELECT_ID = 7;
-	public static final int KIRINUKI_SELECT_JP_KEYWORD = 8;
-	public static final int KIRINUKI_SELECT_EN_KEYWORD = 9;
-	public static final int KIRINUKI_SELECT_ID_KEYWORD = 10;
-	private static String url = "jdbc:oracle:thin:@222.237.255.159:1521:xe";
-	private static String userid = "HololiveFinder";
+	private static String url = "jdbc:oracle:thin:@52.193.142.22:1521:xe";
+	private static String userid = "AnyHolo";
 	private static String pwd ="8778";
 	private static Connection con =null;
 	private static PreparedStatement pstmt = null;
@@ -77,20 +70,6 @@ public class DBController {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-	}
-	public static int TweetSelect(String twid) {
-		DBConnect();
-		String sql = "select * from tweet where twitid like ?";
-		try {
-			pstmt=con.prepareStatement(sql);
-			pstmt.setString(1, twid);
-			pstmt.executeQuery();
-			return 1;
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return 0;
 		}
 	}
 	public static void TweetInsert(Tweet t) {
@@ -175,7 +154,7 @@ public class DBController {
 	}
 	private static void RepliedPrevTweetSelect(ArrayList<JSONObject> temp,JSONObject obj) {//맨 앞에 있는 트윗 찾는거 replied에서
 		try {	
-			String sql ="SELECT * FROM HOLOLIVEFINDER.TWEET WHERE TweetId = ?";
+			String sql ="SELECT * FROM ANYHOLO.TWEET WHERE TweetId = ?";
 			pstmt = con.prepareStatement(sql);
 			String prevTweetId = (String) obj.get("prevTweetId");
 			pstmt.setString(1, String.valueOf(prevTweetId));
@@ -193,7 +172,7 @@ public class DBController {
 	}
 	private static void RepliedNextTweetSelect(ArrayList<JSONObject> temp,JSONObject obj) {
 		try {
-			String sql ="SELECT * FROM HOLOLIVEFINDER.TWEET WHERE prevTweetId = ?";
+			String sql ="SELECT * FROM ANYHOLO.TWEET WHERE prevTweetId = ?";
 			pstmt = con.prepareStatement(sql);
 			String tweetId = (String) obj.get("tweetId");//앞쪽에 있는걸 검색하기 위해서는 prev아이디가 현재 트윗인걸 검색해야함
 			pstmt.setString(1, String.valueOf(tweetId));
@@ -212,7 +191,7 @@ public class DBController {
 	}
 	public static void PrevTweetSelect(JSONObject obj,String tweetId){
 		DBConnect();
-		String sql = "SELECT * from HOLOLIVEFINDER.TWEET t WHERE TWEETID = ?";
+		String sql = "SELECT * from ANYHOLO.TWEET t WHERE TWEETID = ?";
 		try {
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, tweetId);
@@ -233,7 +212,7 @@ public class DBController {
 	private static void TweetSelect(JSONArray jArray,String country,String keyword,int startNum,int EndNum) {
 		try {
 			DBConnect();
-			String sql ="SELECT * FROM (SELECT rownum AS num, t.* FROM (SELECT * FROM HOLOLIVEFINDER.TWEET t where holo = 1 ORDER BY WRITEDATE DESC)t) WHERE num BETWEEN ? AND ?";
+			String sql ="SELECT * FROM (SELECT rownum AS num, t.* FROM (SELECT * FROM ANYHOLO.TWEET t where holo = 1 ORDER BY WRITEDATE DESC)t) WHERE num BETWEEN ? AND ?";
 			String plusSql="";
 			int countryCheck=0;
 			int keywordCheck=0;
@@ -279,7 +258,7 @@ public class DBController {
 			DBConnect();
 			//String sql = "SELECT * FROM kirinuki order by uploadtime desc";			
 			String sql=
-					"SELECT * FROM (SELECT rownum AS num, k.* FROM (SELECT * FROM HOLOLIVEFINDER.KIRINUKI k ORDER BY k.uploadtime desc)k) WHERE num BETWEEN ? AND ?";
+					"SELECT * FROM (SELECT rownum AS num, k.* FROM (SELECT * FROM ANYHOLO.KIRINUKI k ORDER BY k.uploadtime desc)k) WHERE num BETWEEN ? AND ?";
 			String plusSql="";
 			int countryCheck=0;
 			int keywordCheck=0;
