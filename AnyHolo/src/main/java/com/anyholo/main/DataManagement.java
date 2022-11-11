@@ -1,9 +1,7 @@
 package com.anyholo.main;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
@@ -26,7 +24,10 @@ import com.anyholo.api.TwitterApi;
 import com.anyholo.api.YoutubeDataApi;
 import com.anyholo.db.DBController;
 import com.anyholo.model.data.Kirinuki;
+import com.anyholo.model.data.KirinukiUser;
+import com.anyholo.model.data.KirinukiVideo;
 import com.anyholo.model.data.Member;
+import com.anyholo.model.data.MemberOnAir;
 import com.anyholo.model.data.Tweet;
 import com.anyholo.model.kirinuki.KirinukiModel;
 import com.anyholo.model.live.LiveModel;
@@ -140,7 +141,7 @@ public class DataManagement {
 			"베스티아제타","코발스키아카엘라","코보카나에루"
 	};
 	private String[] TwitterId= {
-			"880317891249188864", "960340787782299648", "1062499145267605504", "979891380616019968", "97527587867340800",
+			"880317891249188864", "960340787782299648", "1062499145267605504", "979891380616019968", "975275878673408001",
 			"985703615758123008", "996643748862836736", "998336069992001537", "997786053124616192", "996645451045617664",
 			"1024528894940987392", "1024533638879166464", "1024532356554608640", "1024970912859189248", "1027853566780698624",
 			"1063337246231687169", "1109751762733301760", "1109748792721432577",
@@ -155,8 +156,12 @@ public class DataManagement {
 			"1328277233492844544", "1328277750000492545", "1328275136575799297",
 			"1486633489101307907", "1486636197908602880", "1486629076005634049"			
 	};
-	private List<Member> list = new ArrayList<Member>();
-	public void InitialValue() {//초기값 설정
+	private ArrayList<Member> memberList = new ArrayList<>();
+	private ArrayList<KirinukiUser> kirinukiList = new ArrayList<>();
+	private ArrayList<MemberOnAir> memberOnAir = new ArrayList<>();
+	/*public void InitialValue() throws SQLException {//초기값 설정
+		YoutubeDataApi.setKey();
+		DBController.MemberSelect(memberList);
 		try {
 			YoutubeDataApi.setKey();
 			String channelIds="";
@@ -216,180 +221,165 @@ public class DataManagement {
 			for(int i=0;i<channelId.length;i++) {
 				DBController.InitialValueInsert(list.get(i), KRName[list.get(i).getNumber()]);
 			}
-			//db처음에 넣을때 사용한거*/
+			//db처음에 넣을때 사용한거
 			Collections.sort(list);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	public void LiveConfirm() {
-		boolean[] check = new boolean[55];
-		try {//web페이지를 파싱해서 live여부를 확인 할당량을 아끼기위해 사용함
-			String liveids="";
-			for(int i=0;i<channelId.length;i++) {
-				Document doc = Jsoup.connect("https://www.youtube.com/channel/"
-						+channelId[i]+"/live").get();
-				String temp="";
-				Elements links = doc.select("link[rel=\"canonical\"]");
-				if(links.attr("href").contains("watch")) {
-					liveids+=(links.attr("href").substring(32))+",";
-				}
-			}
-			if(liveids!="") {
-				liveids=liveids.substring(0,liveids.length()-1);
-				String jsonString = YoutubeDataApi.getLiveJSon(liveids);
-				ObjectMapper mapper = new ObjectMapper();
-				String Day2Later = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_INSTANT);
-				List<com.anyholo.model.live.Item> items = mapper.readValue(jsonString, LiveModel.class).getItems();
-				for(int i=0;i<items.size();i++) {
-					int index = getIndex(items.get(i));
-					if(items.get(i).getSnippet().getLiveBroadcastContent().equals("live")||
-							items.get(i).getSnippet().getLiveBroadcastContent().equals("upcoming")&&
-							items.get(i).getLiveStreamingDetails().getScheduledStartTime().compareTo(Day2Later)<=0) {
-						list.get(index).setOnAir(items.get(i).getSnippet().getLiveBroadcastContent());
-						list.get(index).setOnAirthumnailsUrl(items.get(i).getSnippet().getThumbnails().getMedium().getUrl());
-						list.get(index).setOnAirTitle(items.get(i).getSnippet().getTitle());
-						list.get(index).setOnAirVideoUrl("https://www.youtube.com/watch?v="+items.get(i).getId());
-						check[index]=true;
-					}
-				}
-				for(int i=0;i<channelId.length;i++) {
-					if(!check[i]) {
-						list.get(i).setOnAir("default");
-						list.get(i).setOnAirthumnailsUrl("default");
-						list.get(i).setOnAirTitle("default");
-						list.get(i).setOnAirVideoUrl("default");
-					}
-					check[i]=false;
-				}
-			}
-			for(int i=0;i<channelId.length;i++) {
-				DBController.DBUpdate(list.get(i));
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	private int getIndex(Item item) {//api에서 불러온 값이 순서대로가 아니라 순서를 확인해줄 index
-		for(int i=0;i<memberNameT.length;i++) {
-			if(item.getSnippet().getTitle().contains(memberNameT[i])) {
-				return i;
+	}*/
+	public void LiveConfirm() throws SQLException, IOException {
+		DBController.MemberSelect(memberList);
+		//web페이지를 파싱해서 live여부를 확인 할당량을 아끼기위해 사용함
+		String liveids="";
+		for(int i=0;i<memberList.size();i++) {
+			Document doc = Jsoup.connect("https://www.youtube.com/channel/"
+					+memberList.get(i).getChannelId()+"/live").get();
+			Elements links = doc.select("link[rel=\"canonical\"]");
+			if(links.attr("href").contains("watch")) {
+				liveids+=(links.attr("href").substring(32))+",";
 			}
 		}
-		return 0;
+		if(liveids!="") {
+			liveids = liveids.substring(0,liveids.length()-1);
+			String jsonString = YoutubeDataApi.getLiveJSon(liveids);
+			ObjectMapper mapper = new ObjectMapper();
+			String Day2Later = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_INSTANT);
+			List<com.anyholo.model.live.Item> items = mapper.readValue(jsonString, LiveModel.class).getItems();
+			for(int i=0;i<items.size();i++) {
+				int index = getIndex(items.get(i));
+				String onAir = "default";
+				String onAirThumnailsUrl = "default";
+				String onAirTitle = "default";
+				String onAirVideoUrl = "default";
+				if(items.get(i).getSnippet().getLiveBroadcastContent().equals("live")||
+						items.get(i).getSnippet().getLiveBroadcastContent().equals("upcoming")&&
+						items.get(i).getLiveStreamingDetails().getScheduledStartTime().compareTo(Day2Later)<=0) {
+					onAir = items.get(i).getSnippet().getLiveBroadcastContent();
+					onAirThumnailsUrl = items.get(i).getSnippet().getThumbnails().getMedium().getUrl();
+					onAirTitle = items.get(i).getSnippet().getTitle();
+					onAirVideoUrl = "https://www.youtube.com/watch?v="+items.get(i).getId();
+				}
+				memberOnAir.add(new MemberOnAir(index,onAir,onAirTitle,onAirThumnailsUrl,onAirVideoUrl));
+			}
+		}
+		System.out.println(memberOnAir.size());
+		DBController.MemberOnAirUpdate(memberOnAir);
 	}
 	private int getIndex(com.anyholo.model.live.Item item) {//api에서 불러온 값이 순서대로가 아니라 순서를 확인해줄 index
-		for(int i=0;i<memberNameT.length;i++) {
-			if(item.getSnippet().getChannelTitle().contains(memberNameT[i])) {
-				return i;
+		for(Member m : memberList) {
+			if(item.getSnippet().getChannelId().equals(m.getChannelId())) {
+				return m.getNumber();
 			}
 		}
-		return 0;
+		return -1;
 	}
-	public void getKirinuki(String channel_id) {
-		try {
-			String jsonString = YoutubeDataApi.getKirinukiInitialValue(channel_id);
+	public void getKirinuki() throws SQLException, IOException {
+		DBController.KirinukiUserSelect(kirinukiList);
+		DBController.MemberSelect(memberList);
+		for(int i = 0;i<kirinukiList.size();i++) {
+			System.out.println(kirinukiList.get(i).getUserName());
+			System.out.println(kirinukiList.get(i).getYoutubeUrl());
+			String jsonString = YoutubeDataApi.getKirinukiInitialValue(kirinukiList.get(i).getYoutubeUrl());
 			ObjectMapper mapper = new ObjectMapper();
 			KirinukiModel model = mapper.readValue(jsonString, KirinukiModel.class);
 			if(model.getNextPageToken()!=null) {
-				getKirinuki(channel_id,model.getNextPageToken());
+				getKirinuki(kirinukiList.get(i).getYoutubeUrl(), model.getNextPageToken());
 			}
 			for(com.anyholo.model.kirinuki.Item item: model.getItems()) {
 				String time = convertTime(item.getSnippet().getPublishedAt());
-				Kirinuki k;
-				String country; // jp,en,id
+				//Kirinuki k;
+				KirinukiVideo k;
 				if(item.getSnippet().getThumbnails().getMaxres()!=null) {
-					k = new Kirinuki(item.getSnippet().getResourceId().getVideoId(),
+					/*k = new Kirinuki(item.getSnippet().getResourceId().getVideoId(),
 							item.getSnippet().getChannelTitle(),
 							item.getSnippet().getThumbnails().getMaxres().getUrl(),
 							item.getSnippet().getTitle(),
 							item.getSnippet().getDescription(),
 							"",
-							time);
+							time);*/
+					k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
+							item.getSnippet().getTitle(),
+							item.getSnippet().getThumbnails().getMaxres().getUrl(),
+							item.getSnippet().getDescription(),
+							time,
+							"",
+							item.getSnippet().getChannelId());
 				}else {
-					k = new Kirinuki(item.getSnippet().getResourceId().getVideoId(),
+					/*k = new Kirinuki(item.getSnippet().getResourceId().getVideoId(),
 							item.getSnippet().getChannelTitle(),
 							item.getSnippet().getThumbnails().getHigh().getUrl(),
 							item.getSnippet().getTitle(),
 							item.getSnippet().getDescription(),
 							"",
-							time);
+							time);*/
+					k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
+							item.getSnippet().getTitle(),
+							item.getSnippet().getThumbnails().getHigh().getUrl(),
+							item.getSnippet().getDescription(),
+							time,
+							"",
+							item.getSnippet().getChannelId());
 				}
-				for(int i=0;i<KRName.length;i++) {
-					if(i<35&&k.getTag().contains(KRName[i])) {
-						k.setCountry("JP");
-						i=35;
-					}else if(i<45&&k.getTag().contains(KRName[i])) {
-						k.setCountry(k.getCountry()+"EN");
-						i=45;
-					}else if(i<KRName.length&&k.getTag().contains(KRName[i])) {
-						k.setCountry(k.getCountry()+"ID");
-						break;
+				for(int j=0;j<memberList.size();j++) {
+					if(!k.getCountry().contains(memberList.get(j).getCountry())
+							&&k.getTag().contains(memberList.get(j).getKrName())) {
+						k.setCountry(k.getCountry()+memberList.get(j).getCountry());
 					}
 				}
 				DBController.KirinukiInsert(k);
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
-	public void getLength() {
-		System.out.println("채널 아디 : "+channelId.length);
-		System.out.println("멤버 네임 t : "+memberNameT.length);
-		System.out.println("twitterUrl : "+twitterUrl.length);
-		System.out.println("hololive Url : "+hololiveUrl.length);
-		System.out.println("KRName : "+KRName.length);
-		System.out.println("TwitterId : "+TwitterId.length);
-	}
-	public void getKirinuki(String channel_id,String nextToken) {
-		try {
-			String jsonString = YoutubeDataApi.getKirinukiInitialValue(channel_id,nextToken);
-			ObjectMapper mapper = new ObjectMapper();
-			KirinukiModel model = mapper.readValue(jsonString, KirinukiModel.class);
-			if(model.getNextPageToken()!=null) {
-				getKirinuki(channel_id,model.getNextPageToken());
+	public void getKirinuki(String channelId, String nextToken) throws IOException, SQLException {
+		String jsonString = YoutubeDataApi.getKirinukiInitialValue(channelId, nextToken);
+		ObjectMapper mapper = new ObjectMapper();
+		KirinukiModel model = mapper.readValue(jsonString, KirinukiModel.class);
+		if(model.getNextPageToken()!=null) {
+			getKirinuki(channelId,model.getNextPageToken());
+		}
+		for(com.anyholo.model.kirinuki.Item item: model.getItems()) {
+			String time = convertTime(item.getSnippet().getPublishedAt());
+			//Kirinuki k;
+			KirinukiVideo k;
+			if(item.getSnippet().getThumbnails().getMaxres()!=null) {
+				/*k = new Kirinuki(item.getSnippet().getResourceId().getVideoId(),
+						item.getSnippet().getChannelTitle(),
+						item.getSnippet().getThumbnails().getMaxres().getUrl(),
+						item.getSnippet().getTitle(),
+						item.getSnippet().getDescription(),
+						"",
+						time);*/
+				k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
+						item.getSnippet().getTitle(),
+						item.getSnippet().getThumbnails().getMaxres().getUrl(),
+						item.getSnippet().getDescription(),
+						time,
+						"",
+						item.getSnippet().getChannelId());
+			}else {
+				/*k = new Kirinuki(item.getSnippet().getResourceId().getVideoId(),
+						item.getSnippet().getChannelTitle(),
+						item.getSnippet().getThumbnails().getHigh().getUrl(),
+						item.getSnippet().getTitle(),
+						item.getSnippet().getDescription(),
+						"",
+						time);*/
+				k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
+						item.getSnippet().getTitle(),
+						item.getSnippet().getThumbnails().getHigh().getUrl(),
+						item.getSnippet().getDescription(),
+						time,
+						"",
+						item.getSnippet().getChannelId());
 			}
-			for(com.anyholo.model.kirinuki.Item item: model.getItems()) {
-				String time = convertTime(item.getSnippet().getPublishedAt());
-				Kirinuki k;
-				if(item.getSnippet().getThumbnails().getMaxres()!=null) {
-					k = new Kirinuki(item.getSnippet().getResourceId().getVideoId(),
-							item.getSnippet().getChannelTitle(),
-							item.getSnippet().getThumbnails().getMaxres().getUrl(),
-							item.getSnippet().getTitle(),
-							item.getSnippet().getDescription(),
-							"",
-							time);
-				}else {
-					k = new Kirinuki(item.getSnippet().getResourceId().getVideoId(),
-							item.getSnippet().getChannelTitle(),
-							item.getSnippet().getThumbnails().getHigh().getUrl(),
-							item.getSnippet().getTitle(),
-							item.getSnippet().getDescription(),
-							"",
-							time);
+			for(int i=0;i<memberList.size();i++) {
+				if(!k.getCountry().contains(memberList.get(i).getCountry())
+						&&k.getTag().contains(memberList.get(i).getKrName())) {
+					k.setCountry(k.getCountry()+memberList.get(i).getCountry());
 				}
-				for(int i=0;i<KRName.length;i++) {
-					if(i<35&&k.getTag().contains(KRName[i])) {
-						k.setCountry("JP");
-						i=35;
-					}else if(i<45&&k.getTag().contains(KRName[i])) {
-						k.setCountry(k.getCountry()+"EN");
-						i=45;
-					}else if(i<KRName.length&&k.getTag().contains(KRName[i])) {
-						System.out.println(KRName[i]);
-						k.setCountry(k.getCountry()+"ID");
-						break;
-					}
-				}
-				DBController.KirinukiInsert(k);
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			DBController.KirinukiInsert(k);
 		}
 	}
 
@@ -490,15 +480,82 @@ public class DataManagement {
 				}
 				if(td.getAttachments()!=null) {		
 					String url="";
-					for(String key : td.getAttachments().getMediaKeys()){
-						url += midea.get(key).get(1)+";";
+					if(td.getAttachments().getMediaKeys()!=null) {
+						for(String key : td.getAttachments().getMediaKeys()){
+							if(midea.get(key)!=null)
+								url += midea.get(key).get(1)+";";
+						}
+						if(!url.equals("")) {
+							url=url.substring(0,url.length()-1);
+							t.setMediaURL(url);
+							t.setMediaType(midea.get(td.getAttachments().getMediaKeys()[0]).get(0));
+						}
 					}
-					url=url.substring(0,url.length()-1);
-					t.setMediaURL(url);
-					t.setMediaType(midea.get(td.getAttachments().getMediaKeys()[0]).get(0));
 				}
 				tweetList.add(t);
 			}
+		}
+	}
+	public void get7daysTweet() {
+		TwitterClient twitterClient = null;
+		try {
+			twitterClient = TwitterApi.getTwitterClient();
+		} catch (StreamReadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DatabindException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
+		for(int j = 0; j<TwitterId.length;j++) {
+			TweetList timeline = twitterClient.getUserTimeline(TwitterId[j],
+					AdditionalParameters.builder().startTime(LocalDateTime.now().minusDays(7).minusHours(9).minusMinutes(1)).endTime(LocalDateTime.now().minusHours(9)).build());
+			/*TweetList timeline = twitterClient.getUserTimeline(TwitterId[j],
+					AdditionalParameters.builder().startTime(LocalDateTime.now().minusMinutes(1)).endTime(LocalDateTime.now()).build());*/
+			//리눅스는 정상 시간이라 9시간 안빼줘도됨
+			//1133215093246664706페코라1063337246231687169아쿠아1283653858510598144칼리1234752200145899520리스
+			//1458498136117489665내꺼
+			HashMap<String,ArrayList<String>> midea = new HashMap<String,ArrayList<String>>();
+			List<Tweet> tweetList = new ArrayList<>();
+			List<String> rtIds = new ArrayList<>(); // 리트윗한 트윗의 아이디들
+			List<String> quIds = new ArrayList<>(); // 인용된 트윗의 아이디들(인용 == 공유)
+			List<String> reIds = new ArrayList<>(); //리플라이된 트윗의 아이디들
+			for(int i=0;i<timeline.getData().size();i++) {
+				TweetData td = timeline.getData().get(i);
+				if(td.getTweetType().equals(TweetType.RETWEETED)) {
+					rtIds.add(td.getInReplyToStatusId());
+				}
+				else if(td.getTweetType().equals(TweetType.QUOTED)) {
+					quIds.add(td.getInReplyToStatusId());
+				}
+				else if(td.getTweetType().equals(TweetType.REPLIED_TO)) {
+					reIds.add(td.getInReplyToStatusId());
+				}
+			}
+
+			TweetList rtTweet = null; //RT 트윗
+			TweetList quTweet = null; //인용 트윗
+			TweetList reTweet = null; //replied 트윗
+			if(rtIds.size()!=0) {
+				rtTweet = twitterClient.getTweets(rtIds);
+			}
+			if(quIds.size()!=0) {
+				quTweet = twitterClient.getTweets(quIds);
+			}
+			if(reIds.size()!=0) {
+				reTweet = twitterClient.getTweets(reIds);
+			}
+			getTweet(rtTweet,tweetList,midea);
+			getTweet(quTweet,tweetList,midea);
+			getTweet(reTweet,tweetList,midea);
+			getTweet(timeline,tweetList,midea);
+
+			for(int i=0;i<tweetList.size();i++) {
+				DBController.TweetInsert(tweetList.get(i));
+			}			
 		}
 	}
 	public void getTweet() {
@@ -516,8 +573,12 @@ public class DataManagement {
 			e.printStackTrace();
 		}	
 		for(int j = 0; j<TwitterId.length;j++) {
+			/*TweetList timeline = twitterClient.getUserTimeline(TwitterId[j],
+					AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusMinutes(1)).endTime(LocalDateTime.now().minusHours(9)).build());*/
 			TweetList timeline = twitterClient.getUserTimeline(TwitterId[j],
-					AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusMinutes(1)).endTime(LocalDateTime.now().minusHours(9)).build());			//1133215093246664706페코라1063337246231687169아쿠아1283653858510598144칼리1234752200145899520리스
+					AdditionalParameters.builder().startTime(LocalDateTime.now().minusMinutes(1)).endTime(LocalDateTime.now()).build());
+			//리눅스는 정상 시간이라 9시간 안빼줘도됨
+			//1133215093246664706페코라1063337246231687169아쿠아1283653858510598144칼리1234752200145899520리스
 			//1458498136117489665내꺼
 			/*TweetList timeline = twitterClient.getUserTimeline("1133215093246664706",
 				AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusDays(1)).endTime(LocalDateTime.now().minusHours(9)).build());*/
@@ -574,6 +635,28 @@ public class DataManagement {
 				DBController.TweetInsert(tweetList.get(i));
 			}			
 		}
-	
+	}
+	public void InitialMemberData() throws SQLException {
+		DBController.DBConnect();
+		for(int i = 0;i<KRName.length;i++) {
+			String country=null;
+			if(i<35) {
+				country="JP";
+			}else if(i<45) {
+				country="EN";
+			}else {
+				country="ID";
+			}
+			DBController.MemberDataInsert(new Member(i,channelId[i],twitterUrl[i],hololiveUrl[i],country,KRName[i],Init_KRName[i],TwitterId[i]));
+		}
+		DBController.DBClose();
+	}
+	public void InitialMemberOnAir() throws SQLException {
+		DBController.DBConnect();
+		DBController.MemberSelect(memberList);
+		for(Member m : memberList)
+			DBController.MemberOnairInsert(new MemberOnAir(m.getNumber(), "default", "default", "default", "default"));
+		DBController.DBClose();
+
 	}
 }

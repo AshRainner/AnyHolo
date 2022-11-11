@@ -12,8 +12,8 @@ import java.net.URL;
 public class YoutubeDataApi {
 	private static String API_KEY = null;
 	public static void setKey() {
-		File youtubeApiPath = new File("/key/YoutubeApiKey.txt");//리눅스용
-		//File youtubeApiPath = new File("C:\\Users\\User\\Desktop\\test\\YoutubeApiKey.txt");//윈도우용 테스트
+		//File youtubeApiPath = new File("/key/YoutubeApiKey.txt");//리눅스용
+		File youtubeApiPath = new File("C:\\Users\\User\\Desktop\\test\\YoutubeApiKey.txt");//윈도우용 테스트
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(youtubeApiPath));
 			API_KEY=br.readLine();
@@ -63,6 +63,7 @@ public class YoutubeDataApi {
 	public static String getKirinukiInitialValue(String channel_id)throws IOException{
 		String apiurl = "https://www.googleapis.com/youtube/v3/playlistItems";
 		channel_id="UU"+channel_id.substring(2,channel_id.length());
+		System.out.println("##"+channel_id);
 		apiurl+="?part=snippet&maxResults=50&playlistId="+channel_id;
 		apiurl+="&key="+API_KEY;
 		return apiConnection(apiurl);

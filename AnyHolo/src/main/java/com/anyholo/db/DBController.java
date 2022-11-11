@@ -11,10 +11,13 @@ import java.util.ArrayList;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import com.anyholo.model.data.Kirinuki;
+import com.anyholo.model.data.KirinukiUser;
+import com.anyholo.model.data.KirinukiVideo;
 import com.anyholo.model.data.Member;
+import com.anyholo.model.data.Member;
+import com.anyholo.model.data.MemberOnAir;
 import com.anyholo.model.data.Tweet;
 
 public class DBController {
@@ -38,30 +41,6 @@ public class DBController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	public static void InitialValueInsert(Member m,String KRName) {
-		DBConnect();
-		String sql = "insert into member values(?,?,?,?,?,?,?,?,?,?,?,?)";
-		try {
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, KRName);
-			pstmt.setString(2, m.getImageUrl());
-			pstmt.setString(3, m.getCountry());
-			pstmt.setString(4, m.getOnAir());
-			pstmt.setString(5, m.getIntroduceText());
-			pstmt.setString(6, m.getOnAirTitle());
-			pstmt.setString(7, m.getOnAirthumnailsUrl());
-			pstmt.setString(8, m.getChannelId());
-			pstmt.setString(9, m.getTwitterUrl());
-			pstmt.setString(10, m.getHololiveUrl());
-			pstmt.setInt(11, m.getNumber());
-			pstmt.setString(12, m.getOnAirVideoUrl());
-			pstmt.executeUpdate();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		DBClose();
 	}
 	public static void DBClose() {
 		try {
@@ -118,24 +97,17 @@ public class DBController {
 		DBClose();
 
 	}
-	public static void DBUpdate(Member m) {
-		DBConnect();
-		String sql = "update member set ONAIR = ?, ONAIRTITLE = ?, ONAIRTHUMNAILSURL = ?, ONAIRVIDEOURL = ?"
-				+ ", INTRODUCETEXT = ? where channelid like ?";
-		try {
-			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, m.getOnAir());
-			pstmt.setString(2, m.getOnAirTitle());
-			pstmt.setString(3, m.getOnAirthumnailsUrl());
-			pstmt.setString(4, m.getOnAirVideoUrl());
-			pstmt.setString(5, m.getIntroduceText());
-			pstmt.setString(6, m.getChannelId());
-			pstmt.executeUpdate();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		DBClose();
+	public static void KirinukiInsert(KirinukiVideo k) throws SQLException {
+		String sql = "INSERT INTO ANYHOLO.KIRINUKI_VIDEO VALUES(?,?,?,TO_DATE(?,'yyyy-MM-dd hh24:mi'),?,?,?)";
+		pstmt = con.prepareStatement(sql);
+		pstmt.setString(1, k.getThumnailUrl());
+		pstmt.setString(2, k.getVideoTitle());
+		pstmt.setString(3, k.getTag());
+		pstmt.setString(4, k.getUpLoadTime());
+		pstmt.setString(5, k.getCountry());
+		pstmt.setString(6, k.getVideoUrl());
+		pstmt.setString(7, k.getYoutubeUrl());
+		pstmt.executeUpdate();
 	}
 	public static void DBSelect(JSONArray jArray,int Num,String country,String keyword,int Page) {
 		if(Num==MEMBER_SELECT)
@@ -365,6 +337,75 @@ public class DBController {
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	public static void MemberSelect(ArrayList<Member> list) throws SQLException {
+		String sql = "SELECT * FROM ANYHOLO.MEMBER_USER m";
+		pstmt = con.prepareStatement(sql);
+		ResultSet rs = pstmt.executeQuery();
+		while(rs.next()) {
+			list.add(new Member(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7),rs.getString(8)));
+		}	
+	}
+	public static void MemberDataInsert(Member m) throws SQLException {
+		String sql = "INSERT INTO ANYHOLO.MEMBER_DATA m values(?,?,?,?,?,?,?,?)";
+		pstmt = con.prepareStatement(sql);
+		pstmt.setInt(1, m.getNumber());
+		pstmt.setString(2, m.getChannelId());
+		pstmt.setString(3, m.getTwitterUrl());
+		pstmt.setString(4, m.getHololiveUrl());
+		pstmt.setString(5, m.getCountry());
+		pstmt.setString(6, m.getSearchKrName());
+		pstmt.setString(7, m.getKrName());
+		pstmt.setString(8, m.getTwitterId());
+		pstmt.executeUpdate();
+	}
+	public static void MemberOnairInsert(MemberOnAir m) throws SQLException {
+		String sql = "INSERT INTO ANYHOLO.MEMBER_ONAIR values(?,?,?,?,?)";
+		pstmt = con.prepareStatement(sql);
+		pstmt.setString(1, m.getOnAir());
+		pstmt.setString(2, m.getOnAirTitle());
+		pstmt.setString(3, m.getOnAirThumnailsUrl());
+		pstmt.setString(4, m.getOnAirVideoUrl());
+		pstmt.setInt(5, m.getNumber());
+		pstmt.executeUpdate();
+	}
+	public static void KirinukiUserInsert(KirinukiUser k) throws SQLException {
+		String sql = "INSERT INTO ANYHOLO.KIRINUKI_USER values(?,?)";
+		pstmt = con.prepareStatement(sql);
+		pstmt.setString(1, k.getYoutubeUrl());
+		pstmt.setString(2, k.getUserName());
+		pstmt.executeUpdate();
+	}
+	public static void KirinukiVideoInsert(KirinukiVideo k) throws SQLException {
+		String sql = "INSERT INTO ANYHOLO.KIRINUKI_VIDEO values(?,?,?,TO_DATE(?,'yyyy-MM-dd hh24:mi'),?,?,?)";
+		pstmt = con.prepareStatement(sql);
+		pstmt.setString(1, k.getThumnailUrl());
+		pstmt.setString(2, k.getVideoTitle());
+		pstmt.setString(3, k.getTag());
+		pstmt.setString(4, k.getUpLoadTime());
+		pstmt.setString(5, k.getCountry());
+		pstmt.setString(6, k.getVideoUrl());
+		pstmt.setString(7,k.getYoutubeUrl());
+		pstmt.executeUpdate();
+	}
+	public static void KirinukiUserSelect(ArrayList<KirinukiUser> k) throws SQLException {
+		String sql = "SELECT * FROM ANYHOLO.KIRINUKI_USER";
+		pstmt = con.prepareStatement(sql);
+		ResultSet rs = pstmt.executeQuery();
+		while(rs.next())
+		k.add(new KirinukiUser(rs.getString(1),rs.getString(2)));
+	}
+	public static void MemberOnAirUpdate(ArrayList<MemberOnAir> onAirList) throws SQLException {
+		String sql = "UPDATE ANYHOLO.MEMBER_ONAIR m SET ONAIR = ?, ONAIRTITLE = ?, ONAIRTHUMNAILSURL = ?, ONAIRVIDEOURL = ? where m.\"NUMBER\" = ?";	
+		for(MemberOnAir m : onAirList) {
+			pstmt = con.prepareStatement(sql);
+			pstmt.setString(1, m.getOnAir());
+			pstmt.setString(2, m.getOnAirTitle());
+			pstmt.setString(3, m.getOnAirThumnailsUrl());
+			pstmt.setString(4, m.getOnAirVideoUrl());
+			pstmt.setInt(5, m.getNumber());
+			pstmt.executeUpdate();
 		}
 	}
 }
