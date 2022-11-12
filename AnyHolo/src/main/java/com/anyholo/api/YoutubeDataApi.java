@@ -54,16 +54,14 @@ public class YoutubeDataApi {
 	public static String getKirinukiVideo(String channel_id)throws IOException{
 		//playlistid가져와서 playlist로 검색해서 가져오기
 		String apiurl = "https://www.googleapis.com/youtube/v3/playlistItems";
+		channel_id="UU"+channel_id.substring(2,channel_id.length());
 		apiurl+="?part=snippet&playlistId="+channel_id;
 		apiurl+="&fields=items&key="+API_KEY;
-		//UCOPaYsI-TnBk0qxoAy_rjXA
-		//UUOPaYsI-TnBk0qxoAy_rjXA
 		return apiConnection(apiurl);
 	}
 	public static String getKirinukiInitialValue(String channel_id)throws IOException{
 		String apiurl = "https://www.googleapis.com/youtube/v3/playlistItems";
 		channel_id="UU"+channel_id.substring(2,channel_id.length());
-		System.out.println("##"+channel_id);
 		apiurl+="?part=snippet&maxResults=50&playlistId="+channel_id;
 		apiurl+="&key="+API_KEY;
 		return apiConnection(apiurl);

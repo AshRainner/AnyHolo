@@ -60,6 +60,19 @@ public class AndroidInitialValue extends HttpServlet {
 				}
 			}
 		}
+		for(int i=0;i<jArray.size();i++) {
+			JSONObject jObj=(JSONObject)jArray.get(i);
+			if(jObj.get("tweetType").equals("REPLIED_TO")) {
+				for(int j=0;j<jArray.size();j++) {
+						JSONObject jObj2 = (JSONObject)jArray.get(j);
+						if(jObj2.get("tweetId").equals(jObj.get("prevTweetId"))) {
+							jArray.add(j,jObj);
+							jArray.remove(i+1);					
+							break;
+						}
+				}
+			}
+		}
 		for(int i = 0;i<jArray.size();i++) {
 			JSONObject jObj=(JSONObject)jArray.get(i);
 			if(jObj.get("tweetType").equals("REPLIED_TO")) {
@@ -80,6 +93,7 @@ public class AndroidInitialValue extends HttpServlet {
 					jArray.remove(i);
 					for(int j=0;j<temp.size();j++)
 						jArray.add(i++,temp.get(j));
+					i--;//맨 마지막에 빼줘야 마지막에 ++된거 상쇄됨
 				}
 			}
 			else if(!(jObj.get("tweetType").equals("DEFAULT"))) {

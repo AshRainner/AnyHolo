@@ -20,7 +20,7 @@ public class AndroidKirinukiValue extends HttpServlet {
 		response.setContentType("text/html; charset=UTF-8");;
 		response.setCharacterEncoding("UTF-8");
 		int page = 1;
-		String country=null;
+		String country="";
 		if(request.getParameter("Page")!=null)
 			page=Integer.parseInt(request.getParameter("Page"));
 		if(request.getParameter("Country")!=null)	
