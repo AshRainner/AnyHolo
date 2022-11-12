@@ -1,29 +1,28 @@
-package com.anyholo.main;
+package com.anyholo.db;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import com.anyholo.api.YoutubeDataApi;
-import com.anyholo.db.DBController;
+import com.anyholo.main.DataManagement;
 
-public class Main {
-	public static void main(String[] args) {
+@WebServlet("/dataUpdate")
+public class DataUpdate extends HttpServlet {
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		DataManagement d = new DataManagement();
 		YoutubeDataApi.setKey();
-		/*try {
-			d.InitializationValue();
-			//d.getKirinuki();
-			d.getKirinukiInitialization("UCbYbIsGOwG9CCEbK5zUyx_A");
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
 		Thread YoutubeThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -58,6 +57,6 @@ public class Main {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-		}	
+		}
 	}
 }
