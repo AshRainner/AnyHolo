@@ -88,7 +88,7 @@ public class AndroidTweetValue extends HttpServlet {
 				}
 			}
 		}
-		System.out.println(jArray);
+		//System.out.println(jArray);
 		LinkedHashSet<JSONObject> deduplicationHashSet = new LinkedHashSet<>();
 		for(int i=0;i<jArray.size();i++)
 			deduplicationHashSet.add((JSONObject) jArray.get(i));

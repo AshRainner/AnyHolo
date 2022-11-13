@@ -103,7 +103,6 @@ public class DataManagement {
 	public void getKirinuki() throws SQLException, IOException {
 		for(int i = 0;i<kirinukiList.size();i++) {
 			String jsonString = YoutubeDataApi.getKirinukiVideo(kirinukiList.get(i).getYoutubeUrl());
-			System.out.println(kirinukiList.get(i).getYoutubeUrl());
 			ObjectMapper mapper = new ObjectMapper();
 			KirinukiModel model = mapper.readValue(jsonString, KirinukiModel.class);
 			for(com.anyholo.model.kirinuki.Item item: model.getItems()) {
@@ -264,56 +263,58 @@ public class DataManagement {
 					midea.putAll(getMideaURL(Tweets));
 				}
 			}
-			for(int i=0;i<Tweets.getData().size();i++) { // 리트윗한 트윗 내용
-				TweetData td = Tweets.getData().get(i);
-				String time = td.getCreatedAt().plusHours(9).toString();
-				time=time.replace("T"," ");
-				int number = 0;
-				for(Member m : memberList) {
-					if(m.getTwitterId().equals(td.getUser().getId())) {
-						number = m.getNumber();
-						break;
-					}
-				}
-				Tweet t = null;
-				if(td.getText().contains("https://t.co/")) {
-					t = new Tweet(
-							td.getId(),
-							td.getUser().getDisplayedName(),
-							td.getUser().getProfileImageUrl(),
-							td.getText().substring(0,td.getText().indexOf("https://t.co/")),
-							td.getTweetType().toString(),
-							td.getInReplyToStatusId(),
-							null,
-							null,
-							time, number);
-				}else {
-					t = new Tweet(
-							td.getId(),
-							td.getUser().getDisplayedName(),
-							td.getUser().getProfileImageUrl(),
-							td.getText(),
-							td.getTweetType().toString(),
-							td.getInReplyToStatusId(),
-							null,
-							null,
-							time, number);
-				}
-				if(td.getAttachments()!=null) {		
-					String url="";
-					if(td.getAttachments().getMediaKeys()!=null) {
-						for(String key : td.getAttachments().getMediaKeys()){
-							if(midea.get(key)!=null)
-								url += midea.get(key).get(1)+";";
-						}
-						if(!url.equals("")) {
-							url=url.substring(0,url.length()-1);
-							t.setMediaURL(url);
-							t.setMediaType(midea.get(td.getAttachments().getMediaKeys()[0]).get(0));
+			if(Tweets.getData()!=null) {
+				for(int i=0;i<Tweets.getData().size();i++) { // 리트윗한 트윗 내용
+					TweetData td = Tweets.getData().get(i);
+					String time = td.getCreatedAt().plusHours(9).toString();
+					time=time.replace("T"," ");
+					int number = 0;
+					for(Member m : memberList) {
+						if(m.getTwitterId().equals(td.getUser().getId())) {
+							number = m.getNumber();
+							break;
 						}
 					}
+					Tweet t = null;
+					if(td.getText().contains("https://t.co/")) {
+						t = new Tweet(
+								td.getId(),
+								td.getUser().getDisplayedName(),
+								td.getUser().getProfileImageUrl(),
+								td.getText().substring(0,td.getText().indexOf("https://t.co/")),
+								td.getTweetType().toString(),
+								td.getInReplyToStatusId(),
+								null,
+								null,
+								time, number);
+					}else {
+						t = new Tweet(
+								td.getId(),
+								td.getUser().getDisplayedName(),
+								td.getUser().getProfileImageUrl(),
+								td.getText(),
+								td.getTweetType().toString(),
+								td.getInReplyToStatusId(),
+								null,
+								null,
+								time, number);
+					}
+					if(td.getAttachments()!=null) {		
+						String url="";
+						if(td.getAttachments().getMediaKeys()!=null) {
+							for(String key : td.getAttachments().getMediaKeys()){
+								if(midea.get(key)!=null)
+									url += midea.get(key).get(1)+";";
+							}
+							if(!url.equals("")) {
+								url=url.substring(0,url.length()-1);
+								t.setMediaURL(url);
+								t.setMediaType(midea.get(td.getAttachments().getMediaKeys()[0]).get(0));
+							}
+						}
+					}
+					tweetList.add(t);
 				}
-				tweetList.add(t);
 			}
 		}
 	}
@@ -322,7 +323,7 @@ public class DataManagement {
 		twitterClient = TwitterApi.getTwitterClient();
 		for(int j = 0; j<memberList.size();j++) {
 			TweetList timeline = twitterClient.getUserTimeline(memberList.get(j).getTwitterId(),
-					AdditionalParameters.builder().startTime(LocalDateTime.now().minusDays(3).minusHours(9).minusMinutes(1)).endTime(LocalDateTime.now().minusHours(9)).build());
+					AdditionalParameters.builder().startTime(LocalDateTime.now().minusDays(1).minusHours(9).minusMinutes(1)).endTime(LocalDateTime.now().minusHours(9)).build());
 			HashMap<String,ArrayList<String>> midea = new HashMap<String,ArrayList<String>>();
 			List<Tweet> tweetList = new ArrayList<>();
 			List<String> rtIds = new ArrayList<>(); // 리트윗한 트윗의 아이디들
@@ -367,11 +368,8 @@ public class DataManagement {
 		TwitterClient twitterClient = null;
 		twitterClient = TwitterApi.getTwitterClient();
 		for(int i = 0; i<memberList.size();i++) {
-			/*TweetList timeline = twitterClient.getUserTimeline(memberList.get(i).getTwitterId(),
-					AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusMinutes(1)).endTime(LocalDateTime.now().minusHours(9)).build());*/
 			TweetList timeline = twitterClient.getUserTimeline(memberList.get(i).getTwitterId(),
-					AdditionalParameters.builder().startTime(LocalDateTime.now().minusMinutes(1)).endTime(LocalDateTime.now()).build());
-			//리눅스는 정상 시간이라 9시간 안빼줘도됨
+					AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusMinutes(1)).endTime(LocalDateTime.now().minusHours(9)).build());
 			//1133215093246664706페코라1063337246231687169아쿠아1283653858510598144칼리1234752200145899520리스
 			//1458498136117489665내꺼
 			HashMap<String,ArrayList<String>> midea = new HashMap<String,ArrayList<String>>();
