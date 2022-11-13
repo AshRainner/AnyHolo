@@ -59,6 +59,8 @@ public class Thumbnails {
 		this.high = high;
 	}
 
+	
+	
 	@JsonAnyGetter
 	public Map<String, Object> getAdditionalProperties() {
 		return this.additionalProperties;

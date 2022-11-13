@@ -51,15 +51,14 @@ public class YoutubeDataApi {
 		}
 		return response.toString();
 	}
-	public static String getKirinukiVideo(String channel_id)throws IOException{
-		//playlistid가져와서 playlist로 검색해서 가져오기
-		String apiurl = "https://www.googleapis.com/youtube/v3/playlistItems";
-		channel_id="UU"+channel_id.substring(2,channel_id.length());
-		apiurl+="?part=snippet&playlistId="+channel_id;
+	public static String getKirinukiVideo(String videos_id)throws IOException{
+		//원래는 playlistItems로하다가 할당량이 너무 많이들 것으로 예상됨
+		String apiurl = "https://www.googleapis.com/youtube/v3/videos";
+		apiurl+="?part=snippet&id="+videos_id;
 		apiurl+="&fields=items&key="+API_KEY;
 		return apiConnection(apiurl);
 	}
-	public static String getKirinukiInitialValue(String channel_id)throws IOException{
+	public static String getKirinukiInitialValue(String channel_id)throws IOException{//초기화할때는 이렇게 써야함
 		String apiurl = "https://www.googleapis.com/youtube/v3/playlistItems";
 		channel_id="UU"+channel_id.substring(2,channel_id.length());
 		apiurl+="?part=snippet&maxResults=50&playlistId="+channel_id;

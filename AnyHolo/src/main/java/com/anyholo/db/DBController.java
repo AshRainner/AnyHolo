@@ -274,6 +274,22 @@ public class DBController {
 		rs.close();
 		DBClose();
 	}
+	public static String KirinukiVideoCheck(String videoUrl) throws SQLException {
+		DBConnect();
+		String sql = "SELECT * FROM ANYHOLO.KIRINUKI_VIDEO WHERE VIDEOURL = ?";
+		pstmt = con.prepareStatement(sql);
+		pstmt.setString(1, videoUrl);
+		ResultSet rs = pstmt.executeQuery();	
+		if(rs.next()==false) {
+			rs.close();
+			DBClose();
+			return videoUrl;	
+		}
+		rs.close();
+		DBClose();
+		return "";
+		
+	}
 	public static void KirinukiUserSelect(ArrayList<KirinukiUser> k) throws SQLException {
 		DBConnect();
 		String sql = "SELECT * FROM ANYHOLO.KIRINUKI_USER";

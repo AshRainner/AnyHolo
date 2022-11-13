@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.annotation.processing.Generated;
 
-import com.anyholo.model.profile.Thumbnails;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;

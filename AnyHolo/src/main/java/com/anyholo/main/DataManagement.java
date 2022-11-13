@@ -8,16 +8,20 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.anyholo.api.TwitterApi;
@@ -30,8 +34,6 @@ import com.anyholo.model.data.MemberOnAir;
 import com.anyholo.model.data.Tweet;
 import com.anyholo.model.kirinuki.KirinukiModel;
 import com.anyholo.model.live.LiveModel;
-import com.anyholo.model.profile.Item;
-import com.anyholo.model.profile.ProfileModel;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -84,7 +86,7 @@ public class DataManagement {
 						items.get(i).getSnippet().getLiveBroadcastContent().equals("upcoming")&&
 						items.get(i).getLiveStreamingDetails().getScheduledStartTime().compareTo(Day2Later)<=0) {
 					memberOnAirList.get(index).setOnAir(items.get(i).getSnippet().getLiveBroadcastContent());
-					memberOnAirList.get(index).setOnAirThumnailsUrl(items.get(i).getSnippet().getThumbnails().getMedium().getUrl());
+					memberOnAirList.get(index).setOnAirThumnailsUrl(items.get(i).getSnippet().getThumbnails().getMaxres().getUrl());
 					memberOnAirList.get(index).setOnAirTitle(items.get(i).getSnippet().getTitle());
 					memberOnAirList.get(index).setOnAirVideoUrl("https://www.youtube.com/watch?v="+items.get(i).getId());
 				}
@@ -100,24 +102,129 @@ public class DataManagement {
 		}
 		return -1;
 	}
+	private String returnVideoUrl(String channelId){
+		Document doc;
+		try {
+			doc = Jsoup.connect("https://www.youtube.com/channel/"
+					+channelId+"/videos").get();
+			Elements links = doc.select("script");
+			//System.out.println(links);
+			String jsonString=null;
+			for(Element element : links) {
+				if(element.data().contains("var ytInitialData")) {
+					Pattern pattern = Pattern.compile(".*var ytInitialData = ([^;]*);");
+					Matcher matcher = pattern.matcher(element.data());
+					if(matcher.find()) {
+						jsonString = matcher.group(1);
+						break;
+					}
+				}
+			}
+			JSONParser parser = new JSONParser();
+			JSONObject jsonObject = (JSONObject) parser.parse(jsonString);
+			jsonObject = (JSONObject) jsonObject.get("contents");
+			jsonObject = (JSONObject) jsonObject.get("twoColumnBrowseResultsRenderer");
+			JSONArray jsonArray = (JSONArray) jsonObject.get("tabs");
+			jsonObject = (JSONObject) jsonArray.get(1);
+			jsonObject = (JSONObject) jsonObject.get("tabRenderer");
+			jsonObject = (JSONObject) jsonObject.get("content");
+			jsonObject = (JSONObject) jsonObject.get("richGridRenderer");
+			jsonArray = (JSONArray) jsonObject.get("contents");
+			jsonObject = (JSONObject) jsonArray.get(0);
+			jsonObject = (JSONObject) jsonObject.get("richItemRenderer");
+			jsonObject = (JSONObject) jsonObject.get("content");
+			jsonObject = (JSONObject) jsonObject.get("videoRenderer");
+			return jsonObject.get("videoId").toString();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (org.json.simple.parser.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	private String returnShortVideoUrl(String channelId) {
+		Document doc;
+		try {
+			doc = Jsoup.connect("https://www.youtube.com/channel/"
+					+channelId+"/shorts").get();
+			Elements links = doc.select("script");
+			String jsonString=null;
+			for(Element element : links) {
+				if(element.data().contains("var ytInitialData")) {
+					Pattern pattern = Pattern.compile(".*var ytInitialData = ([^;]*);");
+					Matcher matcher = pattern.matcher(element.data());
+					if(matcher.find()) {
+						jsonString = matcher.group(1);
+						break;
+					}
+				}
+			}
+			JSONParser parser = new JSONParser();
+			JSONObject jsonObject = (JSONObject) parser.parse(jsonString);
+			jsonObject = (JSONObject) jsonObject.get("contents");
+			jsonObject = (JSONObject) jsonObject.get("twoColumnBrowseResultsRenderer");
+			JSONArray jsonArray = (JSONArray) jsonObject.get("tabs");
+			jsonObject = (JSONObject) jsonArray.get(2);
+			jsonObject = (JSONObject) jsonObject.get("tabRenderer");
+			jsonObject = (JSONObject) jsonObject.get("content");
+			jsonObject = (JSONObject) jsonObject.get("richGridRenderer");
+			jsonArray = (JSONArray) jsonObject.get("contents");	
+			jsonObject = (JSONObject) jsonArray.get(0);
+			jsonObject = (JSONObject) jsonObject.get("richItemRenderer");
+			jsonObject = (JSONObject) jsonObject.get("content");	
+			jsonObject = (JSONObject) jsonObject.get("reelItemRenderer");
+			return jsonObject.get("videoId").toString();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (org.json.simple.parser.ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+
+	}
 	public void getKirinuki() throws SQLException, IOException {
+		String videoIds="";
 		for(int i = 0;i<kirinukiList.size();i++) {
-			String jsonString = YoutubeDataApi.getKirinukiVideo(kirinukiList.get(i).getYoutubeUrl());
+			String videoId = returnVideoUrl(kirinukiList.get(i).getYoutubeUrl());
+			String shortVideoId = returnShortVideoUrl(kirinukiList.get(i).getYoutubeUrl());
+			videoId = DBController.KirinukiVideoCheck(videoId);
+			shortVideoId = DBController.KirinukiVideoCheck(shortVideoId);
+			if(!videoId.equals(""))
+				videoIds+=videoId+",";
+			if(!shortVideoId.equals(""))
+				videoIds+=shortVideoId+",";
+		}
+		if(!videoIds.equals("")) {
+			videoIds=videoIds.substring(0,videoIds.length()-1);
+			String jsonString = YoutubeDataApi.getKirinukiVideo(videoIds);
 			ObjectMapper mapper = new ObjectMapper();
-			KirinukiModel model = mapper.readValue(jsonString, KirinukiModel.class);
-			for(com.anyholo.model.kirinuki.Item item: model.getItems()) {
+			LiveModel model = mapper.readValue(jsonString, LiveModel.class);
+			for(com.anyholo.model.live.Item item: model.getItems()) {
 				String time = convertTime(item.getSnippet().getPublishedAt());
 				KirinukiVideo k;
 				if(item.getSnippet().getThumbnails().getMaxres()!=null) {
-					k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
+					k = new KirinukiVideo(item.getId(),
 							item.getSnippet().getTitle(),
 							item.getSnippet().getThumbnails().getMaxres().getUrl(),
 							item.getSnippet().getDescription(),
 							time,
 							"",
 							item.getSnippet().getChannelId());
-				}else {
-					k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
+				}else if(item.getSnippet().getThumbnails().getStandard()!=null){
+					k = new KirinukiVideo(item.getId(),
+							item.getSnippet().getTitle(),
+							item.getSnippet().getThumbnails().getStandard().getUrl(),
+							item.getSnippet().getDescription(),
+							time,
+							"",
+							item.getSnippet().getChannelId());
+				}
+				else {
+					k = new KirinukiVideo(item.getId(),
 							item.getSnippet().getTitle(),
 							item.getSnippet().getThumbnails().getHigh().getUrl(),
 							item.getSnippet().getDescription(),
@@ -125,17 +232,18 @@ public class DataManagement {
 							"",
 							item.getSnippet().getChannelId());
 				}
-				for(int j=0;j<memberList.size();j++) {
-					if(!k.getCountry().contains(memberList.get(j).getCountry())
-							&&k.getTag().contains(memberList.get(j).getKrName())) {
-						if(memberList.get(j).getKrName().equals("올리")) {
+				for(int i=0;i<memberList.size();i++) {
+					if(!k.getCountry().contains(memberList.get(i).getCountry())
+							&&k.getTag().contains(memberList.get(i).getKrName())) {
+						if(memberList.get(i).getKrName().equals("올리")) {
 							if(k.getTag().contains("쿠레이지"))
 								k.setCountry(k.getCountry()+"ID");
 						}
 						else
-							k.setCountry(k.getCountry()+memberList.get(j).getCountry());
+							k.setCountry(k.getCountry()+memberList.get(i).getCountry());
 					}
 				}
+				System.out.println(k.getVideoTitle());
 				DBController.KirinukiVideoInsert(k);
 			}
 		}
@@ -158,7 +266,16 @@ public class DataManagement {
 						time,
 						"",
 						item.getSnippet().getChannelId());
-			}else {
+			}else if(item.getSnippet().getThumbnails().getStandard()!=null){
+				k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
+						item.getSnippet().getTitle(),
+						item.getSnippet().getThumbnails().getStandard().getUrl(),
+						item.getSnippet().getDescription(),
+						time,
+						"",
+						item.getSnippet().getChannelId());
+			}
+			else {
 				k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
 						item.getSnippet().getTitle(),
 						item.getSnippet().getThumbnails().getHigh().getUrl(),
@@ -199,7 +316,16 @@ public class DataManagement {
 						time,
 						"",
 						item.getSnippet().getChannelId());
-			}else {
+			}else if(item.getSnippet().getThumbnails().getStandard()!=null){
+				k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
+						item.getSnippet().getTitle(),
+						item.getSnippet().getThumbnails().getStandard().getUrl(),
+						item.getSnippet().getDescription(),
+						time,
+						"",
+						item.getSnippet().getChannelId());
+			}
+			else {
 				k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
 						item.getSnippet().getTitle(),
 						item.getSnippet().getThumbnails().getHigh().getUrl(),

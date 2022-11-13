@@ -83,7 +83,7 @@ public class AndroidInitialValue extends HttpServlet {
 		LinkedHashSet<JSONObject> deduplicationHashSet = new LinkedHashSet<>();
 		for(int i=0;i<jArray.size();i++)
 			deduplicationHashSet.add((JSONObject) jArray.get(i));
-		jObjcet.put("Version",version);
+		jObject.put("Version",version);
 		jObject.put("Tweet", deduplicationHashSet);
 		jArray = new JSONArray();
 		DBController.DBSelect(jArray, DBController.KIRINUKI_SELECT,"","",1);

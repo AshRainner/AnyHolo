@@ -2,23 +2,20 @@ package com.anyholo.main;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
+
+import org.json.simple.parser.ParseException;
 
 import com.anyholo.api.YoutubeDataApi;
-import com.anyholo.db.DBController;
 
 public class Main {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, ParseException {
 		DataManagement d = new DataManagement();
 		YoutubeDataApi.setKey();
 		/*try {
 			d.InitializationValue();
 			System.out.println("키리누키 시작 : "+LocalDateTime.now());
-			d.get7daysTweet();
+			d.getKirinuki();
 			System.out.println("키리누키 종료 : "+LocalDateTime.now());
-			//d.getKirinukiInitialization("UCbYbIsGOwG9CCEbK5zUyx_A");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -36,9 +33,6 @@ public class Main {
 						d.InitializationValue();
 						d.LiveConfirm();
 						//System.out.println("라이브 컨펌 종료 : "+LocalDateTime.now());
-						//System.out.println("키리누키 시작 : "+LocalDateTime.now());
-						d.getKirinuki();
-						//System.out.println("키리누키 종료 : "+LocalDateTime.now());
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -49,7 +43,38 @@ public class Main {
 				}
 			}
 		});
+		Thread KirinukiThread = new Thread(new Runnable() {
+
+			@Override
+			public void run() {			
+				try {
+					while(true) {
+						//System.out.println("키리누키 시작 : "+LocalDateTime.now());
+						d.getKirinuki();
+						//System.out.println("키리누키 종료 : "+LocalDateTime.now());
+						Thread.sleep((1000*40));
+					}
+
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}			
+			}
+		});
 		YoutubeThread.start();
+		try {
+			Thread.sleep(3000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		KirinukiThread.start();
 		while(true) {
 			//System.out.println("트윗 시작 : "+LocalDateTime.now());
 			try {
