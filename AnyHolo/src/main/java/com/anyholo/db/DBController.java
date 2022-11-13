@@ -258,10 +258,8 @@ public class DBController {
 		String sql = "SELECT * FROM ANYHOLO.KIRINUKI_VIDEO WHERE VIDEOURL = ?";
 		pstmt = con.prepareStatement(sql);
 		pstmt.setString(1, k.getVideoUrl());
-		ResultSet rs = pstmt.executeQuery();
-		rs.next();
-		if(rs.next()) {
-			System.out.println("시작");
+		ResultSet rs = pstmt.executeQuery();	
+		if(rs.next()==false) {
 			sql = "INSERT INTO ANYHOLO.KIRINUKI_VIDEO values(?,?,?,TO_DATE(?,'yyyy-MM-dd hh24:mi'),?,?,?)";
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, k.getThumnailUrl());

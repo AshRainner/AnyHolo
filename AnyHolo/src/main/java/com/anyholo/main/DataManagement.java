@@ -103,6 +103,7 @@ public class DataManagement {
 	public void getKirinuki() throws SQLException, IOException {
 		for(int i = 0;i<kirinukiList.size();i++) {
 			String jsonString = YoutubeDataApi.getKirinukiVideo(kirinukiList.get(i).getYoutubeUrl());
+			System.out.println(kirinukiList.get(i).getYoutubeUrl());
 			ObjectMapper mapper = new ObjectMapper();
 			KirinukiModel model = mapper.readValue(jsonString, KirinukiModel.class);
 			for(com.anyholo.model.kirinuki.Item item: model.getItems()) {

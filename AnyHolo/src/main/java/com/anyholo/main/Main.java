@@ -13,18 +13,20 @@ public class Main {
 	public static void main(String[] args) {
 		DataManagement d = new DataManagement();
 		YoutubeDataApi.setKey();
-		/*try {
+		try {
 			d.InitializationValue();
-			//d.getKirinuki();
-			d.getKirinukiInitialization("UCbYbIsGOwG9CCEbK5zUyx_A");
+			System.out.println("키리누키 시작 : "+LocalDateTime.now());
+			d.getKirinuki();
+			System.out.println("키리누키 종료 : "+LocalDateTime.now());
+			//d.getKirinukiInitialization("UCbYbIsGOwG9CCEbK5zUyx_A");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
-		Thread YoutubeThread = new Thread(new Runnable() {
+		}
+		/*Thread YoutubeThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				// TODO Auto-generated method stub
@@ -58,6 +60,6 @@ public class Main {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-		}	
+		}*/	
 	}
 }
