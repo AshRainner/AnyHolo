@@ -299,10 +299,10 @@ public class DBController {
 			k.add(new KirinukiUser(rs.getString(1),rs.getString(2)));
 		DBClose();
 	}
-	public static void MemberOnAirUpdate(ArrayList<MemberOnAir> onAirList) throws SQLException {
-		DBConnect();
+	public static void MemberOnAirUpdate(ArrayList<MemberOnAir> onAirList) throws SQLException {	
 		String sql = "UPDATE ANYHOLO.MEMBER_ONAIR m SET ONAIR = ?, ONAIRTITLE = ?, ONAIRTHUMNAILSURL = ?, ONAIRVIDEOURL = ? where m.\"NUMBER\" = ?";	
 		for(MemberOnAir m : onAirList) {
+			DBConnect();
 			pstmt = con.prepareStatement(sql);
 			pstmt.setString(1, m.getOnAir());
 			pstmt.setString(2, m.getOnAirTitle());
@@ -310,8 +310,8 @@ public class DBController {
 			pstmt.setString(4, m.getOnAirVideoUrl());
 			pstmt.setInt(5, m.getNumber());
 			pstmt.executeUpdate();
-		}
-		DBClose();
+			DBClose();
+		}		
 	}
 	public static void TweetDataInsert(Tweet t) {
 		DBConnect();
