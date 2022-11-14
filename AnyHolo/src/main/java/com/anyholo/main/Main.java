@@ -10,22 +10,11 @@ import com.anyholo.api.YoutubeDataApi;
 
 public class Main {
 	public static void main(String[] args){
-		DataManagement d = new DataManagement();
+		DataManagement yt = new DataManagement(); //youtube/twitter
+		DataManagement k = new DataManagement();//kirinuki
 		YoutubeDataApi.setKey();
-		/*try {
-			d.InitializationValue();
-			System.out.println("키리누키 시작 : "+LocalDateTime.now());
-			d.getKirinuki();
-			System.out.println("키리누키 종료 : "+LocalDateTime.now());
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}*/
 		try {
-			d.InitializationValue();
+			yt.InitializationValue();
 		} catch (SQLException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -37,11 +26,9 @@ public class Main {
 				while(true) {	
 					try {
 						System.out.println("라이브 컨펌 시작 : "+LocalDateTime.now());
-						d.LiveConfirm();
+						yt.LiveConfirm();
 						System.out.println("라이브 컨펌 종료 : "+LocalDateTime.now());
-						System.out.println("키리누키 시작 : "+LocalDateTime.now());
-						d.getKirinuki();
-						System.out.println("키리누키 종료 : "+LocalDateTime.now());
+						yt.InitializationValue();
 					} catch (SQLException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -52,14 +39,15 @@ public class Main {
 				}
 			}
 		});
-		/*Thread KirinukiThread = new Thread(new Runnable() {
+		Thread KirinukiThread = new Thread(new Runnable() {
 
 			@Override
 			public void run() {			
 				try {
 					while(true) {
+						k.InitializationValue();
 						System.out.println("키리누키 시작 : "+LocalDateTime.now());
-						d.getKirinuki();
+						k.getKirinuki();
 						System.out.println("키리누키 종료 : "+LocalDateTime.now());
 						Thread.sleep((1000*40));
 					}
@@ -75,13 +63,19 @@ public class Main {
 					e.printStackTrace();
 				}			
 			}
-		});*/
+		});
 		YoutubeThread.start();
-		//KirinukiThread.start();
+		KirinukiThread.start();
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		while(true) {
 			System.out.println("트윗 시작 : "+LocalDateTime.now());
 			try {
-				d.getTweet();
+				yt.getTweet();
 				System.out.println("트윗 종료 : "+LocalDateTime.now());
 				Thread.sleep((1000*40));	
 			} catch (SQLException | IOException | InterruptedException e1) {
