@@ -43,8 +43,10 @@ public class DBController {
 	}
 	public void DBClose(PreparedStatement pstmt, Connection con) {
 		try {
-			pstmt.close();
-			con.close();
+			if(pstmt!=null)
+				pstmt.close();
+			if(con!=null)
+				con.close();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -181,26 +183,40 @@ public class DBController {
 			Connection con = null;
 			PreparedStatement pstmt = null;
 			con = DBConnect(con);
-			String sql = "SELECT * FROM MEMBERVIEW";
-			pstmt = con.prepareStatement(sql);
-			ResultSet rs=pstmt.executeQuery();
-			while(rs.next()) {
-				JSONObject sObject = new JSONObject();
-				sObject.put("memberName", rs.getString("krName"));
-				sObject.put("searchName", rs.getString("searchKrName"));
-				sObject.put("profileUrl", rs.getString("profileUrl"));
-				sObject.put("country", rs.getString("country"));
-				sObject.put("channelId", rs.getString("channelId"));
-				sObject.put("twitterUrl", rs.getString("twitterUrl"));
-				sObject.put("hololiveUrl", rs.getString("hololiveUrl"));
-				sObject.put("onAir", rs.getString("onAir"));
-				sObject.put("onAirTitle", rs.getString("onAirTitle"));
-				sObject.put("onAirThumnailsUrl", rs.getString("onAirThumnailsUrl"));
-				sObject.put("onAirVideoUrl", rs.getString("onAirVideoUrl"));
-				sObject.put("enName", rs.getString("enName"));
-				jArray.add(sObject);
-			}
-			rs.close();
+			for(int i=0;i<3;i++) {
+				String sql = "SELECT * FROM MEMBERVIEW WHERE COUNTRY = ?";
+				pstmt = con.prepareStatement(sql);
+				switch(i) {
+				case 0:
+					pstmt.setString(1, "JP");
+					break;
+				case 1:
+					pstmt.setString(1, "EN");
+					break;
+				case 2:
+					pstmt.setString(1, "ID");
+					break;
+				}
+				ResultSet rs=pstmt.executeQuery();
+				while(rs.next()) {
+					JSONObject sObject = new JSONObject();
+					sObject.put("memberName", rs.getString("krName"));
+					sObject.put("searchName", rs.getString("searchKrName"));
+					sObject.put("profileUrl", rs.getString("profileUrl"));
+					sObject.put("country", rs.getString("country"));
+					sObject.put("channelId", rs.getString("channelId"));
+					sObject.put("twitterUrl", rs.getString("twitterUrl"));
+					sObject.put("hololiveUrl", rs.getString("hololiveUrl"));
+					sObject.put("onAir", rs.getString("onAir"));
+					sObject.put("onAirTitle", rs.getString("onAirTitle"));
+					sObject.put("onAirThumnailsUrl", rs.getString("onAirThumnailsUrl"));
+					sObject.put("onAirVideoUrl", rs.getString("onAirVideoUrl"));
+					sObject.put("enName", rs.getString("enName"));
+					jArray.add(sObject);
+				}
+				rs.close();
+				pstmt.close();
+			}			
 			DBClose(pstmt,con);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -313,7 +329,7 @@ public class DBController {
 		rs.close();
 		DBClose(pstmt,con);
 		return "";
-		
+
 	}
 	public void KirinukiUserSelect(ArrayList<KirinukiUser> k) throws SQLException {
 		Connection con = null;
