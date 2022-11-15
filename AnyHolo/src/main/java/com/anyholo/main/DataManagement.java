@@ -238,6 +238,9 @@ public class DataManagement {
 						if(memberList.get(i).getKrName().equals("올리")) {
 							if(k.getTag().contains("쿠레이지"))
 								k.setCountry(k.getCountry()+"ID");
+						}else if(memberList.get(i).getKrName().equals("멜")) {
+							if(k.getTag().contains("요조라"))
+								k.setCountry(k.getCountry()+"JP");
 						}
 						else
 							k.setCountry(k.getCountry()+memberList.get(i).getCountry());
@@ -289,6 +292,9 @@ public class DataManagement {
 					if(memberList.get(j).getKrName().equals("올리")) {
 						if(k.getTag().contains("쿠레이지"))
 							k.setCountry(k.getCountry()+"ID");
+					}else if(memberList.get(j).getKrName().equals("멜")) {
+						if(k.getTag().contains("요조라"))
+							k.setCountry(k.getCountry()+"JP");
 					}
 					else
 						k.setCountry(k.getCountry()+memberList.get(j).getCountry());
@@ -339,6 +345,9 @@ public class DataManagement {
 					if(memberList.get(j).getKrName().equals("올리")) {
 						if(k.getTag().contains("쿠레이지"))
 							k.setCountry(k.getCountry()+"ID");
+					}else if(memberList.get(j).getKrName().equals("멜")) {
+						if(k.getTag().contains("요조라"))
+							k.setCountry(k.getCountry()+"JP");
 					}
 					else
 						k.setCountry(k.getCountry()+memberList.get(j).getCountry());
