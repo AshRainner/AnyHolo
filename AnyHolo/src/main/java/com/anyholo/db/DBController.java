@@ -26,21 +26,7 @@ public class DBController {
 	private static String url = "jdbc:oracle:thin:@52.193.142.22:1521:xe";
 	private static String userid = "AnyHolo";
 	private static String pwd ="8778";
-	private static Connection con =null;
-	private static PreparedStatement pstmt = null;
 	private static final int MAXITEM=10;
-	public static void DBConnect() {
-		try {
-			Class.forName("oracle.jdbc.driver.OracleDriver");
-			con = DriverManager.getConnection(url, userid, pwd);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	public Connection DBConnect(Connection con) {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -64,15 +50,6 @@ public class DBController {
 			e.printStackTrace();
 		}
 	}
-	public static void DBClose() {
-		try {
-			pstmt.close();
-			con.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	public void DBSelect(JSONArray jArray,int Num,String country,String keyword,int Page) {
 		if(Num==MEMBER_SELECT)
 			MemberViewSelect(jArray);
@@ -82,11 +59,9 @@ public class DBController {
 			TweetViewSelect(jArray,country,keyword,(Page-1)*MAXITEM+1,Page*MAXITEM);
 	}
 	public void RepliedTweetSelect(ArrayList<JSONObject> temp,JSONObject obj) {
-		DBConnect();
 		temp.add(obj);
 		RepliedPrevTweetSelect(temp,obj);
 		RepliedNextTweetSelect(temp,obj);
-		DBClose();
 	}
 	private void RepliedPrevTweetSelect(ArrayList<JSONObject> temp,JSONObject obj) {//맨 앞에 있는 트윗 찾는거 replied에서
 		try {	
@@ -129,7 +104,7 @@ public class DBController {
 				RepliedNextTweetSelect(temp,nextObject);
 			}
 			rs.close();
-			DBClose();
+			DBClose(pstmt,con);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

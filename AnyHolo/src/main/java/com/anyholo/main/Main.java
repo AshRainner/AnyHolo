@@ -70,13 +70,13 @@ public class Main {
 		});
 		YoutubeThread.start();
 		KirinukiThread.start();
-		try {
+		/*try {
 			yt.InitializationValue();
 			yt.get7daysTweet();
 		} catch (SQLException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
+		}	*/	
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
