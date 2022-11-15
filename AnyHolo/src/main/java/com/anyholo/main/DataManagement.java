@@ -48,13 +48,20 @@ public class DataManagement {
 	private ArrayList<Member> memberList;
 	private ArrayList<KirinukiUser> kirinukiList;
 	private ArrayList<MemberOnAir> memberOnAirList;
+	private DBController dbc = null;
 	public void InitializationValue() throws SQLException {
+		dbc = new DBController();
+		memberList = new ArrayList<>();
+		memberOnAirList = new ArrayList<>();
+		dbc.MemberSelect(memberList);
+		dbc.MemberOnAirSelect(memberOnAirList);
+	}
+	public void InitializationKirinukiValue() throws SQLException {
+		dbc = new DBController();
 		memberList = new ArrayList<>();
 		kirinukiList = new ArrayList<>();
-		memberOnAirList = new ArrayList<>();
-		DBController.MemberSelect(memberList);
-		DBController.MemberOnAirSelect(memberOnAirList);
-		DBController.KirinukiUserSelect(kirinukiList);
+		dbc.MemberSelect(memberList);
+		dbc.KirinukiUserSelect(kirinukiList);
 	}
 	public void LiveConfirm() throws SQLException, IOException {
 		//web페이지를 파싱해서 live여부를 확인 할당량을 아끼기위해 사용함
@@ -91,7 +98,7 @@ public class DataManagement {
 					memberOnAirList.get(index).setOnAirVideoUrl("https://www.youtube.com/watch?v="+items.get(i).getId());
 				}
 			}
-			DBController.MemberOnAirUpdate(memberOnAirList);
+			dbc.MemberOnAirUpdate(memberOnAirList);
 		}	
 	}
 	private int getIndex(com.anyholo.model.live.Item item) {//api에서 불러온 값이 순서대로가 아니라 순서를 확인해줄 index
@@ -108,16 +115,11 @@ public class DataManagement {
 			doc = Jsoup.connect("https://www.youtube.com/channel/"
 					+channelId+"/videos").get();
 			Elements links = doc.select("script");
-			//System.out.println(links);
 			String jsonString=null;
 			for(Element element : links) {
 				if(element.data().contains("var ytInitialData")) {
-					Pattern pattern = Pattern.compile(".*var ytInitialData = ([^;]*);");
-					Matcher matcher = pattern.matcher(element.data());
-					if(matcher.find()) {
-						jsonString = matcher.group(1);
-						break;
-					}
+					jsonString = element.data().substring(20,element.data().length()-1);
+					break;
 				}
 			}
 			JSONParser parser = new JSONParser();
@@ -153,12 +155,8 @@ public class DataManagement {
 			String jsonString=null;
 			for(Element element : links) {
 				if(element.data().contains("var ytInitialData")) {
-					Pattern pattern = Pattern.compile(".*var ytInitialData = ([^;]*);");
-					Matcher matcher = pattern.matcher(element.data());
-					if(matcher.find()) {
-						jsonString = matcher.group(1);
-						break;
-					}
+					jsonString = element.data().substring(20,element.data().length()-1);
+					break;
 				}
 			}
 			JSONParser parser = new JSONParser();
@@ -169,6 +167,8 @@ public class DataManagement {
 			jsonObject = (JSONObject) jsonArray.get(2);
 			jsonObject = (JSONObject) jsonObject.get("tabRenderer");
 			jsonObject = (JSONObject) jsonObject.get("content");
+			if(jsonObject==null)
+				return "";
 			jsonObject = (JSONObject) jsonObject.get("richGridRenderer");
 			jsonArray = (JSONArray) jsonObject.get("contents");	
 			jsonObject = (JSONObject) jsonArray.get(0);
@@ -191,8 +191,8 @@ public class DataManagement {
 		for(int i = 0;i<kirinukiList.size();i++) {
 			String videoId = returnVideoUrl(kirinukiList.get(i).getYoutubeUrl());
 			String shortVideoId = returnShortVideoUrl(kirinukiList.get(i).getYoutubeUrl());
-			videoId = DBController.KirinukiVideoCheck(videoId);
-			shortVideoId = DBController.KirinukiVideoCheck(shortVideoId);
+			videoId = dbc.KirinukiVideoCheck(videoId);
+			shortVideoId = dbc.KirinukiVideoCheck(shortVideoId);
 			if(!videoId.equals(""))
 				videoIds+=videoId+",";
 			if(!shortVideoId.equals(""))
@@ -243,8 +243,7 @@ public class DataManagement {
 							k.setCountry(k.getCountry()+memberList.get(i).getCountry());
 					}
 				}
-				System.out.println(k.getVideoTitle());
-				DBController.KirinukiVideoInsert(k);
+				dbc.KirinukiVideoInsert(k);
 			}
 		}
 	}
@@ -295,7 +294,7 @@ public class DataManagement {
 						k.setCountry(k.getCountry()+memberList.get(j).getCountry());
 				}
 			}
-			DBController.KirinukiVideoInsert(k);
+			dbc.KirinukiVideoInsert(k);
 		}
 	}
 	public void getKirinukiInitialization(String channelId, String nextToken) throws IOException, SQLException {
@@ -345,7 +344,7 @@ public class DataManagement {
 						k.setCountry(k.getCountry()+memberList.get(j).getCountry());
 				}
 			}
-			DBController.KirinukiVideoInsert(k);
+			dbc.KirinukiVideoInsert(k);
 		}
 	}
 
@@ -486,7 +485,7 @@ public class DataManagement {
 			getTweet(timeline,tweetList,midea);
 
 			for(int i=0;i<tweetList.size();i++) {
-				DBController.TweetDataInsert(tweetList.get(i));
+				dbc.TweetDataInsert(tweetList.get(i));
 			}
 		}
 	}
@@ -545,15 +544,15 @@ public class DataManagement {
 				System.out.println("다음 트윗 ID : "+tweetList.get(i).getPrevTweetID());
 				System.out.println("트윗이 언제 써졌나 : "+tweetList.get(i).getWriteDate());
 				System.out.println("---------------------------------------");*/
-				DBController.TweetDataInsert(tweetList.get(j));
+				dbc.TweetDataInsert(tweetList.get(j));
 			}			
 		}
 	}
 	public void InitialMemberData() throws SQLException {
-		DBController.MemberDataInsert(new Member(0,"","","","","","",""));//넣고싶은 값 넣으면 됨
+		dbc.MemberDataInsert(new Member(0,"","","","","","",""));//넣고싶은 값 넣으면 됨
 	}
 	public void InitialMemberOnAir() throws SQLException {
 		for(Member m : memberList)
-			DBController.MemberOnAirInsert(new MemberOnAir(m.getNumber(), "default", "default", "default", "default"));
+			dbc.MemberOnAirInsert(new MemberOnAir(m.getNumber(), "default", "default", "default", "default"));
 	}
 }

@@ -19,10 +19,11 @@ public class AndroidLiveValue extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html; charset=UTF-8");;
 		response.setCharacterEncoding("UTF-8");
+		DBController dbc = new DBController();
 		PrintWriter out = response.getWriter();
 		JSONObject jObject = new JSONObject();
 		JSONArray jArray = new JSONArray();
-		DBController.DBSelect(jArray,DBController.MEMBER_SELECT,"","",0);
+		dbc.DBSelect(jArray,DBController.MEMBER_SELECT,"","",0);
 		jObject.put("Member", jArray);
 		out.print(jObject);
 		out.flush();

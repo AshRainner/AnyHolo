@@ -27,7 +27,8 @@ public class AndroidInitialValue extends HttpServlet {
 		JSONObject jObject = new JSONObject();
 		JSONArray jArray = new JSONArray();
 		String version="1.0.0";
-		DBController.DBSelect(jArray,DBController.TWEET_SELECT,"","",1);
+		DBController dbc = new DBController();
+		dbc.DBSelect(jArray,DBController.TWEET_SELECT,"","",1);
 		ArrayList<String> prevTweetIds = new ArrayList<String>();
 		ArrayList<String> repliedTweetIds = new ArrayList<String>();
 		for(int i=0;i<jArray.size();i++) {
@@ -56,7 +57,7 @@ public class AndroidInitialValue extends HttpServlet {
 			if(jObj.get("tweetType").equals("REPLIED_TO")) {
 				if(repliedTweetIds.contains(jObj.get("prevTweetId"))) {
 					ArrayList<JSONObject> temp = new ArrayList<JSONObject>();
-					DBController.RepliedTweetSelect(temp,jObj);
+					dbc.RepliedTweetSelect(temp,jObj);
 					Collections.sort(temp, new Comparator<JSONObject>() {
 						private static final String KEY_NUM = "Number";             //JSON key 변수 선언 생성
 						@Override
@@ -76,7 +77,7 @@ public class AndroidInitialValue extends HttpServlet {
 			}
 			else if(!(jObj.get("tweetType").equals("DEFAULT"))) {
 				if(prevTweetIds.contains(jObj.get("prevTweetId"))) {
-					DBController.PrevTweetSelect(jObj,String.valueOf(jObj.get("prevTweetId")));
+					dbc.PrevTweetSelect(jObj,String.valueOf(jObj.get("prevTweetId")));
 				}
 			}
 		}
@@ -86,10 +87,10 @@ public class AndroidInitialValue extends HttpServlet {
 		jObject.put("Version",version);
 		jObject.put("Tweet", deduplicationHashSet);
 		jArray = new JSONArray();
-		DBController.DBSelect(jArray, DBController.KIRINUKI_SELECT,"","",1);
+		dbc.DBSelect(jArray, DBController.KIRINUKI_SELECT,"","",1);
 		jObject.put("Kirinuki", jArray);
 		jArray = new JSONArray();
-		DBController.DBSelect(jArray,DBController.MEMBER_SELECT,"","",1);
+		dbc.DBSelect(jArray,DBController.MEMBER_SELECT,"","",1);
 		jObject.put("Member", jArray);
 		out.print(jObject);
 		out.flush();

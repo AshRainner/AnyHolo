@@ -23,6 +23,7 @@ public class AndroidTweetValue extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html; charset=UTF-8");;
 		response.setCharacterEncoding("UTF-8");
+		DBController dbc = new DBController();
 		int page = 1;
 		if(request.getParameter("Page")!=null)
 			page=Integer.parseInt(request.getParameter("Page"));
@@ -35,7 +36,7 @@ public class AndroidTweetValue extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		JSONObject jObject = new JSONObject();
 		JSONArray jArray = new JSONArray();
-		DBController.DBSelect(jArray,DBController.TWEET_SELECT,country,keyword,page);
+		dbc.DBSelect(jArray,DBController.TWEET_SELECT,country,keyword,page);
 		ArrayList<String> prevTweetIds = new ArrayList<String>();
 		ArrayList<String> repliedTweetIds = new ArrayList<String>();
 		for(int i=0;i<jArray.size();i++) {
@@ -64,7 +65,7 @@ public class AndroidTweetValue extends HttpServlet {
 			if(jObj.get("tweetType").equals("REPLIED_TO")) {
 				if(repliedTweetIds.contains(jObj.get("prevTweetId"))) {
 					ArrayList<JSONObject> temp = new ArrayList<JSONObject>();
-					DBController.RepliedTweetSelect(temp,jObj);
+					dbc.RepliedTweetSelect(temp,jObj);
 					Collections.sort(temp, new Comparator<JSONObject>() {
 						private static final String KEY_NUM = "Number";             //JSON key 변수 선언 생성
 						@Override
@@ -84,7 +85,7 @@ public class AndroidTweetValue extends HttpServlet {
 			}
 			else if(!(jObj.get("tweetType").equals("DEFAULT"))) {
 				if(prevTweetIds.contains(jObj.get("prevTweetId"))) {
-					DBController.PrevTweetSelect(jObj,String.valueOf(jObj.get("prevTweetId")));
+					dbc.PrevTweetSelect(jObj,String.valueOf(jObj.get("prevTweetId")));
 				}
 			}
 		}
