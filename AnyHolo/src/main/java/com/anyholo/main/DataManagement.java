@@ -139,12 +139,10 @@ public class DataManagement {
 			return jsonObject.get("videoId").toString();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return "";
 		} catch (org.json.simple.parser.ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return "";
 		}
-		return null;
 	}
 	private String returnShortVideoUrl(String channelId) {
 		Document doc;
@@ -177,14 +175,10 @@ public class DataManagement {
 			jsonObject = (JSONObject) jsonObject.get("reelItemRenderer");
 			return jsonObject.get("videoId").toString();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return "";
 		} catch (org.json.simple.parser.ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return "";
 		}
-		return null;
-
 	}
 	public void getKirinuki() throws SQLException, IOException {
 		String videoIds="";
@@ -254,9 +248,9 @@ public class DataManagement {
 		String jsonString = YoutubeDataApi.getKirinukiInitialValue(url);
 		ObjectMapper mapper = new ObjectMapper();
 		KirinukiModel model = mapper.readValue(jsonString, KirinukiModel.class);
-		if(model.getNextPageToken()!=null) {
+		/*if(model.getNextPageToken()!=null) {
 			getKirinukiInitialization(url, model.getNextPageToken());
-		}
+		}*/
 		for(com.anyholo.model.kirinuki.Item item: model.getItems()) {
 			String time = convertTime(item.getSnippet().getPublishedAt());
 			KirinukiVideo k;

@@ -15,7 +15,7 @@ public class Main {
 		YoutubeDataApi.setKey();
 		/*try {
 			k.InitializationKirinukiValue();
-			k.getKirinukiInitialization("UCiG-SJ91eywhjFlW0tubIlA"); // 최초로 넣을 때
+			k.getKirinukiInitialization("UCjUUdf20Jh-QEOqktHiA-cg"); // 최초로 넣을 때
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -76,7 +76,7 @@ public class Main {
 		} catch (SQLException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}	*/	
+		}*/
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
