@@ -200,6 +200,13 @@ public class DataManagement {
 			for(com.anyholo.model.live.Item item: model.getItems()) {
 				String time = convertTime(item.getSnippet().getPublishedAt());
 				KirinukiVideo k;
+				/*Pattern pattern = Pattern.compile("[#].*");
+				Matcher matcher = pattern.matcher(item.getSnippet().getDescription());
+				while (matcher.find()) { 
+				    System.out.println(matcher.group(0));			    		    
+				    if(matcher.group(0) ==  null)
+				    	break;
+				}*///이걸로 #tag 가져올 수 있는데 #tag에 멤버 이름을 안넣는 사람이 있을 수 있어 그냥 영상 설명을 다 들고옴
 				if(item.getSnippet().getThumbnails().getMaxres()!=null) {
 					k = new KirinukiVideo(item.getId(),
 							item.getSnippet().getTitle(),
