@@ -200,18 +200,28 @@ public class DataManagement {
 			for(com.anyholo.model.live.Item item: model.getItems()) {
 				String time = convertTime(item.getSnippet().getPublishedAt());
 				KirinukiVideo k;
-				/*Pattern pattern = Pattern.compile("[#].*");
+				Pattern pattern = Pattern.compile("(#)(.*)");
 				Matcher matcher = pattern.matcher(item.getSnippet().getDescription());
+				String tag="";
 				while (matcher.find()) { 
-				    System.out.println(matcher.group(0));			    		    
-				    if(matcher.group(0) ==  null)
-				    	break;
-				}*///이걸로 #tag 가져올 수 있는데 #tag에 멤버 이름을 안넣는 사람이 있을 수 있어 그냥 영상 설명을 다 들고옴
+					if(!matcher.group(0).contains("】")) {
+						if(matcher.group(0).contains(",")||matcher.group(0).contains(" ")) {
+							for(String y : matcher.group(0).replace(",", "").replace(" ","").split("#"))
+								if(!y.equals(""))
+									tag+=y+";";
+						}
+						else {
+							tag+=(matcher.group(0).replace("#", "").replace(" ", ""))+";";
+						}
+					}
+					if(matcher.group(0) ==  null)
+						break;
+				}//이걸로 #tag 가져올 수 있음
 				if(item.getSnippet().getThumbnails().getMaxres()!=null) {
 					k = new KirinukiVideo(item.getId(),
 							item.getSnippet().getTitle(),
 							item.getSnippet().getThumbnails().getMaxres().getUrl(),
-							item.getSnippet().getDescription(),
+							tag,
 							time,
 							"",
 							item.getSnippet().getChannelId());
@@ -219,7 +229,7 @@ public class DataManagement {
 					k = new KirinukiVideo(item.getId(),
 							item.getSnippet().getTitle(),
 							item.getSnippet().getThumbnails().getStandard().getUrl(),
-							item.getSnippet().getDescription(),
+							tag,
 							time,
 							"",
 							item.getSnippet().getChannelId());
@@ -228,23 +238,22 @@ public class DataManagement {
 					k = new KirinukiVideo(item.getId(),
 							item.getSnippet().getTitle(),
 							item.getSnippet().getThumbnails().getHigh().getUrl(),
-							item.getSnippet().getDescription(),
+							tag,
 							time,
 							"",
 							item.getSnippet().getChannelId());
 				}
-				for(int i=0;i<memberList.size();i++) {
-					if(!k.getCountry().contains(memberList.get(i).getCountry())
-							&&k.getTag().contains(memberList.get(i).getKrName())) {
-						if(memberList.get(i).getKrName().equals("올리")) {
-							if(k.getTag().contains("쿠레이지"))
-								k.setCountry(k.getCountry()+"ID");
-						}else if(memberList.get(i).getKrName().equals("멜")) {
-							if(k.getTag().contains("요조라"))
-								k.setCountry(k.getCountry()+"JP");
+				if(!tag.equals("")) {
+					for(int i=0;i<memberList.size();i++) {
+						for(String s : memberList.get(i).getSearchKrName().split(";")) {
+							if(tag.contains(s)) {
+								k.setTag(k.getTag()+memberList.get(i).getSearchKrName()+";");
+								if(!k.getCountry().contains(memberList.get(i).getCountry())) {
+									k.setCountry(k.getCountry()+memberList.get(i).getCountry());
+									break;
+								}
+							}
 						}
-						else
-							k.setCountry(k.getCountry()+memberList.get(i).getCountry());
 					}
 				}
 				dbc.KirinukiVideoInsert(k);
@@ -255,17 +264,34 @@ public class DataManagement {
 		String jsonString = YoutubeDataApi.getKirinukiInitialValue(url);
 		ObjectMapper mapper = new ObjectMapper();
 		KirinukiModel model = mapper.readValue(jsonString, KirinukiModel.class);
-		/*if(model.getNextPageToken()!=null) {
+		if(model.getNextPageToken()!=null) {
 			getKirinukiInitialization(url, model.getNextPageToken());
-		}*/
+		}
 		for(com.anyholo.model.kirinuki.Item item: model.getItems()) {
 			String time = convertTime(item.getSnippet().getPublishedAt());
 			KirinukiVideo k;
+			Pattern pattern = Pattern.compile("(#)(.*)");
+			Matcher matcher = pattern.matcher(item.getSnippet().getDescription());
+			String tag="";
+			while (matcher.find()) { 
+				if(!matcher.group(0).contains("】")) {
+					if(matcher.group(0).contains(",")||matcher.group(0).contains(" ")) {
+						for(String y : matcher.group(0).replace(",", "").replace(" ","").split("#"))
+							if(!y.equals(""))
+								tag+=y+";";
+					}
+					else {
+						tag+=(matcher.group(0).replace("#", "").replace(" ", ""))+";";
+					}
+				}
+				if(matcher.group(0) ==  null)
+					break;
+			}//이걸로 #tag 가져올 수 있음
 			if(item.getSnippet().getThumbnails().getMaxres()!=null) {
 				k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
 						item.getSnippet().getTitle(),
 						item.getSnippet().getThumbnails().getMaxres().getUrl(),
-						item.getSnippet().getDescription(),
+						tag,
 						time,
 						"",
 						item.getSnippet().getChannelId());
@@ -273,7 +299,7 @@ public class DataManagement {
 				k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
 						item.getSnippet().getTitle(),
 						item.getSnippet().getThumbnails().getStandard().getUrl(),
-						item.getSnippet().getDescription(),
+						tag,
 						time,
 						"",
 						item.getSnippet().getChannelId());
@@ -282,23 +308,22 @@ public class DataManagement {
 				k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
 						item.getSnippet().getTitle(),
 						item.getSnippet().getThumbnails().getHigh().getUrl(),
-						item.getSnippet().getDescription(),
+						tag,
 						time,
 						"",
 						item.getSnippet().getChannelId());
 			}
-			for(int j=0;j<memberList.size();j++) {
-				if(!k.getCountry().contains(memberList.get(j).getCountry())
-						&&k.getTag().contains(memberList.get(j).getKrName())) {
-					if(memberList.get(j).getKrName().equals("올리")) {
-						if(k.getTag().contains("쿠레이지"))
-							k.setCountry(k.getCountry()+"ID");
-					}else if(memberList.get(j).getKrName().equals("멜")) {
-						if(k.getTag().contains("요조라"))
-							k.setCountry(k.getCountry()+"JP");
+			if(!tag.equals("")) {
+				for(int i=0;i<memberList.size();i++) {
+					for(String s : memberList.get(i).getSearchKrName().split(";")) {
+						if(tag.contains(s)) {
+							k.setTag(k.getTag()+memberList.get(i).getSearchKrName()+";");
+							if(!k.getCountry().contains(memberList.get(i).getCountry())) {
+								k.setCountry(k.getCountry()+memberList.get(i).getCountry());
+								break;
+							}
+						}
 					}
-					else
-						k.setCountry(k.getCountry()+memberList.get(j).getCountry());
 				}
 			}
 			dbc.KirinukiVideoInsert(k);
@@ -314,11 +339,28 @@ public class DataManagement {
 		for(com.anyholo.model.kirinuki.Item item: model.getItems()) {
 			String time = convertTime(item.getSnippet().getPublishedAt());
 			KirinukiVideo k;
+			Pattern pattern = Pattern.compile("(#)(.*)");
+			Matcher matcher = pattern.matcher(item.getSnippet().getDescription());
+			String tag="";
+			while (matcher.find()) { 
+				if(!matcher.group(0).contains("】")) {
+					if(matcher.group(0).contains(",")||matcher.group(0).contains(" ")) {
+						for(String y : matcher.group(0).replace(",", "").replace(" ","").split("#"))
+							if(!y.equals(""))
+								tag+=y+";";
+					}
+					else {
+						tag+=(matcher.group(0).replace("#", "").replace(" ", ""))+";";
+					}
+				}
+				if(matcher.group(0) ==  null)
+					break;
+			}//이걸로 #tag 가져올 수 있음
 			if(item.getSnippet().getThumbnails().getMaxres()!=null) {
 				k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
 						item.getSnippet().getTitle(),
 						item.getSnippet().getThumbnails().getMaxres().getUrl(),
-						item.getSnippet().getDescription(),
+						tag,
 						time,
 						"",
 						item.getSnippet().getChannelId());
@@ -326,7 +368,7 @@ public class DataManagement {
 				k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
 						item.getSnippet().getTitle(),
 						item.getSnippet().getThumbnails().getStandard().getUrl(),
-						item.getSnippet().getDescription(),
+						tag,
 						time,
 						"",
 						item.getSnippet().getChannelId());
@@ -335,23 +377,22 @@ public class DataManagement {
 				k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
 						item.getSnippet().getTitle(),
 						item.getSnippet().getThumbnails().getHigh().getUrl(),
-						item.getSnippet().getDescription(),
+						tag,
 						time,
 						"",
 						item.getSnippet().getChannelId());
 			}
-			for(int j=0;j<memberList.size();j++) {
-				if(!k.getCountry().contains(memberList.get(j).getCountry())
-						&&k.getTag().contains(memberList.get(j).getKrName())) {
-					if(memberList.get(j).getKrName().equals("올리")) {
-						if(k.getTag().contains("쿠레이지"))
-							k.setCountry(k.getCountry()+"ID");
-					}else if(memberList.get(j).getKrName().equals("멜")) {
-						if(k.getTag().contains("요조라"))
-							k.setCountry(k.getCountry()+"JP");
+			if(!tag.equals("")) {
+				for(int i=0;i<memberList.size();i++) {
+					for(String s : memberList.get(i).getSearchKrName().trim().split(";")) {
+						if(tag.contains(s)) {
+							k.setTag(k.getTag()+memberList.get(i).getSearchKrName()+";");
+							if(!k.getCountry().contains(memberList.get(i).getCountry())) {
+								k.setCountry(k.getCountry()+memberList.get(i).getCountry());
+								break;
+							}
+						}
 					}
-					else
-						k.setCountry(k.getCountry()+memberList.get(j).getCountry());
 				}
 			}
 			dbc.KirinukiVideoInsert(k);
@@ -557,6 +598,10 @@ public class DataManagement {
 				dbc.TweetDataInsert(tweetList.get(j));
 			}			
 		}
+	}
+	public void ResetKirinukiVideo() throws SQLException, IOException {
+		for(int i = 0; i< kirinukiList.size();i++)
+			getKirinukiInitialization(kirinukiList.get(i).getYoutubeUrl());
 	}
 	public void InitialMemberData() throws SQLException {
 		dbc.MemberDataInsert(new Member(0,"","","","","","",""));//넣고싶은 값 넣으면 됨

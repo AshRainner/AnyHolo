@@ -2,9 +2,8 @@ package com.anyholo.main;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
-
-import org.json.simple.parser.ParseException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.anyholo.api.YoutubeDataApi;
 
@@ -15,7 +14,7 @@ public class Main {
 		YoutubeDataApi.setKey();
 		/*try {
 			k.InitializationKirinukiValue();
-			k.getKirinukiInitialization("UCjUUdf20Jh-QEOqktHiA-cg"); // 최초로 넣을 때
+			k.ResetKirinukiVideo(); // 최초로 넣을 때
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -70,13 +69,13 @@ public class Main {
 		});
 		YoutubeThread.start();
 		KirinukiThread.start();
-		/*try {
+		try {
 			yt.InitializationValue();
 			yt.get7daysTweet();
 		} catch (SQLException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
