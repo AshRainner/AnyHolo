@@ -60,6 +60,14 @@ public class DBController {
 		else if(Num==TWEET_SELECT)
 			TweetViewSelect(jArray,country,keyword,(Page-1)*MAXITEM+1,Page*MAXITEM);
 	}
+	public void DBSelect(JSONArray jArray,int Num,String country,String keyword,int Page,int web) {
+		if(Num==MEMBER_SELECT)
+			MemberViewSelect(jArray);
+		else if(Num==KIRINUKI_SELECT)
+			KirinukiViewSelect(jArray,country,keyword,(Page-1)*16+1,Page*16);
+		else if(Num==TWEET_SELECT)
+			TweetViewSelect(jArray,country,keyword,(Page-1)*16+1,Page*16);
+	}
 	public void RepliedTweetSelect(ArrayList<JSONObject> temp,JSONObject obj) {
 		temp.add(obj);
 		RepliedPrevTweetSelect(temp,obj);
