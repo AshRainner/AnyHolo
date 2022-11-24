@@ -57,12 +57,13 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav nav-tabs mr-auto">
-				<li class="nav-item"><a class="nav-link" href="Homepage.jsp"><strong>실시간
-					</strong><span class="sr-only"><strong>(예정)</strong></span></a></li>
-				<li class="nav-item"><a class="nav-link active"
-					href="Arcaive.jsp"><strong>클립</strong></a></li>
+				<li class="nav-item"><a class="nav-link"
+					href="/Main"><strong>실시간</strong></a>
+				</li>
+				<li class="nav-item"><a class="nav-link active" href="/Clip"><strong>클립</strong></a>
+				</li>
 				<!-- dropdown 메뉴 삭제 -->
-				<li class="nav-item"><a class="nav-link" href="Clip.jsp"><strong>즐겨찾기</strong></a>
+				<li class="nav-item"><a class="nav-link" href="/Favorite"><strong>즐겨찾기</strong></a>
 				</li>
 			</ul>
 			<form class="d-flex" role="search">

@@ -298,27 +298,32 @@ public class DBController {
 		pstmt.executeUpdate();
 		DBClose(pstmt,con);
 	}
-	public void KirinukiVideoInsert(KirinukiVideo k) throws SQLException {
+	public void KirinukiVideoInsert(KirinukiVideo k){
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		con = DBConnect(con);
 		String sql = "SELECT * FROM ANYHOLO.KIRINUKI_VIDEO WHERE VIDEOURL = ?";
-		pstmt = con.prepareStatement(sql);
-		pstmt.setString(1, k.getVideoUrl());
-		ResultSet rs = pstmt.executeQuery();	
-		if(rs.next()==false) {
-			sql = "INSERT INTO ANYHOLO.KIRINUKI_VIDEO values(?,?,?,TO_DATE(?,'yyyy-MM-dd hh24:mi'),?,?,?)";
+		try {
 			pstmt = con.prepareStatement(sql);
-			pstmt.setString(1, k.getThumnailUrl());
-			pstmt.setString(2, k.getVideoTitle());
-			pstmt.setString(3, k.getTag());
-			pstmt.setString(4, k.getUpLoadTime());
-			pstmt.setString(5, k.getCountry());
-			pstmt.setString(6, k.getVideoUrl());
-			pstmt.setString(7,k.getYoutubeUrl());
-			pstmt.executeUpdate();
-		}
-		rs.close();
+			pstmt.setString(1, k.getVideoUrl());
+			ResultSet rs = pstmt.executeQuery();	
+			if(rs.next()==false) {
+				sql = "INSERT INTO ANYHOLO.KIRINUKI_VIDEO values(?,?,?,TO_DATE(?,'yyyy-MM-dd hh24:mi'),?,?,?)";
+				pstmt = con.prepareStatement(sql);
+				pstmt.setString(1, k.getThumnailUrl());
+				pstmt.setString(2, k.getVideoTitle());
+				pstmt.setString(3, k.getTag());
+				pstmt.setString(4, k.getUpLoadTime());
+				pstmt.setString(5, k.getCountry());
+				pstmt.setString(6, k.getVideoUrl());
+				pstmt.setString(7,k.getYoutubeUrl());
+				pstmt.executeUpdate();			
+			}
+			rs.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}	
 		DBClose(pstmt,con);
 	}
 	public String KirinukiVideoCheck(String videoUrl) throws SQLException {
@@ -482,5 +487,30 @@ public class DBController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	//-----------------------------------------------------------
+	public void UserInsert(String id, String pw, String phone) throws SQLException {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		con = DBConnect(con);
+		String sql = "Insert into \"USER\" values(?,?,?)";
+		int result=0;
+		pstmt = con.prepareStatement(sql);
+		pstmt.setString(1, id);
+		pstmt.setString(2, pw);
+		pstmt.setString(3, phone);
+		result = pstmt.executeUpdate();
+		DBClose(pstmt,con);
+	}
+	public boolean UserSelect(String id,String pw) throws SQLException {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		con = DBConnect(con);
+		String sql = "Select * from \"USER\" where id = ? and pw = ?";
+		pstmt = con.prepareStatement(sql);
+		pstmt.setString(1, id);
+		pstmt.setString(2, pw);
+		ResultSet rs = pstmt.executeQuery();
+		return rs.next();
 	}
 }

@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=EUC-KR"
 	pageEncoding="UTF-8"%>
+<%@page import="java.util.List"%>
+<%@page import="com.anyholo.model.data.MemberView"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -34,14 +37,24 @@
 					class="navbar-brand d-flex align-items-center"> <strong>Video</strong>
 				</a>
 				<div class="d-grid gap-2 d-md-flex justify-content-md-end">
-					<button type="button" class="btn btn-light" button
-						onclick="location.href='/Login'">
-						<strong>Login</strong>
-					</button>
-					<button type="button" class="btn btn-light" button
-						onclick="location.href='/Sighup'">
-						<strong>Sign Up</strong>
-					</button>
+					<c:choose>
+						<c:when test="${sessionScope.id eq null}">
+							<button type="button" class="btn btn-light" button
+								onclick="location.href='/Login'">
+								<strong>Login</strong>
+							</button>
+							<button type="button" class="btn btn-light" button
+								onclick="location.href='/Sighup'">
+								<strong>Sign Up</strong>
+							</button>
+						</c:when>
+						<c:when test="${sessionScope.id ne null}">
+							<button type="button" class="btn btn-light" button
+								onclick="location.href='/Logout'">
+								<strong>Logout</strong>
+							</button>
+						</c:when>
+					</c:choose>
 				</div>
 			</div>
 		</div>
@@ -59,12 +72,12 @@
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav nav-tabs mr-auto">
 				<li class="nav-item"><a class="nav-link active"
-					href="Homepage.jsp"><strong>실시간 </strong><span class="sr-only"><strong>(예정)</strong></span></a>
+					href="/Main"><strong>실시간</strong></a>
 				</li>
-				<li class="nav-item"><a class="nav-link" href="Arcaive.jsp"><strong>클립</strong></a>
+				<li class="nav-item"><a class="nav-link" href="/Clip"><strong>클립</strong></a>
 				</li>
 				<!-- dropdown 메뉴 삭제 -->
-				<li class="nav-item"><a class="nav-link" href="Clip.jsp"><strong>즐겨찾기</strong></a>
+				<li class="nav-item"><a class="nav-link" href="/Favorite"><strong>즐겨찾기</strong></a>
 				</li>
 			</ul>
 			<form class="d-flex" role="search">
@@ -85,54 +98,55 @@
 
 	<main>
 		<div class="container">
-
-			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-				<div class="row">
-					<div class="card">
+			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3"
+				id="mainContainer">
+				<c:forEach var="n" items="${MemberList}">
+					<c:if test="${n.onAir.onAir eq 'live'}">
 						<div class="row">
-							<a href="https://www.youtube.com/watch?v=wWWqAKIe-Bo"
-								target="_blank"> <img style="width: 320px; height: 200px;"
-								class="card-img-top"
-								src="http://img.youtube.com/vi/wWWqAKIe-Bo/mqdefault.jpg"
-								class="img-responsive"> <span
-								class="glyphicon glyphicon-play-circle"></span>
-								</a>
+							<div class="card shadow-sm">
+								<div class="row">
+									<a href="${n.onAir.onAirVideoUrl}" target="_blank"> <img
+										style="width: 320px; height: 200px;"
+										class="card-img img-fluid" src="${n.onAir.onAirThumnailsUrl}">
+									</a>
+								</div>
+								<p style="width: 280px; pxwhite-space: normal; font-size: 15px"
+									class="card-text pl-3 pt-3 pr-3 mx-1">${n.onAir.onAirTitle }</p>
+								<a href="#" class="card-link line-height:1em ml-4"
+									style="font-size: 12px;">${n.member.krName}</a>
+								<p class="text-left ml-4" style="font-size: 10px;">Live 방송중</p>
+							</div>
 						</div>
-						<div class="card-body">
-							<h5 class="card-title" style="color: #FF0000;">#LIVE</h5>
-							<p class="card-text">생방송 제목</p>
-						</div>
-						<ul class="list-group list-group-flush">
-							<li class="list-group-item"><a href="#" class="card-link"
-								style="font-size: 12px">스트리머 이름</a></li>
-						</ul>
-					</div>
-				</div>
-
-				<div class="row">
-					<div class="card shadow-sm">
-						<div class="row">
-							<a href="https://www.youtube.com/watch?v=QtXKiqa0ZWA"
-								target="_blank"> <img style="width: 320px; height: 200px;"
-								src="http://img.youtube.com/vi/QtXKiqa0ZWA/mqdefault.jpg"
-								class="img-responsive"> <span
-								class="glyphicon glyphicon-play-circle"></span> <span
-								class="duration"></span>
-								</a>
-						</div>
-						<div class="card-body">
-							<h5 class="card-title" style="color: #FF0000;">#LIVE</h5>
-							<p class="card-text">생방송 제목</p>
-						</div>
-						<ul class="list-group list-group-flush">
-							<li class="list-group-item"><a href="#" class="card-link"
-								style="font-size: 12px">스트리머 이름</a></li>
-						</ul>
-					</div>
-				</div>
+					</c:if>
+				</c:forEach>
 			</div>
 		</div>
-
+	</main>
+	<hr />
+	<main>
+		<div class="container">
+			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3"
+				id="mainContainer">
+				<c:forEach var="n" items="${MemberList}">
+					<c:if test="${n.onAir.onAir eq 'upcoming'}">
+						<div class="row">
+							<div class="card shadow-sm">
+								<div class="row">
+									<a href="${n.onAir.onAirVideoUrl}" target="_blank"> <img
+										style="width: 320px; height: 200px;"
+										class="card-img img-fluid" src="${n.onAir.onAirThumnailsUrl}">
+									</a>
+								</div>
+								<p style="width: 280px; pxwhite-space: normal; font-size: 15px"
+									class="card-text pl-3 pt-3 pr-3 mx-1">${n.onAir.onAirTitle }</p>
+								<a href="#" class="card-link line-height:1em ml-4"
+									style="font-size: 12px;">${n.member.krName}</a>
+							</div>
+						</div>
+					</c:if>
+				</c:forEach>
+			</div>
+		</div>
 	</main>
 	<script src="/docs/5.0/dist/js/bootstrap.bundle.min.js"
 		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"

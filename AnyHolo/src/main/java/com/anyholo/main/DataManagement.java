@@ -180,13 +180,17 @@ public class DataManagement {
 			return "";
 		}
 	}
-	public void getKirinuki() throws SQLException, IOException {
+	public void getKirinuki() {
 		String videoIds="";
 		for(int i = 0;i<kirinukiList.size();i++) {
 			String videoId = returnVideoUrl(kirinukiList.get(i).getYoutubeUrl());
-			String shortVideoId = returnShortVideoUrl(kirinukiList.get(i).getYoutubeUrl());
-			videoId = dbc.KirinukiVideoCheck(videoId);
-			shortVideoId = dbc.KirinukiVideoCheck(shortVideoId);
+			String shortVideoId = returnShortVideoUrl(kirinukiList.get(i).getYoutubeUrl());		
+			try {
+				videoId = dbc.KirinukiVideoCheck(videoId);
+				shortVideoId = dbc.KirinukiVideoCheck(shortVideoId);
+			} catch (SQLException e) {
+				return;
+			}
 			if(!videoId.equals(""))
 				videoIds+=videoId+",";
 			if(!shortVideoId.equals(""))
@@ -194,9 +198,15 @@ public class DataManagement {
 		}
 		if(!videoIds.equals("")) {
 			videoIds=videoIds.substring(0,videoIds.length()-1);
-			String jsonString = YoutubeDataApi.getKirinukiVideo(videoIds);
+			String jsonString;
 			ObjectMapper mapper = new ObjectMapper();
-			LiveModel model = mapper.readValue(jsonString, LiveModel.class);
+			LiveModel model = null;
+			try {
+				jsonString = YoutubeDataApi.getKirinukiVideo(videoIds);
+				model = mapper.readValue(jsonString, LiveModel.class);
+			} catch (IOException e) {
+				return;
+			}		
 			for(com.anyholo.model.live.Item item: model.getItems()) {
 				String time = convertTime(item.getSnippet().getPublishedAt());
 				KirinukiVideo k;
