@@ -34,10 +34,24 @@
 					class="navbar-brand d-flex align-items-center"> <strong>Video</strong>
 				</a>
 				<div class="d-grid gap-2 d-md-flex justify-content-md-end">
-					<button type="button" class="btn btn-light" button
-						onclick="location.href='Login.jsp'">
-						<strong>Login</strong>
-					</button>
+					<c:choose>
+						<c:when test="${sessionScope.id eq null}">
+							<button type="button" class="btn btn-light" button
+								onclick="location.href='/Login'">
+								<strong>Login</strong>
+							</button>
+							<button type="button" class="btn btn-light" button
+								onclick="location.href='/Sighup'">
+								<strong>Sign Up</strong>
+							</button>
+						</c:when>
+						<c:when test="${sessionScope.id ne null}">
+							<button type="button" class="btn btn-light" button
+								onclick="location.href='/Logout?where=favorite'">
+								<strong>Logout</strong>
+							</button>
+						</c:when>
+					</c:choose>
 				</div>
 			</div>
 		</div>

@@ -25,7 +25,7 @@ public class IDFind_Back extends HttpServlet{
 		try {
 			String id = dbc.FindID(phone, name);
 			out.println("<script>");
-			out.println("alert('"+id+"');");
+			out.println("location.href='/IDResult?id="+id+"';");
 			out.println("</script>");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block

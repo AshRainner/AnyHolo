@@ -50,7 +50,7 @@
 						</c:when>
 						<c:when test="${sessionScope.id ne null}">
 							<button type="button" class="btn btn-light" button
-								onclick="location.href='/Logout'">
+								onclick="location.href='/Logout?where=main'">
 								<strong>Logout</strong>
 							</button>
 						</c:when>
