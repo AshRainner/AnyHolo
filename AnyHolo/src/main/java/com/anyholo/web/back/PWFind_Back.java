@@ -2,7 +2,6 @@ package com.anyholo.web.back;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.security.MessageDigest;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -12,8 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.anyholo.db.DBController;
-@WebServlet("/Signup_Back")
-public class Signup_Back extends HttpServlet{
+@WebServlet("/PWFind_Back")
+public class PWFind_Back extends HttpServlet{
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
@@ -21,40 +20,21 @@ public class Signup_Back extends HttpServlet{
 		response.setCharacterEncoding("UTF-8");
 		DBController dbc = new DBController();
 		String id = request.getParameter("inputID");
-		String pw = getSHA256(request.getParameter("inputPassword"));
-		String phone = request.getParameter("inputTel1")+request.getParameter("inputTel2")+request.getParameter("inputTel3");
+		String phone = request.getParameter("inputTel")+request.getParameter("inputTel2")+request.getParameter("inputTel3");
 		String name = request.getParameter("name");
-		System.out.println("id : "+id+" pw : "+pw+" phone : "+phone);
 		PrintWriter out = response.getWriter();
 		try {
-			dbc.UserInsert(id,pw,phone,name);
+			dbc.FindPW(id,phone, name);
 			out.println("<script>");
-			out.println("alert('회원가입성공'); location.href='/Main';");
+			out.println("location.href='/PWReset?id="+id+"&phone="+phone+"&name="+name+"';");
 			out.println("</script>");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			out.println("<script>");
-			out.println("alert('이미 있는 아이디입니다.'); location.href='/Signup';");
+			out.println("alert('존재하지 않는 사용자입니다.');");
+			out.println("history.back()");
 			out.println("</script>");
 		}
-	}
-	public static String getSHA256(String data) {
-		String SHA = "";
-		try {
-			MessageDigest sh = MessageDigest.getInstance("SHA-256");
-			sh.update(data.getBytes());
-			byte byteData[] = sh.digest();
-			StringBuffer sb = new StringBuffer();
-			for (int i = 0; i < byteData.length; i++) {
-				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
-			}
-			SHA = sb.toString();
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			SHA = null;
-		}
-		return SHA;
 	}
 }

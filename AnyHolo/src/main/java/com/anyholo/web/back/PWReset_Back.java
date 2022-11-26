@@ -12,30 +12,30 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.anyholo.db.DBController;
-@WebServlet("/Signup_Back")
-public class Signup_Back extends HttpServlet{
+@WebServlet("/PWReset_Back")
+public class PWReset_Back extends HttpServlet{
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html; charset=UTF-8");;
 		response.setCharacterEncoding("UTF-8");
-		DBController dbc = new DBController();
-		String id = request.getParameter("inputID");
-		String pw = getSHA256(request.getParameter("inputPassword"));
-		String phone = request.getParameter("inputTel1")+request.getParameter("inputTel2")+request.getParameter("inputTel3");
 		String name = request.getParameter("name");
-		System.out.println("id : "+id+" pw : "+pw+" phone : "+phone);
+		String id = request.getParameter("id");
+		String phone = request.getParameter("phone");
+		String pw = getSHA256(request.getParameter("pw"));
+		DBController dbc = new DBController();
 		PrintWriter out = response.getWriter();
 		try {
-			dbc.UserInsert(id,pw,phone,name);
+			dbc.ResetPW(id, pw, phone, name);
 			out.println("<script>");
-			out.println("alert('회원가입성공'); location.href='/Main';");
+			out.println("alert('변경 완료 다시 로그인 해주시길 바랍니다.'); location.href='/Main';");
 			out.println("</script>");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			out.println("<script>");
-			out.println("alert('이미 있는 아이디입니다.'); location.href='/Signup';");
+			out.println("alert('오류 다시 입력해주세요');");
+			out.println("history.back()");
 			out.println("</script>");
 		}
 	}

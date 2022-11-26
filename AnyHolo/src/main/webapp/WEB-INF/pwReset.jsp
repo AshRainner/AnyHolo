@@ -47,27 +47,11 @@ margin-top:30px;
 <script type="text/javascript">
 function Validation(){
     var RegExp = /^[a-zA-Z0-9]{4,12}$/; //id와 pwassword 유효성 검사 정규식
-    var t_RegExp=/^[0-9]+$/;//Tel 유효성검사
-    var n_RegExp = /^[가-힣]{2,15}$/; //이름 유효성검사 정규식
     
-    var objId = document.getElementById("inputEmail"); //아이디
     var objPwd = document.getElementById("inputPassword1"); //비밀번호
     var objPwd2 = document.getElementById("inputPassword2"); //비밀번호확인
-    var objName = document.getElementById("inputName"); //이름
-    var objTel1 = document.getElementById("inputTel2"); //Tel
-    var objTel2 = document.getElementById("inputTel3"); //Te2
 
     
-    // ================ ID 유효성검사 ================ //
-    
-    if(objId.value==''){
-        alert("ID를 입력해주세요.");
-        return false;
-    }
-    if(!RegExp.test(objId.value)){ //아이디 유효성검사
-        alert("ID는 4~12자의 영문 대소문자와 숫자로만 입력하여 주세요.");        
-        return false;
-    }
     
     // ================ PASSWORD 유효성검사 ===============//
     if(objPwd.value==''){ // 비밀번호 입력여부 검사
@@ -87,26 +71,6 @@ function Validation(){
         alert("비밀번호가 틀립니다. 다시 확인하여 입력해주세요.");
         return false;
     }
-    
-    // ================ 이름 유효성검사 ================ //        
-    if(objName.value ==''){
-        alert("이름을 입력해주세요.");
-        return false;
-    }
-    else if(!n_RegExp.test(objName.value)){
-        alert("특수문자,영어,숫자는 사용할수 없습니다. 한글만 입력하여주세요.");
-        return false;
-    }
-    
-    // ================ Tel 유효성검사 ===============//
-    if(objTel1.value=='' || objTel2.value==''){ // Tel 입력여부 검사
-        alert("휴대폰 번호를 입력해주세요.");
-        return false;
-    }
-    else if(!t_RegExp.test(objTel1.value) || !t_RegExp.test(objTel2.value)){ //Tel 유효성검사
-        alert("휴대폰 번호는 숫자만 입력하여 주세요.");
-        return false;
-    }
 }
 </script>
 <title>회원가입 페이지</title>
@@ -119,21 +83,17 @@ function Validation(){
         <div class="col-md-4 col-md-offset-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <span class="glyphicon glyphicon-lock"></span> 회원가입</div>
+                    <span class="glyphicon glyphicon-lock"></span> 패스워드 재설정</div>
                 <div class="panel-body">
-                    <form action="/Signup_Back" method="get" class="form-horizontal" onsubmit="return Validation();">
-                    <div class="form-group">
-                        <label for="inputEmail" class="col-sm-3 control-label">
-                            ID</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control" id="inputID" name= "inputID" placeholder="ID" required>
-                        </div>
-                    </div>
+                    <form action="/PWReset_Back" class="form-horizontal" onsubmit="return Validation();">
+                    <input type="hidden" name="name" value="${name}">
+                    <input type="hidden" name="phone" value="${phone}">
+                    <input type="hidden" name="id" value="${id}">
                     <div class="form-group">
                         <label for="inputPassword" class="col-sm-3 control-label">
                             비밀번호</label>
                         <div class="col-sm-9">
-                            <input type="password" class="form-control" name= "inputPassword" id="inputPassword1" placeholder="Password" required>
+                            <input type="password" name="pw" class="form-control" id="inputPassword1" placeholder="Password" required>
                         </div>
                     </div>
                     <div class="form-group">
@@ -143,35 +103,10 @@ function Validation(){
                             <input type="password" class="form-control" id="inputPassword2" placeholder="Password" required>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="inputName" class="col-sm-3 control-label">
-                            이름</label>
-                        <div class="col-sm-9">
-                            <input type="text" name="name" class="form-control" id="inputName" placeholder="Name" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="inputTel" class="col-sm-3 control-label">
-                            휴대폰
-                        </label>
-                        <div class="col-sm-3">
-                       			<select style="height:35px;" id="inputTel1" name="inputTel1">
-           						<option value="010">010</option>
-            					<option value="070">070</option>
-            					<option value="070">011</option>
-       							</select>
-                        </div>
-                        <div class="col-sm-3">
-                            <input type="text" class="form-control" name= "inputTel2" id="inputTel2" placeholder="" required>
-                        </div>
-                        <div class="col-sm-3">
-                            <input type="text" class="form-control" name= "inputTel3" id="inputTel3" placeholder="" required>
-                        </div>
-                    </div>
                     <div class="form-group last">
                         <div class="col-sm-offset-3 col-sm-9">
                             <button type="submit" class="btn btn-success btn-sm">
-                                가입하기</button>
+                                확인</button>
                                  <button type="reset" class="btn btn-default btn-sm">
                                 취소</button>
                         </div>

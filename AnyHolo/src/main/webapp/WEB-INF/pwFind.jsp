@@ -69,24 +69,6 @@ function Validation(){
         return false;
     }
     
-    // ================ PASSWORD 유효성검사 ===============//
-    if(objPwd.value==''){ // 비밀번호 입력여부 검사
-        alert("Password를 입력해주세요.");
-        return false;
-    }
-    if(!RegExp.test(objPwd.value)){ //패스워드 유효성검사
-        alert("Password는 4~12자의 영문 대소문자와 숫자로만 입력하여 주세요.");
-        return false;
-    }
-    if(objPwd.value==objId.value){ //패스워드와 ID가 동일한지 검사
-        alert("Password는 ID와 동일하면 안됩니다.");
-        return false;
-    }
-    
-    if(objPwd2.value!=objPwd.value){ //비밀번호와 비밀번호확인이 동일한지 검사
-        alert("비밀번호가 틀립니다. 다시 확인하여 입력해주세요.");
-        return false;
-    }
     
     // ================ 이름 유효성검사 ================ //        
     if(objName.value ==''){
@@ -100,11 +82,11 @@ function Validation(){
     
     // ================ Tel 유효성검사 ===============//
     if(objTel1.value=='' || objTel2.value==''){ // Tel 입력여부 검사
-        alert("휴대폰 번호를 입력해주세요.");
+        alert("Tel을 입력해주세요.");
         return false;
     }
     else if(!t_RegExp.test(objTel1.value) || !t_RegExp.test(objTel2.value)){ //Tel 유효성검사
-        alert("휴대폰 번호는 숫자만 입력하여 주세요.");
+        alert("Tel 번호는 숫자만 입력하여 주세요.");
         return false;
     }
 }
@@ -119,28 +101,14 @@ function Validation(){
         <div class="col-md-4 col-md-offset-4">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <span class="glyphicon glyphicon-lock"></span> 회원가입</div>
+                    <span class="glyphicon glyphicon-lock"></span> 패스워드 찾기</div>
                 <div class="panel-body">
-                    <form action="/Signup_Back" method="get" class="form-horizontal" onsubmit="return Validation();">
+                    <form action="/PWFind_Back" method="get" class="form-horizontal" onsubmit="return Validation();">
                     <div class="form-group">
                         <label for="inputEmail" class="col-sm-3 control-label">
                             ID</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="inputID" name= "inputID" placeholder="ID" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="inputPassword" class="col-sm-3 control-label">
-                            비밀번호</label>
-                        <div class="col-sm-9">
-                            <input type="password" class="form-control" name= "inputPassword" id="inputPassword1" placeholder="Password" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="inputPassword1" class="col-sm-3 control-label">
-                            재확인</label>
-                        <div class="col-sm-9">
-                            <input type="password" class="form-control" id="inputPassword2" placeholder="Password" required>
+                            <input type="text" name="inputID" class="form-control" id="inputEmail" placeholder="ID" required>
                         </div>
                     </div>
                     <div class="form-group">
@@ -155,23 +123,23 @@ function Validation(){
                             휴대폰
                         </label>
                         <div class="col-sm-3">
-                       			<select style="height:35px;" id="inputTel1" name="inputTel1">
+                       			<select style="height:35px;" id="inputTel1" name="inputTel">
            						<option value="010">010</option>
             					<option value="070">070</option>
             					<option value="070">011</option>
        							</select>
                         </div>
                         <div class="col-sm-3">
-                            <input type="text" class="form-control" name= "inputTel2" id="inputTel2" placeholder="" required>
+                            <input type="text" name="inputTel2" class="form-control" id="inputTel2" placeholder="" required>
                         </div>
                         <div class="col-sm-3">
-                            <input type="text" class="form-control" name= "inputTel3" id="inputTel3" placeholder="" required>
+                            <input type="text" name="inputTel3" class="form-control" id="inputTel3" placeholder="" required>
                         </div>
                     </div>
                     <div class="form-group last">
                         <div class="col-sm-offset-3 col-sm-9">
                             <button type="submit" class="btn btn-success btn-sm">
-                                가입하기</button>
+                                확인</button>
                                  <button type="reset" class="btn btn-default btn-sm">
                                 취소</button>
                         </div>

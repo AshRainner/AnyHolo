@@ -244,10 +244,28 @@ public class DataManagement {
 							"",
 							item.getSnippet().getChannelId());
 				}
-				else {
+				else if(item.getSnippet().getThumbnails().getHigh()!=null){
 					k = new KirinukiVideo(item.getId(),
 							item.getSnippet().getTitle(),
 							item.getSnippet().getThumbnails().getHigh().getUrl(),
+							tag,
+							time,
+							"",
+							item.getSnippet().getChannelId());
+				}
+				else if(item.getSnippet().getThumbnails().getMedium()!=null){
+					k = new KirinukiVideo(item.getId(),
+							item.getSnippet().getTitle(),
+							item.getSnippet().getThumbnails().getMedium().getUrl(),
+							tag,
+							time,
+							"",
+							item.getSnippet().getChannelId());
+				}
+				else {
+					k = new KirinukiVideo(item.getId(),
+							item.getSnippet().getTitle(),
+							item.getSnippet().getThumbnails().getDefault().getUrl(),
 							tag,
 							time,
 							"",
@@ -314,10 +332,28 @@ public class DataManagement {
 						"",
 						item.getSnippet().getChannelId());
 			}
-			else {
+			else if (item.getSnippet().getThumbnails().getHigh()!=null){
 				k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
 						item.getSnippet().getTitle(),
 						item.getSnippet().getThumbnails().getHigh().getUrl(),
+						tag,
+						time,
+						"",
+						item.getSnippet().getChannelId());
+			}
+			else if(item.getSnippet().getThumbnails().getMedium()!=null){
+				k = new KirinukiVideo(item.getId(),
+						item.getSnippet().getTitle(),
+						item.getSnippet().getThumbnails().getMedium().getUrl(),
+						tag,
+						time,
+						"",
+						item.getSnippet().getChannelId());
+			}
+			else {
+				k = new KirinukiVideo(item.getId(),
+						item.getSnippet().getTitle(),
+						item.getSnippet().getThumbnails().getDefault().getUrl(),
 						tag,
 						time,
 						"",
@@ -383,10 +419,28 @@ public class DataManagement {
 						"",
 						item.getSnippet().getChannelId());
 			}
-			else {
+			else if (item.getSnippet().getThumbnails().getHigh()!=null){
 				k = new KirinukiVideo(item.getSnippet().getResourceId().getVideoId(),
 						item.getSnippet().getTitle(),
 						item.getSnippet().getThumbnails().getHigh().getUrl(),
+						tag,
+						time,
+						"",
+						item.getSnippet().getChannelId());
+			}
+			else if(item.getSnippet().getThumbnails().getMedium()!=null){
+				k = new KirinukiVideo(item.getId(),
+						item.getSnippet().getTitle(),
+						item.getSnippet().getThumbnails().getMedium().getUrl(),
+						tag,
+						time,
+						"",
+						item.getSnippet().getChannelId());
+			}
+			else {
+				k = new KirinukiVideo(item.getId(),
+						item.getSnippet().getTitle(),
+						item.getSnippet().getThumbnails().getDefault().getUrl(),
 						tag,
 						time,
 						"",

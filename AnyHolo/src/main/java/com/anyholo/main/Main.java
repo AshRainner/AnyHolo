@@ -14,7 +14,7 @@ public class Main {
 		YoutubeDataApi.setKey();
 		/*try {
 			k.InitializationKirinukiValue();
-			k.ResetKirinukiVideo(); // 최초로 넣을 때
+			k.getKirinukiInitialization("UCPJWIVKuW7m7ZzuY3FICwjQ"); // 최초로 넣을 때
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -64,8 +64,8 @@ public class Main {
 				}			
 			}
 		});
-		//YoutubeThread.start();
-		//KirinukiThread.start();
+		YoutubeThread.start();
+		KirinukiThread.start();
 		/*try {
 			yt.InitializationValue();
 			yt.get7daysTweet();

@@ -114,7 +114,11 @@ function Validation(){
                     </form>
                 </div>
                 <div class="panel-footer">
-                    회원가입 하시겠습니까? <a href="/Signup">회원가입</a>
+                    회원가입 하시겠습니까? <a href="join1.jsp">회원가입</a>
+                     <div class="forgot-pass-content">
+                         <a href="/IDFind">아이디 찾기</a>/
+                         <a href="/PWFind">패스워드 찾기</a>
+                     </div>
                 </div>
             </div>
         </div>

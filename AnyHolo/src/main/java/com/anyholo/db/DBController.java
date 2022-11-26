@@ -489,16 +489,17 @@ public class DBController {
 		}
 	}
 	//-----------------------------------------------------------
-	public void UserInsert(String id, String pw, String phone) throws SQLException {
+	public void UserInsert(String id, String pw, String phone,String name) throws SQLException {
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		con = DBConnect(con);
-		String sql = "Insert into \"USER\" values(?,?,?)";
+		String sql = "Insert into \"USER\" values(?,?,?,?)";
 		int result=0;
 		pstmt = con.prepareStatement(sql);
 		pstmt.setString(1, id);
 		pstmt.setString(2, pw);
 		pstmt.setString(3, phone);
+		pstmt.setString(4, name);
 		result = pstmt.executeUpdate();
 		DBClose(pstmt,con);
 	}
@@ -512,5 +513,42 @@ public class DBController {
 		pstmt.setString(2, pw);
 		ResultSet rs = pstmt.executeQuery();
 		return rs.next();
+	}
+	public String FindID(String phone,String name) throws SQLException {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		con = DBConnect(con);
+		String sql = "Select * from \"USER\" where phone = ? and name = ?";
+		pstmt = con.prepareStatement(sql);
+		pstmt.setString(1, phone);
+		pstmt.setString(2, name);
+		ResultSet rs = pstmt.executeQuery();
+		rs.next();
+		return rs.getString("ID");
+	}
+	public String FindPW(String id,String phone,String name) throws SQLException {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		con = DBConnect(con);
+		String sql = "Select * from \"USER\" where id = ? and phone = ? and name = ?";
+		pstmt = con.prepareStatement(sql);
+		pstmt.setString(1, id);
+		pstmt.setString(2, phone);
+		pstmt.setString(3, name);
+		ResultSet rs = pstmt.executeQuery();
+		rs.next();
+		return rs.getString("id");
+	}
+	public void ResetPW(String id,String pw,String phone,String name) throws SQLException {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		con = DBConnect(con);
+		String sql = "UPDATE \"USER\" SET pw = ? where id = ? and phone = ? and name = ?";
+		pstmt = con.prepareStatement(sql);
+		pstmt.setString(1, pw);
+		pstmt.setString(2, id);
+		pstmt.setString(3, phone);
+		pstmt.setString(4, name);
+		pstmt.executeUpdate();
 	}
 }

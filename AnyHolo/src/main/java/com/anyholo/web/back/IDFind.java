@@ -7,13 +7,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-@WebServlet("/Signup")
-public class Signup extends HttpServlet{
+@WebServlet("/IDFind")
+public class IDFind extends HttpServlet{
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");
 		response.setContentType("text/html; charset=UTF-8");;
 		response.setCharacterEncoding("UTF-8");
-		request.getRequestDispatcher("/WEB-INF/Signup.jsp").forward(request, response);
+		request.getRequestDispatcher("/WEB-INF/idFind.jsp").forward(request, response);
 	}
 }
