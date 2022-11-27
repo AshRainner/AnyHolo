@@ -10,7 +10,7 @@
 <meta charset="utf-8">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Bootstrap 4 Accordion</title>
+<title>PICK</title>
 <link rel="stylesheet"
 	href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 <link rel="stylesheet"
@@ -63,8 +63,8 @@
 
 	<div class="navbar shadow-sm" style="background-color: #4C586F;">
 		<div class="container">
-			<a style="color: #FFFFFF; font-size: 2.0em" href="Homepage.jsp"
-				class="navbar-brand d-flex align-items-center"> <strong>Video</strong>
+			<a style="color: #FFFFFF; font-size: 2.0em" href="/Main"
+				class="navbar-brand d-flex align-items-center"> <strong>메인</strong>
 			</a>
 			<div class="d-grid gap-2 d-md-flex justify-content-md-end">
 				<c:choose>
@@ -74,7 +74,7 @@
 							<strong>Login</strong>
 						</button>
 						<button type="button" class="btn btn-light" button
-							onclick="location.href='/Sighup'">
+							onclick="location.href='/Signup'">
 							<strong>Sign Up</strong>
 						</button>
 					</c:when>

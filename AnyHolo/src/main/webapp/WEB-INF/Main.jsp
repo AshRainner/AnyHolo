@@ -8,7 +8,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>PICK</title>
 </head>
 <body style="background-color: #EBECED;">
 
@@ -34,8 +34,8 @@
 
 		<div class="navbar shadow-sm" style="background-color: #4C586F;">
 			<div class="container">
-				<a style="color: #FFFFFF; font-size: 2.0em" href="Homepage.jsp"
-					class="navbar-brand d-flex align-items-center"> <strong>Video</strong>
+				<a style="color: #FFFFFF; font-size: 2.0em" href="/Main"
+					class="navbar-brand d-flex align-items-center"> <strong>메인</strong>
 				</a>
 				<div class="d-grid gap-2 d-md-flex justify-content-md-end">
 					<c:choose>
@@ -45,7 +45,7 @@
 								<strong>Login</strong>
 							</button>
 							<button type="button" class="btn btn-light" button
-								onclick="location.href='/Sighup'">
+								onclick="location.href='/Signup'">
 								<strong>Sign Up</strong>
 							</button>
 						</c:when>
@@ -78,8 +78,10 @@
 				<li class="nav-item"><a class="nav-link" href="/Clip"><strong>클립</strong></a>
 				</li>
 				<!-- dropdown 메뉴 삭제 -->
+				<c:if test="${sessionScope.id ne null}">
 				<li class="nav-item"><a class="nav-link" href="/Favorite"><strong>즐겨찾기</strong></a>
 				</li>
+				</c:if>
 			</ul>
 		</div>
 	</nav>
@@ -87,9 +89,11 @@
 		<c:set var="favoriteLiveCheck" value="false" />
 		<c:forEach var="n" items="${MemberList }">
 			<c:if test="${not favoriteLiveCheck}">
-				<c:if test="${fn:contains(sessionScope.favorite,n.member.krName)}">
-					<h1>즐겨찾기/방송중</h1>
-					<c:set var="favoriteLiveCheck" value="true" />
+				<c:if test="${n.onAir.onAir eq 'live'}">
+					<c:if test="${fn:contains(sessionScope.favorite,n.member.krName)}">
+						<h1>즐겨찾기/방송중</h1>
+						<c:set var="favoriteLiveCheck" value="true" />
+					</c:if>
 				</c:if>
 			</c:if>
 		</c:forEach>
@@ -152,7 +156,7 @@
 				</c:if>
 			</c:if>
 		</c:forEach>
-		
+
 		<main>
 			<div id="justify-content" class="container-fluid">
 				<div class="row row-cols-md-4">

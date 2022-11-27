@@ -50,14 +50,13 @@ function Validation(){
     var t_RegExp=/^[0-9]+$/;//Tel 유효성검사
     var n_RegExp = /^[가-힣]{2,15}$/; //이름 유효성검사 정규식
     
-    var objId = document.getElementById("inputEmail"); //아이디
+    var objId = document.getElementById("inputID"); //아이디
     var objPwd = document.getElementById("inputPassword1"); //비밀번호
     var objPwd2 = document.getElementById("inputPassword2"); //비밀번호확인
     var objName = document.getElementById("inputName"); //이름
     var objTel1 = document.getElementById("inputTel2"); //Tel
     var objTel2 = document.getElementById("inputTel3"); //Te2
 
-    
     // ================ ID 유효성검사 ================ //
     
     if(objId.value==''){
@@ -94,7 +93,7 @@ function Validation(){
         return false;
     }
     else if(!n_RegExp.test(objName.value)){
-        alert("특수문자,영어,숫자는 사용할수 없습니다. 한글만 입력하여주세요.");
+        alert("이름에는 특수문자,영어,숫자는 사용할수 없습니다. 한글만 입력하여주세요.");
         return false;
     }
     
@@ -109,7 +108,7 @@ function Validation(){
     }
 }
 </script>
-<title>회원가입 페이지</title>
+<title>PICK</title>
 </head>
 <body>
 <div class="item-bg">
@@ -172,7 +171,7 @@ function Validation(){
                         <div class="col-sm-offset-3 col-sm-9">
                             <button type="submit" class="btn btn-success btn-sm">
                                 가입하기</button>
-                                 <button type="reset" class="btn btn-default btn-sm">
+                                 <button type="button" class="btn btn-default btn-sm" onclick="location.href='/Main'">
                                 취소</button>
                         </div>
                     </div>

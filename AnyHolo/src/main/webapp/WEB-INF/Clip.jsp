@@ -7,7 +7,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>PICK</title>
 </head>
 <body style="background-color: #EBECED;">
 
@@ -33,8 +33,8 @@
 
 		<div class="navbar shadow-sm" style="background-color: #4C586F;">
 			<div class="container">
-				<a style="color: #FFFFFF; font-size: 2.0em" href="Homepage.jsp"
-					class="navbar-brand d-flex align-items-center"> <strong>Video</strong>
+				<a style="color: #FFFFFF; font-size: 2.0em" href="/Main"
+					class="navbar-brand d-flex align-items-center"> <strong>메인</strong>
 				</a>
 				<div class="d-grid gap-2 d-md-flex justify-content-md-end">
 					<c:choose>
@@ -44,7 +44,7 @@
 								<strong>Login</strong>
 							</button>
 							<button type="button" class="btn btn-light" button
-								onclick="location.href='/Sighup'">
+								onclick="location.href='/Signup'">
 								<strong>Sign Up</strong>
 							</button>
 						</c:when>
@@ -76,8 +76,10 @@
 				<li class="nav-item"><a class="nav-link active" href="/Clip"><strong>클립</strong></a>
 				</li>
 				<!-- dropdown 메뉴 삭제 -->
-				<li class="nav-item"><a class="nav-link" href="/Favorite"><strong>즐겨찾기</strong></a>
-				</li>
+				<c:if test="${sessionScope.id ne null}">
+					<li class="nav-item"><a class="nav-link" href="/Favorite"><strong>즐겨찾기</strong></a>
+					</li>
+				</c:if>
 			</ul>
 			<form action="/Clip" method="get" class="d-flex" role="search">
 				<input class="form-control me-2" type="search" placeholder="Search"
@@ -103,9 +105,10 @@
 						style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px">
 						<div class="card shadow-sm">
 							<div class="p-3 border">
-								<a href="${n.video.videoUrl}" target="_blank"> <img
-									style="width: 320px; height: 200px;" class="card-img-top"
-									src="${n.video.thumnailUrl}" class="img-responsive">
+								<a href="https://www.youtube.com/watch?v=${n.video.videoUrl}"
+									target="_blank"> <img style="width: 320px; height: 200px;"
+									class="card-img-top" src="${n.video.thumnailUrl}"
+									class="img-responsive">
 								</a>
 							</div>
 							<div class="ml-5 mr-5 p-2 bd-highlight">

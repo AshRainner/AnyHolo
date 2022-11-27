@@ -24,7 +24,6 @@ public class Signup_Back extends HttpServlet{
 		String pw = getSHA256(request.getParameter("inputPassword"));
 		String phone = request.getParameter("inputTel1")+request.getParameter("inputTel2")+request.getParameter("inputTel3");
 		String name = request.getParameter("name");
-		System.out.println("id : "+id+" pw : "+pw+" phone : "+phone);
 		PrintWriter out = response.getWriter();
 		try {
 			dbc.UserInsert(id,pw,phone,name);

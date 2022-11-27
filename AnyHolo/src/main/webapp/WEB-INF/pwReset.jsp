@@ -51,8 +51,6 @@ function Validation(){
     var objPwd = document.getElementById("inputPassword1"); //비밀번호
     var objPwd2 = document.getElementById("inputPassword2"); //비밀번호확인
 
-    
-    
     // ================ PASSWORD 유효성검사 ===============//
     if(objPwd.value==''){ // 비밀번호 입력여부 검사
         alert("Password를 입력해주세요.");
@@ -62,10 +60,6 @@ function Validation(){
         alert("Password는 4~12자의 영문 대소문자와 숫자로만 입력하여 주세요.");
         return false;
     }
-    if(objPwd.value==objId.value){ //패스워드와 ID가 동일한지 검사
-        alert("Password는 ID와 동일하면 안됩니다.");
-        return false;
-    }
     
     if(objPwd2.value!=objPwd.value){ //비밀번호와 비밀번호확인이 동일한지 검사
         alert("비밀번호가 틀립니다. 다시 확인하여 입력해주세요.");
@@ -73,7 +67,7 @@ function Validation(){
     }
 }
 </script>
-<title>회원가입 페이지</title>
+<title>PICK</title>
 </head>
 <body>
 <div class="item-bg">
@@ -107,7 +101,7 @@ function Validation(){
                         <div class="col-sm-offset-3 col-sm-9">
                             <button type="submit" class="btn btn-success btn-sm">
                                 확인</button>
-                                 <button type="reset" class="btn btn-default btn-sm">
+                                 <button type="reset" class="btn btn-default btn-sm" onclick="location.href='/Main'">
                                 취소</button>
                         </div>
                     </div>

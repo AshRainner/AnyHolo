@@ -44,7 +44,7 @@ margin-top:30px;
   }
     
 </style>
-<title>아이디 찾기</title>
+<title>PICK</title>
 </head>
 <body>
 <div class="item-bg">
