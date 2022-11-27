@@ -19,7 +19,7 @@ public class tcpSocket extends Thread{
 	public void run() {
 		// TODO Auto-generated method stub
 		try {
-			server_socket = new ServerSocket(9091);
+			server_socket = new ServerSocket(9092);
 			while(true) {
 				System.out.println("시작");
 				socket = server_socket.accept();
@@ -48,16 +48,15 @@ class SendThread extends Thread{
 	@Override
 	public void run() {
 		try {
-			System.out.println("데이터 취합중");
 			JSONObject jObject = new JSONObject();
 			JSONArray jArray = new JSONArray();
-			//DBController.DBSelect(jArray,DBController.MEMBER_SELECT,null,1);
+			DBController dbc = new DBController();
+			dbc.DBSelect(jArray,DBController.MEMBER_SELECT,"","",1);
 			jObject.put("Member", jArray);
 			os.writeObject(jObject);
 			os.flush();
 			os.close();
 			socket.close();
-			System.out.println("데이터 보냈음");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
