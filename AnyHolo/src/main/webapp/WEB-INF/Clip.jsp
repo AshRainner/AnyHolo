@@ -71,8 +71,7 @@
 		</button>
 		<div class="collapse navbar-collapse" id="navbarSupportedContent">
 			<ul class="navbar-nav nav-tabs mr-auto">
-				<li class="nav-item"><a class="nav-link"
-					href="/Main"><strong>실시간</strong></a>
+				<li class="nav-item"><a class="nav-link" href="/Main"><strong>실시간</strong></a>
 				</li>
 				<li class="nav-item"><a class="nav-link active" href="/Clip"><strong>클립</strong></a>
 				</li>
@@ -80,10 +79,10 @@
 				<li class="nav-item"><a class="nav-link" href="/Favorite"><strong>즐겨찾기</strong></a>
 				</li>
 			</ul>
-			<form class="d-flex" role="search">
+			<form action="/Clip" method="get" class="d-flex" role="search">
 				<input class="form-control me-2" type="search" placeholder="Search"
 					style="width: 400px; height: 35px; font-size: 20px;"
-					aria-label="Search">
+					aria-label="Search" name="Keyword">
 				<button class="btn btn-primary btn-circle" type="submit"
 					style="width: 40px; height: 40px; color: white">
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -95,25 +94,28 @@
 			</form>
 		</div>
 	</nav>
-
+	<input type="hidden" name="searchKeyword" value="${Keyword}">
 	<main>
-		<div class="container">
-			<div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-3"
-				id="mainContainer">
+		<div id="justify-content" class="container-fluid">
+			<div class="row row-cols-md-4" id="mainContainer">
 				<c:forEach var="n" items="${kirinukiList}">
-					<div class="row">
+					<div class="row justify-content-around"
+						style="margin-left: 10px; margin-top: 10px; margin-bottom: 10px">
 						<div class="card shadow-sm">
-							<div class="row">
-								<a href="https://www.youtube.com/watch?v=${n.video.videoUrl}"
-									target="_blank"> <img style="width: 320px; height: 200px;"
-									class="card-img img-fluid" src="${n.video.thumnailUrl}">
+							<div class="p-3 border">
+								<a href="${n.video.videoUrl}" target="_blank"> <img
+									style="width: 320px; height: 200px;" class="card-img-top"
+									src="${n.video.thumnailUrl}" class="img-responsive">
 								</a>
 							</div>
-							<p style="width: 280px; pxwhite-space: normal; font-size: 15px"
-								class="card-text pl-3 pt-3 pr-3 mx-1">${n.video.videoTitle }</p>
-							<a href="#" class="card-link line-height:1em ml-4"
-								style="font-size: 12px;">${n.user.userName}</a>
-							<p class="text-left ml-4" style="font-size: 10px;">${n.video.upLoadTime}</p>
+							<div class="ml-5 mr-5 p-2 bd-highlight">
+								<p
+									style="width: 240px; pxwhite-space: normal; font-size: 18px; margin-top: 0; margin-bottom: 0; margin-left: 0; overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; width: 300px line-heigth:1.0em; height: 3.0em;"" >${n.video.videoTitle }</p>
+								<a href="https://www.youtube.com/channel/${n.user.youtubeUrl}"
+									style="font-size: 12px; margin-top: 0; margin-bottom: 0; margin-left: 0">${n.user.userName}
+								</a>
+								<p style="font-size: 10px; margin: 0">${n.video.upLoadTime}</p>
+							</div>
 						</div>
 					</div>
 				</c:forEach>
@@ -127,6 +129,7 @@
 	<script type="text/javascript">
 		var loading = false;
 		var scrollPage = 2;
+		var keyword = "<c:out value='${Keyword}'/>"
 		$(window).scroll(
 				function() {
 					if ($(window).scrollTop() + 100 >= $(document).height()
@@ -143,10 +146,11 @@
 				loading = true;
 				$
 						.ajax({
-							url : "http://localhost:8081/Clip2",
+							url : "http://localhost:8081/ClipGet",
 							type : "get",
 							data : {
-								"Page" : scrollPage
+								"Page" : scrollPage,
+								"Keyword" : keyword
 							},
 							dataType : "json",
 							success : function(data) {
@@ -156,16 +160,24 @@
 										.forEach(function(value) {
 											var row = document
 													.createElement("div");
-											row.classList.add("row");
+											row
+													.setAttribute("class",
+															"row justify-content-around");
+											row
+													.setAttribute("style",
+															"margin-left: 10px; margin-top: 10px; margin-bottom: 10px");
 											var card = document
 													.createElement("div");
-											card.setAttribute("class","card shadow-sm");
+											card.setAttribute("class",
+													"card shadow-sm");
 											var secondRow = document
 													.createElement("div");
-											secondRow.classList.add("row");
+											secondRow.setAttribute("class",
+													"p-3 border");
 											var a = document.createElement("a");
 											a.setAttribute("href",
-													"https://www.youtube.com/watch?v="+value.youtubeUrl);
+													"https://www.youtube.com/watch?v="
+															+ value.youtubeUrl);
 											a.setAttribute("target", "_blank");
 											var img = document
 													.createElement("img");
@@ -174,31 +186,42 @@
 															"width: 320px; height: 200px;");
 											img.setAttribute("class",
 													"card-img-top");
-											img
-													.setAttribute("src",
-															value.thumnailUrl);
-											var p = document
-											.createElement("p");
-											p.setAttribute("style","width: 280px; pxwhite-space: normal; font-size: 15px");
-											p.setAttribute("class","card-text pl-3 pt-3 pr-3 mx-1");
+											img.setAttribute("src",
+													value.thumnailUrl);
+
+											var nameTimeDiv = document
+													.createElement("div");
+											nameTimeDiv
+													.setAttribute("class",
+															"ml-5 mr-5 p-2 bd-highlight");
+											var p = document.createElement("p");
+											p
+													.setAttribute(
+															"style",
+															"width: 240px; pxwhite-space: normal; font-size: 18px; margin-top: 0; margin-bottom: 0; margin-left: 0; overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; width: 300px line-heigth:1.0em; height: 3.0em;");
 											p.innerHTML = value.videoTitle;
 											var name = document
-											.createElement("a");
-											name.setAttribute("class","card-link line-height:1em ml-4");
-											name.setAttribute("style","font-size: 12px;");
-											name.setAttribute("href","#");
-											name.innerHTML=value.channelName;
+													.createElement("a");
+											name
+													.setAttribute("style",
+															"font-size: 12px; margin-top: 0; margin-bottom: 0; margin-left: 0");
+											name.setAttribute("href",
+													"https://www.youtube.com/channel/"
+															+ value.userUrl);
+											name.innerHTML = value.channelName;
 											var upLoadTime = document
-											.createElement("p");
-											upLoadTime.setAttribute("class","text-left ml-4");
-											upLoadTime.setAttribute("style","font-size: 10px;");
-											upLoadTime.innerHTML=value.uploadTime;
-											a.appendChild(img);
-											secondRow.appendChild(a);										
+													.createElement("p");
+											upLoadTime
+													.setAttribute("style",
+															"font-size: 10px; margin: 0");
+											upLoadTime.innerHTML = value.uploadTime;
 											card.appendChild(secondRow);
-											card.appendChild(p);
-											card.appendChild(name);
-											card.appendChild(upLoadTime);	
+											secondRow.appendChild(a);
+											secondRow.appendChild(img);
+											card.appendChild(nameTimeDiv);
+											nameTimeDiv.appendChild(p);
+											nameTimeDiv.appendChild(name);
+											nameTimeDiv.appendChild(upLoadTime);
 											row.appendChild(card);
 											document.getElementById(
 													'mainContainer')

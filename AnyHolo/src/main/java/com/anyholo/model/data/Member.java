@@ -9,6 +9,7 @@ public class Member {
 	String searchKrName; // 검색용 이름
 	String krName; // 보여줄 이름
 	String twitterId;
+	String profileUrl;
 	
 	
 
@@ -24,6 +25,16 @@ public class Member {
 		this.krName = krName;
 		this.twitterId = twitterId;
 	}
+	
+	public String getProfileUrl() {
+		return profileUrl;
+	}
+
+
+	public void setProfileUrl(String profileUrl) {
+		this.profileUrl = profileUrl;
+	}
+
 
 	public String getTwitterId() {
 		return twitterId;

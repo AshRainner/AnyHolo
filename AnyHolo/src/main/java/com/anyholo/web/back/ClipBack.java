@@ -43,11 +43,12 @@ public class ClipBack extends HttpServlet {
 		for(int i=0;i<jArray.size();i++) {
 			JSONObject obj = (JSONObject) jArray.get(i);
 			kirinuki.add(new KirinukiView(
-					new KirinukiUser("",obj.get("channelName").toString()),
+					new KirinukiUser(obj.get("userUrl").toString(),obj.get("channelName").toString()),
 					new KirinukiVideo(obj.get("youtubeUrl").toString(),obj.get("videoTitle").toString(),
 							obj.get("thumnailUrl").toString(),"",obj.get("uploadTime").toString(),"","")));
 		}
 		request.setAttribute("kirinukiList", kirinuki);
+		request.setAttribute("Keyword", keyword);
 		request.getRequestDispatcher("/WEB-INF/Clip.jsp").forward(request, response);
 	}
 }

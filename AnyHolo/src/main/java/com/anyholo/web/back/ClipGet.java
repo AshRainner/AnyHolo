@@ -19,8 +19,8 @@ import com.anyholo.model.data.KirinukiUser;
 import com.anyholo.model.data.KirinukiVideo;
 import com.anyholo.model.data.KirinukiView;
 
-@WebServlet("/Clip2")
-public class ClipBack2 extends HttpServlet {
+@WebServlet("/ClipGet")
+public class ClipGet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		request.setCharacterEncoding("UTF-8");

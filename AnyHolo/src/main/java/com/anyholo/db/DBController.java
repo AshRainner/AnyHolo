@@ -146,6 +146,7 @@ public class DBController {
 	private static void KirinukiPut(JSONArray jArray,ResultSet rs) throws SQLException {
 		while(rs.next()) {
 			JSONObject sObject = new JSONObject();
+			sObject.put("userUrl", rs.getString("youtubeUrl"));
 			sObject.put("youtubeUrl", rs.getString("videoUrl"));
 			sObject.put("channelName", rs.getString("userName"));
 			sObject.put("thumnailUrl", rs.getString("thumnailUrl"));
@@ -494,13 +495,16 @@ public class DBController {
 		PreparedStatement pstmt = null;
 		con = DBConnect(con);
 		String sql = "Insert into \"USER\" values(?,?,?,?)";
-		int result=0;
 		pstmt = con.prepareStatement(sql);
 		pstmt.setString(1, id);
 		pstmt.setString(2, pw);
 		pstmt.setString(3, phone);
 		pstmt.setString(4, name);
-		result = pstmt.executeUpdate();
+		pstmt.executeUpdate();
+		sql = "Insert into \"FAVORITE\" values(?,'null')";
+		pstmt = con.prepareStatement(sql);
+		pstmt.setString(1, id);
+		pstmt.executeUpdate();
 		DBClose(pstmt,con);
 	}
 	public boolean UserSelect(String id,String pw) throws SQLException {
@@ -512,7 +516,10 @@ public class DBController {
 		pstmt.setString(1, id);
 		pstmt.setString(2, pw);
 		ResultSet rs = pstmt.executeQuery();
-		return rs.next();
+		boolean result = rs.next();
+		rs.close();
+		DBClose(pstmt, con);
+		return result;
 	}
 	public String FindID(String phone,String name) throws SQLException {
 		Connection con = null;
@@ -524,7 +531,10 @@ public class DBController {
 		pstmt.setString(2, name);
 		ResultSet rs = pstmt.executeQuery();
 		rs.next();
-		return rs.getString("ID");
+		String result=rs.getString("id");
+		rs.close();
+		DBClose(pstmt, con);
+		return result;
 	}
 	public String FindPW(String id,String phone,String name) throws SQLException {
 		Connection con = null;
@@ -537,7 +547,10 @@ public class DBController {
 		pstmt.setString(3, name);
 		ResultSet rs = pstmt.executeQuery();
 		rs.next();
-		return rs.getString("id");
+		String result=rs.getString("id");
+		rs.close();
+		DBClose(pstmt, con);
+		return result;
 	}
 	public void ResetPW(String id,String pw,String phone,String name) throws SQLException {
 		Connection con = null;
@@ -550,5 +563,56 @@ public class DBController {
 		pstmt.setString(3, phone);
 		pstmt.setString(4, name);
 		pstmt.executeUpdate();
+		DBClose(pstmt, con);
+	}
+	public void FavoriteUpdate(String id,String name) throws SQLException {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		con = DBConnect(con);
+		String sql = "select * from \"FAVORITE\" where id = ?";
+		pstmt = con.prepareStatement(sql);
+		pstmt.setString(1, id);
+		ResultSet rs = pstmt.executeQuery();
+		rs.next();
+		name+=";"+rs.getString("favorite");
+		sql = "UPDATE \"FAVORITE\" SET favorite = ? where id = ?";
+		pstmt = con.prepareStatement(sql);
+		pstmt.setString(1, name);
+		pstmt.setString(2, id);
+		pstmt.executeUpdate();
+		rs.close();
+		DBClose(pstmt, con);
+	}
+	public void FavoriteUpdate_Del(String id,String Delname) throws SQLException {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		con = DBConnect(con);
+		String sql = "select * from \"FAVORITE\" where id = ?";
+		pstmt = con.prepareStatement(sql);
+		pstmt.setString(1, id);
+		ResultSet rs = pstmt.executeQuery();
+		rs.next();
+		String name=rs.getString("favorite").replace(Delname+";", "");
+		sql = "UPDATE \"FAVORITE\" SET favorite = ? where id = ?";
+		pstmt = con.prepareStatement(sql);
+		pstmt.setString(1, name);
+		pstmt.setString(2, id);
+		pstmt.executeUpdate();
+		rs.close();
+		DBClose(pstmt, con);
+	}
+	public String SeletctFavorite(String id) throws SQLException {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		con = DBConnect(con);
+		String sql = "Select * from \"FAVORITE\" where id = ?";
+		pstmt = con.prepareStatement(sql);
+		pstmt.setString(1, id);
+		ResultSet rs = pstmt.executeQuery();
+		rs.next();
+		String favorite=rs.getString("favorite");
+		rs.close();
+		DBClose(pstmt, con);
+		return favorite;
 	}
 }

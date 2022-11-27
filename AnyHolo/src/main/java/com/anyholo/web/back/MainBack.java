@@ -42,6 +42,7 @@ public class MainBack extends HttpServlet {
 			JSONObject obj = (JSONObject) jArray.get(i);
 			memberList.add(new MemberView(new Member(0, obj.get("channelId").toString(), null, null, obj.get("country").toString(), obj.get("searchName").toString(), obj.get("memberName").toString(), null),
 					new MemberOnAir(0, obj.get("onAir").toString(), obj.get("onAirTitle").toString(), obj.get("onAirThumnailsUrl").toString(), obj.get("onAirVideoUrl").toString())));
+			memberList.get(i).getMember().setProfileUrl(obj.get("profileUrl").toString());
 		}
 		request.setAttribute("MemberList", memberList);
 		request.getRequestDispatcher("/WEB-INF/Main.jsp").forward(request, response);

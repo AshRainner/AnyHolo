@@ -25,11 +25,12 @@ public class Login_Back extends HttpServlet {
 		String pw = getSHA256(request.getParameter("inputPassword"));
 		DBController dbc = new DBController();
 		PrintWriter out = response.getWriter();
-
 		try {
 			if(dbc.UserSelect(id, pw)) {
 				HttpSession session= request.getSession();
 				session.setAttribute("id", id);
+				String favorite=dbc.SeletctFavorite(id);
+				session.setAttribute("favorite", favorite);
 				response.sendRedirect("/Main");
 			}
 			else {
