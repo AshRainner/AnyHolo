@@ -20,8 +20,10 @@ public class Signup_Back extends HttpServlet{
 		response.setContentType("text/html; charset=UTF-8");;
 		response.setCharacterEncoding("UTF-8");
 		DBController dbc = new DBController();
+		//get 방식으로 id pw phone name을 받음
 		String id = request.getParameter("inputID");
 		String pw = getSHA256(request.getParameter("inputPassword"));
+		//받은 pw받은 sha256해시함수로 암호화 한다.
 		String phone = request.getParameter("inputTel1")+request.getParameter("inputTel2")+request.getParameter("inputTel3");
 		String name = request.getParameter("name");
 		PrintWriter out = response.getWriter();
@@ -41,7 +43,7 @@ public class Signup_Back extends HttpServlet{
 	public static String getSHA256(String data) {
 		String SHA = "";
 		try {
-			MessageDigest sh = MessageDigest.getInstance("SHA-256");
+			MessageDigest sh = MessageDigest.getInstance("SHA-256");//암호화 sha256으로 하기
 			sh.update(data.getBytes());
 			byte byteData[] = sh.digest();
 			StringBuffer sb = new StringBuffer();
@@ -54,6 +56,6 @@ public class Signup_Back extends HttpServlet{
 			e.printStackTrace();
 			SHA = null;
 		}
-		return SHA;
+		return SHA;//암호화한 pw를 반환
 	}
 }

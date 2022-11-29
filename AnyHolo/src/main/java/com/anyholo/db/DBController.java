@@ -321,12 +321,12 @@ public class DBController {
 				pstmt.executeUpdate();			
 			}
 			rs.close();
+			DBClose(pstmt,con);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
-		DBClose(pstmt,con);
-	}
+}
 	public String KirinukiVideoCheck(String videoUrl) throws SQLException {
 		Connection con = null;
 		PreparedStatement pstmt = null;

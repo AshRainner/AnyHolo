@@ -49,56 +49,80 @@ public class DataManagement {
 	private ArrayList<KirinukiUser> kirinukiList;
 	private ArrayList<MemberOnAir> memberOnAirList;
 	private DBController dbc = null;
-	public void InitializationValue() throws SQLException {
+	public void InitializationValue(){
 		dbc = new DBController();
 		memberList = new ArrayList<>();
 		memberOnAirList = new ArrayList<>();
-		dbc.MemberSelect(memberList);
-		dbc.MemberOnAirSelect(memberOnAirList);
+		try {
+			dbc.MemberSelect(memberList);
+			dbc.MemberOnAirSelect(memberOnAirList);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
-	public void InitializationKirinukiValue() throws SQLException {
+	public void InitializationKirinukiValue(){
 		dbc = new DBController();
 		memberList = new ArrayList<>();
 		kirinukiList = new ArrayList<>();
-		dbc.MemberSelect(memberList);
-		dbc.KirinukiUserSelect(kirinukiList);
+		try {
+			dbc.MemberSelect(memberList);
+			dbc.KirinukiUserSelect(kirinukiList);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 	}
-	public void LiveConfirm() throws SQLException, IOException {
+	public void LiveConfirm(){
 		//web페이지를 파싱해서 live여부를 확인 할당량을 아끼기위해 사용함
 		String liveids="";
 		for(int i=0;i<memberList.size();i++) {
-			Document doc = Jsoup.connect("https://www.youtube.com/channel/"
-					+memberList.get(i).getChannelId()+"/live").get();
-			Elements links = doc.select("link[rel=\"canonical\"]");
-			if(links.attr("href").contains("watch")) {
-				liveids+=(links.attr("href").substring(32))+",";
-			}
+			Document doc;
+			try {
+				doc = Jsoup.connect("https://www.youtube.com/channel/"
+						+memberList.get(i).getChannelId()+"/live").get();
+				Elements links = doc.select("link[rel=\"canonical\"]");
+				if(links.attr("href").contains("watch")) {
+					liveids+=(links.attr("href").substring(32))+",";
+				}
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}		
 		}
 		boolean[] check = new boolean[55];
 		if(liveids!="") {
 			liveids = liveids.substring(0,liveids.length()-1);
-			String jsonString = YoutubeDataApi.getLiveJSon(liveids);
-			ObjectMapper mapper = new ObjectMapper();
-			String Day2Later = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_INSTANT);
-			List<com.anyholo.model.live.Item> items = mapper.readValue(jsonString, LiveModel.class).getItems();
-			for(int i=0;i<memberOnAirList.size();i++) {
-				memberOnAirList.get(i).setOnAir("default");
-				memberOnAirList.get(i).setOnAirThumnailsUrl("default");
-				memberOnAirList.get(i).setOnAirTitle("default");
-				memberOnAirList.get(i).setOnAirVideoUrl("default");
-			}
-			for(int i=0;i<items.size();i++) {
-				int index = getIndex(items.get(i))-1; // number값이 1부터 시작이라 1 빼줘야함
-				if(items.get(i).getSnippet().getLiveBroadcastContent().equals("live")||
-						items.get(i).getSnippet().getLiveBroadcastContent().equals("upcoming")&&
-						items.get(i).getLiveStreamingDetails().getScheduledStartTime().compareTo(Day2Later)<=0) {
-					memberOnAirList.get(index).setOnAir(items.get(i).getSnippet().getLiveBroadcastContent());
-					memberOnAirList.get(index).setOnAirThumnailsUrl(items.get(i).getSnippet().getThumbnails().getMaxres().getUrl());
-					memberOnAirList.get(index).setOnAirTitle(items.get(i).getSnippet().getTitle());
-					memberOnAirList.get(index).setOnAirVideoUrl("https://www.youtube.com/watch?v="+items.get(i).getId());
+			String jsonString;
+			try {
+				jsonString = YoutubeDataApi.getLiveJSon(liveids);
+				ObjectMapper mapper = new ObjectMapper();
+				String Day2Later = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_INSTANT);
+				List<com.anyholo.model.live.Item> items = mapper.readValue(jsonString, LiveModel.class).getItems();
+				for(int i=0;i<memberOnAirList.size();i++) {
+					memberOnAirList.get(i).setOnAir("default");
+					memberOnAirList.get(i).setOnAirThumnailsUrl("default");
+					memberOnAirList.get(i).setOnAirTitle("default");
+					memberOnAirList.get(i).setOnAirVideoUrl("default");
 				}
+				for(int i=0;i<items.size();i++) {
+					int index = getIndex(items.get(i))-1; // number값이 1부터 시작이라 1 빼줘야함
+					if(items.get(i).getSnippet().getLiveBroadcastContent().equals("live")||
+							items.get(i).getSnippet().getLiveBroadcastContent().equals("upcoming")&&
+							items.get(i).getLiveStreamingDetails().getScheduledStartTime().compareTo(Day2Later)<=0) {
+						memberOnAirList.get(index).setOnAir(items.get(i).getSnippet().getLiveBroadcastContent());
+						memberOnAirList.get(index).setOnAirThumnailsUrl(items.get(i).getSnippet().getThumbnails().getMaxres().getUrl());
+						memberOnAirList.get(index).setOnAirTitle(items.get(i).getSnippet().getTitle());
+						memberOnAirList.get(index).setOnAirVideoUrl("https://www.youtube.com/watch?v="+items.get(i).getId());
+					}
+				}
+				dbc.MemberOnAirUpdate(memberOnAirList);
+			} catch (IOException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			dbc.MemberOnAirUpdate(memberOnAirList);
+			
 		}	
 	}
 	private int getIndex(com.anyholo.model.live.Item item) {//api에서 불러온 값이 순서대로가 아니라 순서를 확인해줄 index
@@ -292,9 +316,9 @@ public class DataManagement {
 		String jsonString = YoutubeDataApi.getKirinukiInitialValue(url);
 		ObjectMapper mapper = new ObjectMapper();
 		KirinukiModel model = mapper.readValue(jsonString, KirinukiModel.class);
-		if(model.getNextPageToken()!=null) {
+		/*if(model.getNextPageToken()!=null) {
 			getKirinukiInitialization(url, model.getNextPageToken());
-		}
+		}*/
 		for(com.anyholo.model.kirinuki.Item item: model.getItems()) {
 			String time = convertTime(item.getSnippet().getPublishedAt());
 			KirinukiVideo k;
