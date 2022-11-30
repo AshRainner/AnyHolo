@@ -9,12 +9,14 @@ import com.anyholo.api.YoutubeDataApi;
 
 public class Main {
 	public static void main(String[] args){
+		/*tcpSocket ts= new tcpSocket();
+		ts.start();*/
 		DataManagement yt = new DataManagement(); //youtube/twitter
 		DataManagement k = new DataManagement();//kirinuki
 		YoutubeDataApi.setKey();
 		/*try {
 			k.InitializationKirinukiValue();
-			k.getKirinukiInitialization("UCPJWIVKuW7m7ZzuY3FICwjQ"); // 최초로 넣을 때
+			k.ResetKirinukiVideo(); // 최초로 넣을 때
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -27,18 +29,10 @@ public class Main {
 			public void run() {
 				// TODO Auto-generated method stub
 				while(true) {	
-					try {
 						yt.InitializationValue();
 						//System.out.println("라이브 컨펌 시작 : "+LocalDateTime.now());
 						yt.LiveConfirm();
 						//System.out.println("라이브 컨펌 종료 : "+LocalDateTime.now());				
-					} catch (SQLException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}	
 				}
 			}
 		});
@@ -46,22 +40,18 @@ public class Main {
 
 			@Override
 			public void run() {			
-				try {
 					while(true) {
 						k.InitializationKirinukiValue();
 						//System.out.println("키리누키 시작 : "+LocalDateTime.now());
 						k.getKirinuki();
 						//System.out.println("키리누키 종료 : "+LocalDateTime.now());
-						Thread.sleep((1000*40));
+						try {
+							Thread.sleep((1000*40));
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
-
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}			
 			}
 		});
 		YoutubeThread.start();
