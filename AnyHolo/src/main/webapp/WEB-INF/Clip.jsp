@@ -149,7 +149,7 @@
 				loading = true;
 				$
 						.ajax({
-							url : "http://localhost:8081/ClipGet",
+							url : "http://52.193.142.22/ClipGet",
 							type : "get",
 							data : {
 								"Page" : scrollPage,
