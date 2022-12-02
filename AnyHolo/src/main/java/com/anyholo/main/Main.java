@@ -29,29 +29,29 @@ public class Main {
 			public void run() {
 				// TODO Auto-generated method stub
 				while(true) {	
-						yt.InitializationValue();
-						//System.out.println("라이브 컨펌 시작 : "+LocalDateTime.now());
-						yt.LiveConfirm();
-						//System.out.println("라이브 컨펌 종료 : "+LocalDateTime.now());				
+					yt.InitializationValue();
+					//System.out.println("라이브 컨펌 시작 : "+LocalDateTime.now());
+					yt.LiveConfirm();
+					//System.out.println("라이브 컨펌 종료 : "+LocalDateTime.now());				
 				}
 			}
 		});
 		Thread KirinukiThread = new Thread(new Runnable() {
 
 			@Override
-			public void run() {			
-					while(true) {
-						k.InitializationKirinukiValue();
-						//System.out.println("키리누키 시작 : "+LocalDateTime.now());
-						k.getKirinuki();
-						//System.out.println("키리누키 종료 : "+LocalDateTime.now());
-						try {
-							Thread.sleep((1000*40));
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+			public void run() {		
+				while(true) {
+					k.InitializationKirinukiValue();
+					//System.out.println("키리누키 시작 : "+LocalDateTime.now());
+					k.getKirinuki();
+					//System.out.println("키리누키 종료 : "+LocalDateTime.now());
+					try {
+						Thread.sleep((1000*40));
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
+				}
 			}
 		});
 		YoutubeThread.start();

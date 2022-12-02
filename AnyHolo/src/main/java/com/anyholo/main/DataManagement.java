@@ -108,11 +108,23 @@ public class DataManagement {
 				}
 				for(int i=0;i<items.size();i++) {
 					int index = getIndex(items.get(i))-1; // number값이 1부터 시작이라 1 빼줘야함
+					String thumbnailsUrl = "";
 					if(items.get(i).getSnippet().getLiveBroadcastContent().equals("live")||
 							items.get(i).getSnippet().getLiveBroadcastContent().equals("upcoming")&&
 							items.get(i).getLiveStreamingDetails().getScheduledStartTime().compareTo(Day2Later)<=0) {
 						memberOnAirList.get(index).setOnAir(items.get(i).getSnippet().getLiveBroadcastContent());
-						memberOnAirList.get(index).setOnAirThumnailsUrl(items.get(i).getSnippet().getThumbnails().getMaxres().getUrl());
+						if(items.get(i).getSnippet().getThumbnails().getMaxres()!=null) {
+							thumbnailsUrl = items.get(i).getSnippet().getThumbnails().getMaxres().getUrl();		
+						}else if(items.get(i).getSnippet().getThumbnails().getStandard()!=null) {
+							thumbnailsUrl = items.get(i).getSnippet().getThumbnails().getStandard().getUrl();
+						}else if(items.get(i).getSnippet().getThumbnails().getHigh()!=null) {
+							thumbnailsUrl = items.get(i).getSnippet().getThumbnails().getHigh().getUrl();
+						}else if(items.get(i).getSnippet().getThumbnails().getMedium()!=null) {
+							thumbnailsUrl = items.get(i).getSnippet().getThumbnails().getMedium().getUrl();
+						}else {
+							thumbnailsUrl = items.get(i).getSnippet().getThumbnails().getDefault().getUrl();
+						}
+						memberOnAirList.get(index).setOnAirThumnailsUrl(thumbnailsUrl);
 						memberOnAirList.get(index).setOnAirTitle(items.get(i).getSnippet().getTitle());
 						memberOnAirList.get(index).setOnAirVideoUrl("https://www.youtube.com/watch?v="+items.get(i).getId());
 					}
@@ -151,9 +163,12 @@ public class DataManagement {
 			jsonObject = (JSONObject) jsonObject.get("contents");
 			jsonObject = (JSONObject) jsonObject.get("twoColumnBrowseResultsRenderer");
 			JSONArray jsonArray = (JSONArray) jsonObject.get("tabs");
-			jsonObject = (JSONObject) jsonArray.get(1);
-			jsonObject = (JSONObject) jsonObject.get("tabRenderer");
-			jsonObject = (JSONObject) jsonObject.get("content");
+			for(int i = 0; i<jsonArray.size()-1;i++) {
+				JSONObject obj = (JSONObject) jsonArray.get(i);
+				if(((JSONObject)obj.get("tabRenderer")).get("title").equals("동영상")) {
+					jsonObject = (JSONObject) ((JSONObject)obj.get("tabRenderer")).get("content");
+				}
+			}
 			jsonObject = (JSONObject) jsonObject.get("richGridRenderer");
 			jsonArray = (JSONArray) jsonObject.get("contents");
 			jsonObject = (JSONObject) jsonArray.get(0);
@@ -165,6 +180,8 @@ public class DataManagement {
 			// TODO Auto-generated catch block
 			return "";
 		} catch (org.json.simple.parser.ParseException e) {
+			return "";
+		} catch (Exception e) {
 			return "";
 		}
 	}
@@ -186,9 +203,12 @@ public class DataManagement {
 			jsonObject = (JSONObject) jsonObject.get("contents");
 			jsonObject = (JSONObject) jsonObject.get("twoColumnBrowseResultsRenderer");
 			JSONArray jsonArray = (JSONArray) jsonObject.get("tabs");
-			jsonObject = (JSONObject) jsonArray.get(2);
-			jsonObject = (JSONObject) jsonObject.get("tabRenderer");
-			jsonObject = (JSONObject) jsonObject.get("content");
+			for(int i = 0; i<jsonArray.size()-1;i++) {
+				JSONObject obj = (JSONObject) jsonArray.get(i);
+				if(((JSONObject)obj.get("tabRenderer")).get("title").equals("Shorts")) {
+					jsonObject = (JSONObject) ((JSONObject)obj.get("tabRenderer")).get("content");
+				}
+			}
 			if(jsonObject==null)
 				return "";
 			jsonObject = (JSONObject) jsonObject.get("richGridRenderer");
@@ -201,6 +221,8 @@ public class DataManagement {
 		} catch (IOException e) {
 			return "";
 		} catch (org.json.simple.parser.ParseException e) {
+			return "";
+		} catch (Exception e) {
 			return "";
 		}
 	}
