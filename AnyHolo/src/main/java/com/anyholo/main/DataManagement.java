@@ -165,7 +165,8 @@ public class DataManagement {
 			JSONArray jsonArray = (JSONArray) jsonObject.get("tabs");
 			for(int i = 0; i<jsonArray.size()-1;i++) {
 				JSONObject obj = (JSONObject) jsonArray.get(i);
-				if(((JSONObject)obj.get("tabRenderer")).get("title").equals("동영상")) {
+				//aws에서는 動画 일본어로 나옴 한국은 동영상
+				if(((JSONObject)obj.get("tabRenderer")).get("title").equals("動画")) {
 					jsonObject = (JSONObject) ((JSONObject)obj.get("tabRenderer")).get("content");
 				}
 			}
@@ -209,7 +210,8 @@ public class DataManagement {
 			boolean check = false;
 			for(int i = 0; i<jsonArray.size()-1;i++) {
 				JSONObject obj = (JSONObject) jsonArray.get(i);
-				if(((JSONObject)obj.get("tabRenderer")).get("title").equals("Shorts")) {
+				//aws 서버는 ショート로 일본어로나온 한국은 Shorts
+				if(((JSONObject)obj.get("tabRenderer")).get("title").equals("ショート")) {
 					check=true;
 					jsonObject = (JSONObject) ((JSONObject)obj.get("tabRenderer")).get("content");
 				}
