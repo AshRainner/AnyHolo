@@ -223,6 +223,7 @@ public class DataManagement {
 		} catch (org.json.simple.parser.ParseException e) {
 			return "";
 		} catch (Exception e) {
+			e.printStackTrace();
 			return "";
 		}
 	}
