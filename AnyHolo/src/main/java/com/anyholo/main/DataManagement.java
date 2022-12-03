@@ -60,7 +60,7 @@ public class DataManagement {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 	public void InitializationKirinukiValue(){
 		dbc = new DBController();
@@ -134,7 +134,7 @@ public class DataManagement {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 		}	
 	}
 	private int getIndex(com.anyholo.model.live.Item item) {//api에서 불러온 값이 순서대로가 아니라 순서를 확인해줄 index
@@ -178,10 +178,13 @@ public class DataManagement {
 			return jsonObject.get("videoId").toString();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
 			return "";
 		} catch (org.json.simple.parser.ParseException e) {
+			e.printStackTrace();
 			return "";
 		} catch (Exception e) {
+			e.printStackTrace();
 			return "";
 		}
 	}
@@ -203,24 +206,29 @@ public class DataManagement {
 			jsonObject = (JSONObject) jsonObject.get("contents");
 			jsonObject = (JSONObject) jsonObject.get("twoColumnBrowseResultsRenderer");
 			JSONArray jsonArray = (JSONArray) jsonObject.get("tabs");
+			boolean check = false;
 			for(int i = 0; i<jsonArray.size()-1;i++) {
 				JSONObject obj = (JSONObject) jsonArray.get(i);
 				if(((JSONObject)obj.get("tabRenderer")).get("title").equals("Shorts")) {
+					check=true;
 					jsonObject = (JSONObject) ((JSONObject)obj.get("tabRenderer")).get("content");
 				}
 			}
-			if(jsonObject==null)
-				return "";
-			jsonObject = (JSONObject) jsonObject.get("richGridRenderer");
-			jsonArray = (JSONArray) jsonObject.get("contents");	
-			jsonObject = (JSONObject) jsonArray.get(0);
-			jsonObject = (JSONObject) jsonObject.get("richItemRenderer");
-			jsonObject = (JSONObject) jsonObject.get("content");	
-			jsonObject = (JSONObject) jsonObject.get("reelItemRenderer");
-			return jsonObject.get("videoId").toString();
+			if(check) {
+				jsonObject = (JSONObject) jsonObject.get("richGridRenderer");		
+				jsonArray = (JSONArray) jsonObject.get("contents");	
+				jsonObject = (JSONObject) jsonArray.get(0);
+				jsonObject = (JSONObject) jsonObject.get("richItemRenderer");
+				jsonObject = (JSONObject) jsonObject.get("content");	
+				jsonObject = (JSONObject) jsonObject.get("reelItemRenderer");
+				return jsonObject.get("videoId").toString();
+			}
+			return "";
 		} catch (IOException e) {
+			e.printStackTrace();
 			return "";
 		} catch (org.json.simple.parser.ParseException e) {
+			e.printStackTrace();
 			return "";
 		} catch (Exception e) {
 			e.printStackTrace();
