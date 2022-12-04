@@ -133,6 +133,9 @@ public class DataManagement {
 			} catch (IOException | SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+				return;
 			}
 
 		}	
