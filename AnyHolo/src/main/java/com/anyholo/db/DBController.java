@@ -23,6 +23,7 @@ public class DBController {
 	public static final int MEMBER_SELECT = 1;
 	public static final int KIRINUKI_SELECT = 2; 
 	public static final int TWEET_SELECT = 3;
+	public static final int UPDATE_SELECT = 4;
 	private static String url = "jdbc:oracle:thin:@52.193.142.22:1521:xe";
 	private static String userid = "AnyHolo";
 	private static String pwd ="8778";
@@ -59,6 +60,8 @@ public class DBController {
 			KirinukiViewSelect(jArray,country,keyword,(Page-1)*MAXITEM+1,Page*MAXITEM);
 		else if(Num==TWEET_SELECT)
 			TweetViewSelect(jArray,country,keyword,(Page-1)*MAXITEM+1,Page*MAXITEM);
+		else if(Num==UPDATE_SELECT)
+			UpdateLogSelect(jArray);
 	}
 	public void DBSelect(JSONArray jArray,int Num,String country,String keyword,int Page,int web) {
 		if(Num==MEMBER_SELECT)
@@ -186,6 +189,37 @@ public class DBController {
 		Timestamp time = rs.getTimestamp("writedate");
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		sObject.put("writeDate",format.format(time));
+	}
+	private void UpdateLogSelect(JSONArray jArray) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		con = DBConnect(con);
+		String sql = "SELECT * FROM UPDATE_LOG ORDER BY VERSION desc";
+		try {
+			pstmt = con.prepareStatement(sql);
+			ResultSet rs = pstmt.executeQuery();
+			String updateString="";
+			String recentVersion="";
+			int i = 0;
+			while(rs.next()) {
+				if(i==0) {
+					i++;
+					recentVersion=rs.getString("VERSION");
+				}
+				updateString+=rs.getString("VERSION")+"\n";
+				updateString+=rs.getString("CONTENT")+"\n";
+			}
+			updateString=updateString.substring(0, updateString.length()-1);
+			updateString=updateString.replace("<br>","\n");
+			jArray.add(recentVersion);
+			jArray.add(updateString);
+			System.out.println(jArray);
+			/*System.out.println("최신 버전 : "+recentVersion);
+			System.out.println(updateString);*/
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	private void MemberViewSelect(JSONArray jArray) {
 		try {		
@@ -442,6 +476,7 @@ public class DBController {
 		}		
 
 	}
+	
 	private void TweetViewSelect(JSONArray jArray,String country,String keyword,int startNum,int EndNum) {
 		try {
 			Connection con = null;

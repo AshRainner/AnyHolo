@@ -26,7 +26,6 @@ public class AndroidInitialValue extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		JSONObject jObject = new JSONObject();
 		JSONArray jArray = new JSONArray();
-		String version="1.0.0";
 		DBController dbc = new DBController();
 		dbc.DBSelect(jArray,DBController.TWEET_SELECT,"","",1);
 		ArrayList<String> prevTweetIds = new ArrayList<String>();
@@ -84,7 +83,6 @@ public class AndroidInitialValue extends HttpServlet {
 		LinkedHashSet<JSONObject> deduplicationHashSet = new LinkedHashSet<>();
 		for(int i=0;i<jArray.size();i++)
 			deduplicationHashSet.add((JSONObject) jArray.get(i));
-		jObject.put("Version",version);
 		jObject.put("Tweet", deduplicationHashSet);
 		jArray = new JSONArray();
 		dbc.DBSelect(jArray, DBController.KIRINUKI_SELECT,"","",1);
@@ -92,6 +90,10 @@ public class AndroidInitialValue extends HttpServlet {
 		jArray = new JSONArray();
 		dbc.DBSelect(jArray,DBController.MEMBER_SELECT,"","",1);
 		jObject.put("Member", jArray);
+		jArray = new JSONArray();
+		dbc.DBSelect(jArray, DBController.UPDATE_SELECT, "", "", 0);
+		jObject.put("Version", jArray.get(0));
+		jObject.put("UpdateString", jArray.get(1));
 		out.print(jObject);
 		out.flush();
 	}
