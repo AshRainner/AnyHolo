@@ -190,7 +190,7 @@ public class DBController {
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		sObject.put("writeDate",format.format(time));
 	}
-	private void UpdateLogSelect(JSONArray jArray) {
+	private void UpdateLogSelect(JSONArray jArray) {//업데이트정보
 		Connection con = null;
 		PreparedStatement pstmt = null;
 		con = DBConnect(con);
