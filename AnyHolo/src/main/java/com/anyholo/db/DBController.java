@@ -213,7 +213,7 @@ public class DBController {
 			updateString=updateString.replace("<br>","\n");
 			jArray.add(recentVersion);
 			jArray.add(updateString);
-			System.out.println(jArray);
+			//System.out.println(jArray);
 			/*System.out.println("최신 버전 : "+recentVersion);
 			System.out.println(updateString);*/
 		} catch (SQLException e) {
