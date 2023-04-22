@@ -99,6 +99,7 @@ public class DataManagement {
 				jsonString = YoutubeDataApi.getLiveJSon(liveids);
 				ObjectMapper mapper = new ObjectMapper();
 				String Day2Later = ZonedDateTime.now().plusDays(2).format(DateTimeFormatter.ISO_INSTANT);
+				String Hours1behind = ZonedDateTime.now().minusHours(1).format(DateTimeFormatter.ISO_INSTANT);
 				List<com.anyholo.model.live.Item> items = mapper.readValue(jsonString, LiveModel.class).getItems();
 				for(int i=0;i<memberOnAirList.size();i++) {
 					memberOnAirList.get(i).setOnAir("default");
@@ -106,12 +107,17 @@ public class DataManagement {
 					memberOnAirList.get(i).setOnAirTitle("default");
 					memberOnAirList.get(i).setOnAirVideoUrl("default");
 				}
+				System.out.println(Day2Later);
+				System.out.println(Hours1behind);
 				for(int i=0;i<items.size();i++) {
 					int index = getIndex(items.get(i))-1; // number값이 1부터 시작이라 1 빼줘야함
 					String thumbnailsUrl = "";
 					if(items.get(i).getSnippet().getLiveBroadcastContent().equals("live")||
 							items.get(i).getSnippet().getLiveBroadcastContent().equals("upcoming")&&
 							items.get(i).getLiveStreamingDetails().getScheduledStartTime().compareTo(Day2Later)<=0) {
+						if(items.get(i).getLiveStreamingDetails().getActualStartTime()==null&&
+								Hours1behind.compareTo(items.get(i).getLiveStreamingDetails().getScheduledStartTime())>=0)
+							continue;
 						memberOnAirList.get(index).setOnAir(items.get(i).getSnippet().getLiveBroadcastContent());
 						if(items.get(i).getSnippet().getThumbnails().getMaxres()!=null) {
 							thumbnailsUrl = items.get(i).getSnippet().getThumbnails().getMaxres().getUrl();		
@@ -169,7 +175,7 @@ public class DataManagement {
 			for(int i = 0; i<jsonArray.size()-1;i++) {
 				JSONObject obj = (JSONObject) jsonArray.get(i);
 				//aws에서는 動画 일본어로 나옴 한국은 동영상
-				if(((JSONObject)obj.get("tabRenderer")).get("title").equals("動画")) {
+				if(((JSONObject)obj.get("tabRenderer")).get("title").equals("동영상")) {
 					jsonObject = (JSONObject) ((JSONObject)obj.get("tabRenderer")).get("content");
 				}
 			}
@@ -214,7 +220,7 @@ public class DataManagement {
 			for(int i = 0; i<jsonArray.size()-1;i++) {
 				JSONObject obj = (JSONObject) jsonArray.get(i);
 				//aws 서버는 ショート로 일본어로나온 한국은 Shorts
-				if(((JSONObject)obj.get("tabRenderer")).get("title").equals("ショート")) {
+				if(((JSONObject)obj.get("tabRenderer")).get("title").equals("Shorts")) {
 					check=true;
 					jsonObject = (JSONObject) ((JSONObject)obj.get("tabRenderer")).get("content");
 				}
@@ -623,7 +629,7 @@ public class DataManagement {
 		twitterClient = TwitterApi.getTwitterClient();
 		for(int j = 0; j<memberList.size();j++) {
 			TweetList timeline = twitterClient.getUserTimeline(memberList.get(j).getTwitterId(),
-					AdditionalParameters.builder().startTime(LocalDateTime.now().minusDays(1).minusHours(9).minusMinutes(1)).endTime(LocalDateTime.now().minusHours(9)).build());
+					AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(10).minusMinutes(1)).endTime(LocalDateTime.now().minusHours(9)).build());
 			HashMap<String,ArrayList<String>> midea = new HashMap<String,ArrayList<String>>();
 			List<Tweet> tweetList = new ArrayList<>();
 			List<String> rtIds = new ArrayList<>(); // 리트윗한 트윗의 아이디들
@@ -733,5 +739,51 @@ public class DataManagement {
 	public void InitialMemberOnAir() throws SQLException {
 		for(Member m : memberList)
 			dbc.MemberOnAirInsert(new MemberOnAir(m.getNumber(), "default", "default", "default", "default"));
+	}
+	public String getDec(String videoId){
+		Document doc;
+		try {
+			doc = Jsoup.connect(videoId).get();
+			Elements links = doc.select("script");
+			String jsonString=null;
+			for(Element element : links) {
+				if(element.data().contains("var ytInitialData")) {
+					jsonString = element.data().substring(20,element.data().length()-1);
+					break;
+				}
+			}
+			JSONParser parser = new JSONParser();
+			JSONObject jsonObject = (JSONObject) parser.parse(jsonString);
+			jsonObject = (JSONObject) jsonObject.get("contents");			
+			jsonObject = (JSONObject) jsonObject.get("twoColumnWatchNextResults");
+			jsonObject = (JSONObject) jsonObject.get("results");
+			jsonObject = (JSONObject) jsonObject.get("results");
+			JSONArray jsonArray = (JSONArray) jsonObject.get("contents");
+			
+			for(int i = 0; i<jsonArray.size()-1;i++) {
+				JSONObject obj = (JSONObject) jsonArray.get(i);
+				if(((JSONObject)obj.get("videoSecondaryInfoRenderer")!=null)) {
+					jsonObject = (JSONObject) ((JSONObject)obj.get("videoSecondaryInfoRenderer"));
+				}
+			}
+			jsonObject = (JSONObject) jsonObject.get("description");
+			jsonArray = (JSONArray) jsonObject.get("runs");
+			String description = "";
+			for(int i=0;i<jsonArray.size();i++) {
+				JSONObject obj = (JSONObject) jsonArray.get(i);
+				description+=obj.get("text");
+			}
+			return description;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return "";
+		} catch (org.json.simple.parser.ParseException e) {
+			e.printStackTrace();
+			return "";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "";
+		}
 	}
 }
