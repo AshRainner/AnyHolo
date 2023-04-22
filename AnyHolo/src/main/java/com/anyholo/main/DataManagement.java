@@ -107,14 +107,13 @@ public class DataManagement {
 					memberOnAirList.get(i).setOnAirTitle("default");
 					memberOnAirList.get(i).setOnAirVideoUrl("default");
 				}
-				System.out.println(Day2Later);
-				System.out.println(Hours1behind);
 				for(int i=0;i<items.size();i++) {
 					int index = getIndex(items.get(i))-1; // number값이 1부터 시작이라 1 빼줘야함
 					String thumbnailsUrl = "";
 					if(items.get(i).getSnippet().getLiveBroadcastContent().equals("live")||
 							items.get(i).getSnippet().getLiveBroadcastContent().equals("upcoming")&&
 							items.get(i).getLiveStreamingDetails().getScheduledStartTime().compareTo(Day2Later)<=0) {
+						//프리챗이 앞에 있을 경우 고려
 						if(items.get(i).getLiveStreamingDetails().getActualStartTime()==null&&
 								Hours1behind.compareTo(items.get(i).getLiveStreamingDetails().getScheduledStartTime())>=0)
 							continue;
@@ -175,7 +174,7 @@ public class DataManagement {
 			for(int i = 0; i<jsonArray.size()-1;i++) {
 				JSONObject obj = (JSONObject) jsonArray.get(i);
 				//aws에서는 動画 일본어로 나옴 한국은 동영상
-				if(((JSONObject)obj.get("tabRenderer")).get("title").equals("동영상")) {
+				if(((JSONObject)obj.get("tabRenderer")).get("title").equals("動画")) {
 					jsonObject = (JSONObject) ((JSONObject)obj.get("tabRenderer")).get("content");
 				}
 			}
@@ -220,7 +219,7 @@ public class DataManagement {
 			for(int i = 0; i<jsonArray.size()-1;i++) {
 				JSONObject obj = (JSONObject) jsonArray.get(i);
 				//aws 서버는 ショート로 일본어로나온 한국은 Shorts
-				if(((JSONObject)obj.get("tabRenderer")).get("title").equals("Shorts")) {
+				if(((JSONObject)obj.get("tabRenderer")).get("title").equals("ショート")) {
 					check=true;
 					jsonObject = (JSONObject) ((JSONObject)obj.get("tabRenderer")).get("content");
 				}
@@ -629,7 +628,7 @@ public class DataManagement {
 		twitterClient = TwitterApi.getTwitterClient();
 		for(int j = 0; j<memberList.size();j++) {
 			TweetList timeline = twitterClient.getUserTimeline(memberList.get(j).getTwitterId(),
-					AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(10).minusMinutes(1)).endTime(LocalDateTime.now().minusHours(9)).build());
+					AdditionalParameters.builder().startTime(LocalDateTime.now().minusHours(9).minusMinutes(5)).endTime(LocalDateTime.now().minusHours(9)).build());
 			HashMap<String,ArrayList<String>> midea = new HashMap<String,ArrayList<String>>();
 			List<Tweet> tweetList = new ArrayList<>();
 			List<String> rtIds = new ArrayList<>(); // 리트윗한 트윗의 아이디들
